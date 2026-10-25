@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- TOP RANKING GOOGLE SEO META TAGS -->
+<title>Free Resume Maker, Study Notes & Resume Free Download PDF (100% Free) | FreeCVResume.co.in</title>
+<meta name="title" content="Free Resume Maker, Study Notes & Resume Free Download PDF (100% Free) | FreeCVResume.co.in">
+<meta name="description" content="FreeCVResume.co.in is India's #1 Free Resume Maker, Study Notes PDF Hub & Resume Free Download Portal. Create standard ATS-friendly CV in 1-Click with AI, resize SSC/Railway photos (20KB-50KB), read free exam notes, and practice live AI typing test 100% free.">
+<meta name="keywords" content="free resume maker, resume free download, free study notes pdf, ssc cgl notes hindi, railway ntpc study material, free cv builder online, 100% free resume download pdf, ai resume maker free india, ats friendly resume builder free, biodata maker online free download, ssc photo resizer 20kb to 50kb, signature resizer, ssc chsl typing test online free, freecvresume.co.in">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="FreeCVResume.co.in">
+<link rel="canonical" href="https://freecvresume.co.in/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://freecvresume.co.in/">
+<meta property="og:title" content="Free Resume Maker, Study Notes & Resume Free Download PDF | FreeCVResume.co.in">
+<meta property="og:description" content="1-Click AI Resume Maker with 100% Free PDF Download! Plus Free SSC/Railway Study Notes, Photo Resizer (20-50KB) & AI Typing Test.">
+
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "WebApplication",
+"name": "FreeCVResume.co.in - Free Resume Maker, Study Notes & Resume Free Download",
+"alternateName": ["FreeCVResume", "Free Resume Maker India", "Resume Free Download PDF", "FreeCV Study Hub"],
+"url": "https://freecvresume.co.in/",
+"description": "100% Free AI Resume Maker and instant PDF Resume Free Download without login or watermark. Includes Free Competitive Exam Study Notes, SSC/Railway Photo Resizer (20KB-50KB) and AI Live Typing Speed Test.",
+"applicationCategory": "EducationalApplication",
+"operatingSystem": "All",
+"offers": {
+"@type": "Offer",
+"price": "0",
+"priceCurrency": "INR"
+}
+}
+</script>
+
+<!-- Browser Tab Favicon Logo -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234338ca'/%3E%3Cstop offset='100%25' y2='100%25' stop-color='%237e22ce'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M18 14h20l10 10v26a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z' fill='%23ffffff'/%3E%3Cpath d='M38 14v10h10z' fill='%23c7d2fe'/%3E%3Crect x='20' y='28' width='16' height='3.5' rx='1.75' fill='%234338ca'/%3E%3Crect x='20' y='35' width='22' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Crect x='20' y='41' width='18' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='46' cy='46' r='11' fill='%23fbbf24'/%3E%3Cpath d='M46 39l2 4.5 4.5 2-4.5 2-2 4.5-2-4.5-4.5-2 4.5-2z' fill='%230f172a'/%3E%3C/svg%3E">
+
+<!-- Google AdSense Verification Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9375037798816963" crossorigin="anonymous"></script>
+
+<!-- Supabase CDN for Study Notes Database -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+[contenteditable="true"]:hover { outline: 1px dashed #4f46e5; background: #f5f3ff; cursor: text; }
+[contenteditable="true"]:focus { outline: 2px solid #4f46e5; background: #ffffff; }
+#resume-paper {
+width: 100%;
+max-width: 740px;
+min-height: 1020px;
+background: #ffffff;
+margin: 0 auto;
+box-sizing: border-box;
+color: #1e293b;
+word-wrap: break-word;
+overflow-wrap: break-word;
+}
+.tpl-classic-font { font-family: Georgia, "Times New Roman", serif; }
+.tpl-biodata-border { border: 4px double #1e293b !important; padding: 28px !important; }
+.line-clamp-3 {
+display: -webkit-box;
+-webkit-line-clamp: 3;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+@media print {
+body * { visibility: hidden; }
+#resume-paper, #resume-paper * { visibility: visible; }
+#resume-paper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+<!-- Top Banner -->
+<div class="bg-indigo-950 text-white text-xs py-2 px-4 text-center font-medium">
+<span class="bg-amber-400 text-slate-900 font-extrabold px-2 py-0.5 rounded mr-2">PRO AI v3.0</span>
+100% Free Resume Maker, Study Notes PDF & Instant Download — 1-Click mein Corporate Standard ATS Resume taiyar karein!
+</div>
+
+<!-- Header -->
+<header class="bg-white shadow-sm sticky top-0 z-50 border-b border-slate-200">
+<div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+<a href="/" class="flex items-center gap-3 group">
+<div class="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 p-0.5 shadow-md">
+<div class="w-full h-full bg-indigo-950/20 rounded-[14px] flex items-center justify-center relative">
+<svg class="w-8 h-8" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 10C14 7.79086 15.7909 6 18 6H38L50 18V50C50 52.2091 48.2091 54 46 54H18C15.7909 54 14 52.2091 14 50V10Z" fill="white"/>
+<path d="M38 6V16C38 17.1046 38.8954 18 40 18H50L38 6Z" fill="#C7D2FE"/>
+<circle cx="26" cy="20" r="4" fill="#4F46E5"/>
+<rect x="20" y="28" width="20" height="3.5" rx="1.75" fill="#4F46E5"/>
+<rect x="20" y="35" width="24" height="3" rx="1.5" fill="#94A3B8"/>
+<rect x="20" y="41" width="16" height="3" rx="1.5" fill="#94A3B8"/>
+<circle cx="46" cy="46" r="12" fill="#FBBF24" stroke="#4338CA" stroke-width="2"/>
+<path d="M46 38L48.1 43.4L53.5 45.5L48.1 47.6L46 53L43.9 47.6L38.5 45.5L43.9 43.4L46 38Z" fill="#0F172A"/>
+</svg>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-xl font-black tracking-tight text-slate-900">FreeCV<span class="text-indigo-600">Resume</span></span>
+<span class="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-xs uppercase">.co.in</span>
+</div>
+<p class="text-[11px] text-slate-500 font-medium">Free AI Resume Maker • Study Notes • Photo Resizer • Typing Test</p>
+</div>
+</a>
+
+<nav class="flex flex-wrap bg-slate-100 p-1.5 rounded-2xl gap-1 w-full md:w-auto">
+<button type="button" onclick="switchTab('resume')" id="btn-resume" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer whitespace-nowrap">
+<i class="fa-solid fa-file-signature mr-1"></i> AI Resume
+</button>
+<button type="button" onclick="switchTab('notes')" id="btn-notes" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap">
+<i class="fa-solid fa-book-open mr-1 text-emerald-600"></i> Study Notes
+</button>
+<button type="button" onclick="switchTab('resizer')" id="btn-resizer" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap">
+<i class="fa-solid fa-id-badge mr-1"></i> Photo (20-50KB)
+</button>
+<button type="button" onclick="switchTab('typing')" id="btn-typing" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap">
+<i class="fa-solid fa-keyboard mr-1"></i> AI Typing Test
+</button>
+</nav>
+</div>
+</header>
+
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-6 flex-1 w-full">
+
+<!-- TAB 1: AI RESUME BUILDER -->
+<section id="tab-resume" class="tab-content space-y-6">
+
+<div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="bg-white/10 border border-white/20 rounded-xl p-4">
+<h2 class="text-sm font-bold mb-1"><i class="fa-solid fa-file-arrow-up text-amber-300 mr-1"></i> Purana Resume Upload & Modify Karein</h2>
+<p class="text-xs text-indigo-100 mb-3">Apna purana PDF ya Word (.docx) resume dalein, AI uska data naye standard design mein bhar dega:</p>
+<label class="inline-block bg-white text-indigo-700 font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow hover:bg-indigo-50 transition">
+<i class="fa-solid fa-upload mr-1"></i> Upload Old Resume (PDF/DOCX)
+<input type="file" id="old-resume-file" accept=".pdf,.docx,.txt" onchange="handleOldResume(event)" class="hidden">
+</label>
+<p id="upload-msg" class="text-xs text-amber-300 font-bold mt-2 hidden"></p>
+</div>
+
+<div class="bg-white/10 border border-white/20 rounded-xl p-4">
+<h2 class="text-sm font-bold mb-1"><i class="fa-solid fa-robot text-emerald-300 mr-1"></i> Advanced AI Pro Writer (1-Click Standard Auto-Fill)</h2>
+<p class="text-xs text-indigo-100 mb-3">Job Profile chunein—AI high-level ATS Summary, Experience aur Skills khud likh dega:</p>
+<div class="flex flex-col sm:flex-row gap-2">
+<select id="ai-role" class="flex-1 bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 border border-white/20">
+<option value="warehouse">Store Operations / Billing / Inventory / Q-Commerce</option>
+<option value="dataentry">Back Office / MIS Executive / Data Entry Operator</option>
+<option value="fresher">Fresher Graduate / Management Trainee (All Streams)</option>
+<option value="ssc_govt">SSC / Railway / Banking / Govt Job Aspirant CV</option>
+<option value="sales">Sales / Banking / Business Development Executive</option>
+<option value="bpo">Customer Support / CRM / Telecalling Specialist</option>
+<option value="accounts">Accounts / GST Billing / Finance Executive</option>
+<option value="it">Software / Web Developer / Technical Support</option>
+<option value="hr">HR Executive / Office Admin / Operations Coordinator</option>
+<option value="biodata">Official Job & Marriage Bio-Data Format</option>
+</select>
+<button type="button" onclick="applyAIPreset(this)" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow cursor-pointer">
+<i class="fa-solid fa-bolt mr-1"></i> AI Auto-Fill Pro
+</button>
+</div>
+</div>
+</div>
+
+<!-- Template Selector -->
+<div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+<p class="text-xs font-extrabold uppercase text-slate-600 mb-3">Step 1: Template Design Chunein (Click Karke Badlein)</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<button type="button" onclick="setTemplate('modern')" id="t-btn-modern" class="p-3 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-left font-bold text-xs transition cursor-pointer">1. Modern ATS Blue</button>
+<button type="button" onclick="setTemplate('dark')" id="t-btn-dark" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">2. Executive Dark Header</button>
+<button type="button" onclick="setTemplate('classic')" id="t-btn-classic" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">3. Classic Corporate Print</button>
+<button type="button" onclick="setTemplate('biodata')" id="t-btn-biodata" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">4. Official Bio-Data Frame</button>
+</div>
+</div>
+
+<!-- Editor + Live Preview -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+<!-- Left Form -->
+<div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3.5">
+<div class="flex justify-between items-center border-b pb-2.5">
+<h3 class="font-extrabold text-sm text-slate-800">Details Modify Karein</h3>
+<button type="button" onclick="aiUpgradeAll(this)" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Upgrade All Sections
+</button>
+</div>
+
+<div class="grid grid-cols-2 gap-2.5">
+<div>
+<label class="text-[11px] font-bold text-slate-600">Poora Naam</label>
+<input type="text" id="f-name" oninput="updateCV()" value="YOUR FULL NAME" placeholder="Enter Full Name" class="w-full text-xs border rounded-lg px-2.5 py-2 font-semibold">
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-600">Target Job Role / Title</label>
+<input type="text" id="f-role" oninput="updateCV()" value="Operations & Administration Executive" placeholder="Ex: Operations Executive" class="w-full text-xs border rounded-lg px-2.5 py-2 font-semibold">
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-600">Mobile Number</label>
+<input type="text" id="f-phone" oninput="updateCV()" value="+91 98765 43210" placeholder="+91 XXXXX XXXXX" class="w-full text-xs border rounded-lg px-2.5 py-2">
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-600">Email ID</label>
+<input type="text" id="f-email" oninput="updateCV()" value="yourname@email.com" placeholder="yourname@email.com" class="w-full text-xs border rounded-lg px-2.5 py-2">
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-2.5">
+<div>
+<label class="text-[11px] font-bold text-slate-600">City & State</label>
+<input type="text" id="f-addr" oninput="updateCV()" value="City, State" placeholder="Ex: New Delhi, India" class="w-full text-xs border rounded-lg px-2.5 py-2">
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-600">Photo Lagayein (Optional)</label>
+<input type="file" accept="image/*" onchange="loadCVPhoto(event)" class="w-full text-[10px] border rounded-lg p-1.5">
+</div>
+</div>
+
+<div>
+<div class="flex justify-between items-center mb-1">
+<label class="text-[11px] font-bold text-slate-600">Career Summary / Objective</label>
+<button type="button" onclick="aiRewriteSummary(this)" class="text-[11px] bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold px-2 py-0.5 rounded border border-indigo-200 cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Summary
+</button>
+</div>
+<textarea id="f-summary" oninput="updateCV()" rows="3" class="w-full text-xs border rounded-lg p-2 leading-relaxed">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining 99.9% accuracy, streamlining workflows, and delivering fast service in dynamic corporate environments.</textarea>
+</div>
+
+<div>
+<div class="flex justify-between items-center mb-1">
+<label class="text-[11px] font-bold text-slate-600">Work Experience & Achievements</label>
+<button type="button" onclick="aiRewriteExp(this)" class="text-[11px] bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold px-2 py-0.5 rounded border border-indigo-200 cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Experience
+</button>
+</div>
+<textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
+• POS Billing & MIS Management: Processed daily customer invoices with zero discrepancy and maintained stock reconciliation reports on MS Excel.
+• Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</textarea>
+</div>
+
+<!-- UPGRADED EDUCATION SECTION WITH PERCENTAGE / CGPA -->
+<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+<div class="flex justify-between items-center">
+<label class="text-[11px] font-extrabold text-slate-700"><i class="fa-solid fa-graduation-cap text-indigo-600 mr-1"></i> Education (Qualification & Percentage / CGPA)</label>
+<button type="button" onclick="aiRewriteEdu(this)" class="text-[11px] bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-2.5 py-0.5 rounded shadow-xs cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Format (% / CGPA)
+</button>
+</div>
+
+<!-- Quick Percentage / CGPA Boxes -->
+<div class="grid grid-cols-3 gap-1.5">
+<div>
+<span class="text-[10px] font-bold text-slate-500">Graduation % / CGPA</span>
+<input type="text" id="edu-grad-score" oninput="applyEduScores()" placeholder="Ex: 72% or 6.8 CGPA" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
+</div>
+<div>
+<span class="text-[10px] font-bold text-slate-500">12th Percentage (%)</span>
+<input type="text" id="edu-12-score" oninput="applyEduScores()" placeholder="Ex: 76%" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
+</div>
+<div>
+<span class="text-[10px] font-bold text-slate-500">10th Percentage (%)</span>
+<input type="text" id="edu-10-score" oninput="applyEduScores()" placeholder="Ex: 80% or 8 CGPA" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
+</div>
+</div>
+
+<textarea id="f-edu" oninput="updateCV()" rows="3" class="w-full text-xs border bg-white rounded-lg p-2 leading-relaxed">• Bachelor's Degree (Graduation) – Recognized University | Year: 2025 | Marks: 72% (First Division)
+• Intermediate (12th Standard) – State / Central Board | Year: 2022 | Marks: 76% (First Division)
+• High School (10th Standard) – State / Central Board | Year: 2020 | Marks: 80% (8.0 CGPA)</textarea>
+</div>
+
+<div>
+<div class="flex justify-between items-center mb-1">
+<label class="text-[11px] font-bold text-slate-600">Key & Technical Skills</label>
+<button type="button" onclick="aiRewriteSkills(this)" class="text-[11px] bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold px-2 py-0.5 rounded border border-indigo-200 cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Skills
+</button>
+</div>
+<textarea id="f-skills" oninput="updateCV()" rows="3" class="w-full text-xs border rounded-lg p-2 leading-relaxed">• Core Operations: Billing & Invoicing, Inventory & Stock Audit, Order Fulfillment, Quality Control (QC)
+• Technical & Tools: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), ERP/WMS Systems, Fast English/Hindi Typing
+• Soft Skills: SLA Time Management, Team Coordination, Analytical Problem Solving, High Attention to Detail</textarea>
+</div>
+
+<div>
+<label class="text-[11px] font-bold text-slate-600">Personal Details</label>
+<input type="text" id="f-personal" oninput="updateCV()" value="Date of Birth: DD/MM/YYYY | Languages Known: Hindi & English | Nationality: Indian" class="w-full text-xs border rounded-lg px-2.5 py-2">
+</div>
+
+<div class="pt-1 space-y-2">
+<button type="button" id="dl-btn" onclick="downloadPDF(this)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow-md text-sm transition cursor-pointer">
+<i class="fa-solid fa-file-pdf mr-1"></i> Download Full HD Resume PDF (100% Free)
+</button>
+<button type="button" onclick="window.print()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs cursor-pointer">
+<i class="fa-solid fa-print mr-1"></i> Direct Print / Save as PDF (Backup)
+</button>
+</div>
+</div>
+
+<!-- Right Live Editable A4 Paper -->
+<div class="lg:col-span-7 bg-slate-200 p-3 sm:p-6 rounded-2xl overflow-x-auto">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-bold text-slate-600"><i class="fa-solid fa-pen-to-square mr-1"></i> Niche Resume ke kisi bhi text par click karke seedha edit bhi kar sakte hain:</span>
+<button type="button" onclick="downloadPDF(this)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow cursor-pointer">Save Free PDF</button>
+</div>
+
+<div id="resume-paper" class="p-8 shadow-xl rounded-sm space-y-5 bg-white">
+<div id="cv-header" class="border-b-4 border-indigo-600 pb-4 flex justify-between items-center gap-4">
+<div class="flex-1 min-w-0">
+<h1 id="out-name" contenteditable="true" class="text-2xl sm:text-3xl font-extrabold uppercase text-slate-900 tracking-tight">YOUR FULL NAME</h1>
+<p id="out-role" contenteditable="true" class="text-sm font-bold text-indigo-600 mt-1">Operations & Administration Executive</p>
+<p id="out-contact" contenteditable="true" class="text-xs text-slate-600 mt-1">+91 98765 43210 | yourname@email.com | City, State</p>
+</div>
+<img id="out-photo" src="" alt="Profile" class="hidden w-24 h-28 object-cover rounded-lg border-2 border-slate-300 shrink-0">
+</div>
+
+<div>
+<h2 id="sec-h1" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Professional Summary</h2>
+<p id="out-summary" contenteditable="true" class="text-xs leading-relaxed text-slate-800">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining 99.9% accuracy, streamlining workflows, and delivering fast service in dynamic corporate environments.</p>
+</div>
+
+<div>
+<h2 id="sec-h2" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Work Experience & Key Achievements</h2>
+<div id="out-exp" contenteditable="true" class="text-xs leading-relaxed text-slate-800 whitespace-pre-line">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
+• POS Billing & MIS Management: Processed daily customer invoices with zero discrepancy and maintained stock reconciliation reports on MS Excel.
+• Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</div>
+</div>
+
+<div>
+<h2 id="sec-h4" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Core Competencies & Technical Skills</h2>
+<div id="out-skills" contenteditable="true" class="text-xs leading-relaxed text-slate-800 whitespace-pre-line">• Core Operations: Billing & Invoicing, Inventory & Stock Audit, Order Fulfillment, Quality Control (QC)
+• Technical & Tools: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), ERP/WMS Systems, Fast English/Hindi Typing
+• Soft Skills: SLA Time Management, Team Coordination, Analytical Problem Solving, High Attention to Detail</div>
+</div>
+
+<div>
+<h2 id="sec-h3" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Academic Credentials (With Percentage / CGPA)</h2>
+<div id="out-edu" contenteditable="true" class="text-xs leading-relaxed text-slate-800 whitespace-pre-line">• Bachelor's Degree (Graduation) – Recognized University | Year: 2025 | Marks: 72% (First Division)
+• Intermediate (12th Standard) – State / Central Board | Year: 2022 | Marks: 76% (First Division)
+• High School (10th Standard) – State / Central Board | Year: 2020 | Marks: 80% (8.0 CGPA)</div>
+</div>
+
+<div>
+<h2 id="sec-h5" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Personal Dossier</h2>
+<p id="out-personal" contenteditable="true" class="text-xs leading-relaxed text-slate-800">Date of Birth: DD/MM/YYYY | Languages Known: Hindi & English | Nationality: Indian</p>
+</div>
+
+<div class="pt-6 border-t border-slate-300 flex justify-between items-end gap-4 text-xs text-slate-700">
+<span contenteditable="true" class="italic flex-1">Declaration: I hereby declare that the details furnished above are true and correct to the best of my knowledge.</span>
+<span id="out-sign" contenteditable="true" class="font-extrabold text-slate-900 shrink-0">(YOUR FULL NAME)</span>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- Study Notes Promo Card on Resume Tab -->
+<div class="bg-gradient-to-r from-blue-900 via-indigo-800 to-indigo-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="space-y-1.5 text-center md:text-left">
+<span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase">🎓 Free Exam Study Hub</span>
+<h2 class="text-lg sm:text-xl font-black">सरकारी नौकरी और इंटरव्यू तैयारी के फ्री हैंडरिटन स्टडी नोट्स</h2>
+<p class="text-xs text-indigo-100 max-w-2xl">SSC CGL, CHSL, Railway NTPC, Static GK और जॉब इंटरव्यू की तैयारी के लिए टॉपिक-वाइज शॉर्ट नोट्स व PDF बिल्कुल मुफ्त पढ़ें और अपने खुद के नोट्स भी अपलोड करें।</p>
+</div>
+<button type="button" onclick="switchTab('notes'); window.scrollTo(0,0);" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-5 py-3 rounded-xl shadow-md shrink-0 cursor-pointer transition">
+📖 अभी स्टडी नोट्स पढ़ें →
+</button>
+</div>
+
+</section>
+
+<!-- TAB 2: STUDY NOTES & PDF HUB -->
+<section id="tab-notes" class="tab-content hidden space-y-6">
+
+<!-- Notes Hero Banner -->
+<div class="bg-gradient-to-r from-indigo-900 via-blue-800 to-indigo-900 rounded-2xl p-6 text-white text-center shadow-lg space-y-3">
+<div id="earningBadge" class="hidden bg-emerald-500/20 border border-emerald-400 text-emerald-200 px-4 py-1.5 rounded-full text-xs font-bold">
+💰 Creator Rewards Active: अपने स्टडी नोट्स अपलोड करें और हर 1,000 Views पर ₹50 कमाएं!
+</div>
+<h2 class="text-xl sm:text-2xl font-black">📚 सरकारी नौकरी और एग्ज़ाम तैयारी के फ्री स्टडी नोट्स</h2>
+<p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mx-auto">SSC CGL, CHSL, Railway NTPC, UP State Exams और जॉब इंटरव्यू की तैयारी के लिए टॉपिक-वाइज शॉर्ट नोट्स और पीडीएफ यहाँ पढ़ें व डाउनलोड करें।</p>
+
+<div class="max-w-xl mx-auto flex flex-col sm:flex-row gap-2 pt-2">
+<input type="text" id="notesSearchInput" onkeyup="filterNotes()" placeholder="यहाँ टॉपिक सर्च करें (जैसे: संविधान, Science, Maths Tricks, Interview)..." class="flex-1 bg-white text-slate-800 text-xs rounded-xl px-4 py-3 focus:outline-none shadow">
+<button type="button" onclick="openUploadModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs px-5 py-3 rounded-xl shadow cursor-pointer whitespace-nowrap">
+<i class="fa-solid fa-cloud-arrow-up mr-1"></i> + Upload Notes
+</button>
+</div>
+</div>
+
+<!-- Category Buttons -->
+<div class="flex gap-2 overflow-x-auto pb-2">
+<button type="button" onclick="setNoteCategory('All', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-indigo-600 text-white cursor-pointer whitespace-nowrap">सभी नोट्स (All)</button>
+<button type="button" onclick="setNoteCategory('SSC & CGL', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">SSC CGL / CHSL</button>
+<button type="button" onclick="setNoteCategory('Railway RRB', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Railway (NTPC/Group D)</button>
+<button type="button" onclick="setNoteCategory('GK & GS', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Static GK & संविधान</button>
+<button type="button" onclick="setNoteCategory('Career & Interview', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Interview & Resume Tips</button>
+</div>
+
+<!-- Notes Grid -->
+<div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+<!-- Educational SEO Article for AdSense Approval -->
+<article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
+<h3 class="text-sm font-extrabold text-slate-900">प्रतियोगी परीक्षाओं (SSC, Railway, State PCS) में शॉर्ट नोट्स का महत्व</h3>
+<p>किसी भी सरकारी नौकरी की परीक्षा—चाहे वह SSC Combined Graduate Level (CGL) हो, CHSL हो, रेलवे भर्ती बोर्ड (RRB NTPC) हो या राज्य स्तरीय परीक्षाएं—अंतिम 15 दिनों के रिवीजन में शॉर्ट हैंडरिटन नोट्स (Handwritten Short Notes) सबसे बड़ी भूमिका निभाते हैं। पूरी किताब को दोबारा पढ़ना संभव नहीं होता, लेकिन महत्वपूर्ण अनुच्छेद (Articles), गणित के फॉर्मूले और विज्ञान के वन-लाइनर तथ्यों का संकलन आपकी सटीकता (Accuracy) को 40% तक बढ़ा देता है।</p>
+<p>हमारे इस पोर्टल का उद्देश्य छात्रों को एक ही स्थान पर व्यवस्थित, सटीक और परीक्षा-उपयोगी अध्ययन सामग्री (Study Material) निःशुल्क उपलब्ध कराना है। यदि आपके पास भी अपने खुद के बनाए हुए साफ़-सुथरे नोट्स या शॉर्ट ट्रिक्स हैं, तो आप ऊपर दिए गए '+ Upload Notes' बटन के माध्यम से अन्य छात्रों की मदद के लिए उन्हें साझा कर सकते हैं।</p>
+</article>
+
+</section>
+
+<!-- TAB 3: EXAM PHOTO & SIGN RESIZER -->
+<section id="tab-resizer" class="tab-content hidden">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+<div class="space-y-4">
+<h2 class="text-lg font-extrabold text-slate-900">SSC / Railway Photo (Name & Date) Resizer (20KB-50KB)</h2>
+<select id="p-type" onchange="drawExamPhoto()" class="w-full text-xs font-bold border rounded-xl px-3 py-2.5 bg-slate-50">
+<option value="photo">Passport Photo (3.5cm x 4.5cm) - 20KB to 50KB</option>
+<option value="sign">Signature (4.0cm x 2.0cm) - 10KB to 20KB</option>
+</select>
+<input type="file" accept="image/*" onchange="loadExamFile(event)" class="w-full text-xs border rounded-xl p-2">
+<div class="grid grid-cols-2 gap-2">
+<input type="text" id="p-name" oninput="drawExamPhoto()" placeholder="Name on Photo (Optional)" class="text-xs border rounded-xl px-3 py-2">
+<input type="text" id="p-date" oninput="drawExamPhoto()" placeholder="DOP: DD-MM-YYYY" class="text-xs border rounded-xl px-3 py-2">
+</div>
+<div>
+<label class="text-xs font-bold">File Size Control:</label>
+<input type="range" id="p-qual" min="30" max="95" value="82" oninput="drawExamPhoto()" class="w-full">
+</div>
+<button type="button" onclick="saveExamPhoto()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Download Resized JPG</button>
+</div>
+<div class="bg-slate-100 p-6 rounded-2xl flex flex-col items-center">
+<canvas id="p-canvas" width="350" height="450" class="bg-white shadow border max-w-[220px]"></canvas>
+<p id="p-kb" class="mt-3 text-xs font-bold text-emerald-700">Photo Select Karein</p>
+</div>
+</div>
+</section>
+
+<!-- TAB 4: EXAM TYPING TEST -->
+<section id="tab-typing" class="tab-content hidden">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+<div class="flex flex-col md:flex-row justify-between md:items-center gap-3 border-b pb-3">
+<div>
+<span class="bg-indigo-100 text-indigo-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">AI Dynamic Exam Passages</span>
+<h2 class="text-lg font-extrabold text-slate-900 mt-0.5">SSC CGL / CHSL / NTPC Live Typing Speed Test</h2>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+<select id="ty-topic" onchange="aiChangeTypingText(null)" class="text-xs font-bold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 text-slate-800">
+<option value="ssc">SSC / Govt Exam Official Passage</option>
+<option value="economy">Banking, Economy & Digital India</option>
+<option value="tech">AI, Computers & Modern Technology</option>
+<option value="corporate">Corporate Office & Administration</option>
+<option value="ai_mix">AI Smart Random Generator (Infinite)</option>
+</select>
+<button type="button" onclick="aiChangeTypingText(this)" class="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold px-3.5 py-2 rounded-xl shadow-xs transition cursor-pointer">
+<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Change Words
+</button>
+<button type="button" onclick="resetTypingTest()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">
+<i class="fa-solid fa-rotate-right mr-1"></i> Restart
+</button>
+</div>
+</div>
+
+<div class="grid grid-cols-3 gap-3 text-center">
+<div class="bg-indigo-50 p-3 rounded-xl"><span class="text-xs font-bold">Time</span><p id="ty-time" class="text-xl font-black">60s</p></div>
+<div class="bg-emerald-50 p-3 rounded-xl"><span class="text-xs font-bold">Speed (WPM)</span><p id="ty-wpm" class="text-xl font-black">0</p></div>
+<div class="bg-amber-50 p-3 rounded-xl"><span class="text-xs font-bold">Accuracy</span><p id="ty-acc" class="text-xl font-black">100%</p></div>
+</div>
+
+<p id="ty-text" class="bg-slate-50 p-4 rounded-xl border text-sm leading-relaxed select-none font-medium text-slate-800">Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across India.</p>
+
+<textarea id="ty-input" oninput="runTyping()" placeholder="Yahan type karna shuru karein... (Naye words ke liye upar AI Change Words par click karein)" class="w-full h-32 border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none rounded-xl p-3 text-sm"></textarea>
+</div>
+</section>
+
+<!-- GOOGLE SEO RANKING CONTENT BOX -->
+<section class="mt-10 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
+<h2 class="text-sm font-extrabold text-slate-900">FreeCVResume.co.in – India's #1 Free Resume Maker, Study Notes & Resume Free Download Portal</h2>
+<p>Welcome to <strong>FreeCVResume.co.in</strong>, the most trusted <strong>free resume maker</strong> and <strong>competitive exam study hub</strong> where students, freshers, and experienced professionals can create an executive ATS-friendly CV with academic percentage/CGPA, read topic-wise <strong>SSC & Railway study notes</strong>, and get an instant <strong>resume free download in PDF</strong> format without paying any hidden charges. Unlike other portals that charge ₹250–₹300 at the time of download, our <strong>AI Resume Builder</strong>, <strong>Free Study Notes Hub</strong>, <strong>SSC/Railway Photo & Signature Resizer (20KB–50KB)</strong>, and <strong>AI Live Typing Speed Test</strong> are 100% free forever.</p>
+</section>
+
+</main>
+
+<!-- MODAL 1: STUDY NOTE READER & 10-SECOND DOWNLOAD TIMER -->
+<div id="readerModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-3xl w-full p-6 text-slate-800 relative max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+<button type="button" onclick="closeReaderModal()" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 w-9 h-9 rounded-full text-slate-700 font-bold cursor-pointer">✕</button>
+<span id="modalCategory" class="inline-block bg-indigo-100 text-indigo-800 text-[11px] font-extrabold px-3 py-1 rounded-md">Category</span>
+<h2 id="modalTitle" class="text-lg sm:text-xl font-black text-slate-900">Note Title</h2>
+<p id="modalMeta" class="text-xs text-slate-500 font-medium">By Author • Views</p>
+
+<div id="modalContent" class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line"></div>
+
+<div class="bg-indigo-50 border border-dashed border-indigo-400 p-4 rounded-xl text-center space-y-2">
+<p id="timerText" class="text-xs font-bold text-indigo-800">
+⏳ पीडीएफ लिंक तैयार हो रहा है... कृपया <span id="countdown" class="font-black text-sm">10</span> सेकंड प्रतीक्षा करें
+</p>
+<a id="downloadNoteBtn" href="#" target="_blank" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow inline-flex items-center gap-1.5">
+📥 Download / Print Full PDF Note
+</a>
+</div>
+</div>
+</div>
+
+<!-- MODAL 2: UPLOAD STUDY NOTE FORM -->
+<div id="uploadModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-lg w-full p-6 text-slate-800 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+<button type="button" onclick="closeUploadModal()" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 w-9 h-9 rounded-full text-slate-700 font-bold cursor-pointer">✕</button>
+<h2 class="text-lg font-black text-slate-900 mb-1">📤 अपना स्टडी नोट अपलोड करें</h2>
+<p id="uploadSubtext" class="text-xs text-slate-500 mb-4">अपने हैंडरिटन नोट्स या महत्वपूर्ण प्रश्न-उत्तर अन्य छात्रों के साथ साझा करें।</p>
+
+<form id="uploadNoteForm" onsubmit="submitNewNote(event)" class="space-y-3 text-xs">
+<div>
+<label class="font-bold text-slate-700 block mb-1">आपका नाम (Creator Name) *</label>
+<input type="text" id="authorName" required placeholder="जैसे: Arjun Kumar" class="w-full border rounded-xl px-3 py-2">
+</div>
+<div id="upiFieldGroup" class="hidden">
+<label class="font-bold text-slate-700 block mb-1">आपकी UPI ID (पेमेंट प्राप्त करने के लिए) *</label>
+<input type="text" id="authorUpi" placeholder="example@ybl" class="w-full border rounded-xl px-3 py-2">
+</div>
+<div>
+<label class="font-bold text-slate-700 block mb-1">नोट का शीर्षक (Note Title) *</label>
+<input type="text" id="noteTitle" required placeholder="जैसे: भारतीय संविधान के 50 सबसे महत्वपूर्ण अनुच्छेद" class="w-full border rounded-xl px-3 py-2">
+</div>
+<div>
+<label class="font-bold text-slate-700 block mb-1">एग्ज़ाम कैटेगरी चुनें *</label>
+<select id="noteCategory" required class="w-full border rounded-xl px-3 py-2 bg-white">
+<option value="SSC & CGL">SSC CGL / CHSL</option>
+<option value="Railway RRB">Railway (NTPC/Group D)</option>
+<option value="GK & GS">Static GK & संविधान</option>
+<option value="Career & Interview">Interview & Resume Tips</option>
+</select>
+</div>
+<div>
+<label class="font-bold text-slate-700 block mb-1">नोट्स का मुख्य सारांश / महत्वपूर्ण बिंदु (कम से कम 100 शब्द) *</label>
+<textarea id="noteContent" rows="5" required placeholder="यहाँ नोट्स के मुख्य पॉइंट्स लिखें ताकि छात्र ऑनलाइन भी पढ़ सकें..." class="w-full border rounded-xl p-3"></textarea>
+</div>
+<div>
+<label class="font-bold text-slate-700 block mb-1">PDF Google Drive Link (या खाली छोड़ें)</label>
+<input type="url" id="pdfUrl" placeholder="https://drive.google.com/..." class="w-full border rounded-xl px-3 py-2">
+</div>
+<button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow cursor-pointer">
+✅ नोट सबमिट करें
+</button>
+</form>
+</div>
+</div>
+
+<footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+<div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-xs shadow">CV</div>
+<div>
+<p class="font-bold text-white text-sm">FreeCV<span class="text-indigo-400">Resume.co.in</span></p>
+<p class="text-[11px] text-slate-500">100% Free AI Resume Builder, Study Notes, Exam Photo Resizer & Typing Test.</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 text-xs font-semibold">
+<button type="button" onclick="openLegalModal('about')" class="hover:text-white transition cursor-pointer">About Us</button>
+<span class="text-slate-700">|</span>
+<button type="button" onclick="openLegalModal('privacy')" class="hover:text-white transition cursor-pointer">Privacy Policy</button>
+<span class="text-slate-700">|</span>
+<button type="button" onclick="openLegalModal('terms')" class="hover:text-white transition cursor-pointer">Terms of Service</button>
+<span class="text-slate-700">|</span>
+<button type="button" onclick="openLegalModal('contact')" class="hover:text-white transition cursor-pointer">Contact Us</button>
+</div>
+<p class="text-[11px] text-slate-500">© 2026 FreeCVResume.co.in • All Rights Reserved.</p>
+</div>
+</footer>
+
+<div id="legal-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl max-w-2xl w-full p-6 text-slate-800 relative max-h-[85vh] overflow-y-auto shadow-2xl">
+<button type="button" onclick="closeLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-lg font-bold">✕</button>
+<div id="legal-modal-content" class="text-xs space-y-3 leading-relaxed"></div>
+<div class="mt-6 pt-4 border-t text-right">
+<button type="button" onclick="closeLegalModal()" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-xl text-xs">Close</button>
+</div>
+</div>
+</div>
+
+<script>
+// =========================================================================
+// 🛡️ ADSENSE APPROVAL SAFE SWITCH (Study Notes Monetization)
+// जब तक AdSense में "Getting ready" है, इसे false रखें।
+// साइट "Ready" होते ही इसे true कर दें!
+// =========================================================================
+var SHOW_EARNING_FEATURES = false;
+
+// =========================================================================
+// 🔗 SUPABASE CONFIGURATION (Optional: अपना Supabase URL और Key यहाँ डालें)
+// =========================================================================
+var SUPABASE_URL = "";
+var SUPABASE_ANON_KEY = "";
+var supabaseClient = null;
+if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+function flashBtn(btn, msg) {
+if (!btn) return;
+var orig = btn.getAttribute("data-orig") || btn.innerHTML;
+btn.setAttribute("data-orig", orig);
+btn.innerHTML = "✓ " + (msg || "AI Applied!");
+setTimeout(function() { btn.innerHTML = orig; }, 900);
+}
+
+function switchTab(id) {
+var tabs = ["resume", "notes", "resizer", "typing"];
+for (var i = 0; i < tabs.length; i++) {
+var sec = document.getElementById("tab-" + tabs[i]);
+var b = document.getElementById("btn-" + tabs[i]);
+if (sec) sec.classList.add("hidden");
+if (b) b.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap";
+}
+var activeSec = document.getElementById("tab-" + id);
+var activeBtn = document.getElementById("btn-" + id);
+if (activeSec) activeSec.classList.remove("hidden");
+if (activeBtn) activeBtn.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
+}
+
+function updateCV() {
+var name = document.getElementById("f-name").value || "YOUR FULL NAME";
+var role = document.getElementById("f-role").value || "";
+var phone = document.getElementById("f-phone").value || "";
+var email = document.getElementById("f-email").value || "";
+var addr = document.getElementById("f-addr").value || "";
+
+document.getElementById("out-name").innerText = name;
+document.getElementById("out-sign").innerText = "(" + name + ")";
+document.getElementById("out-role").innerText = role;
+document.getElementById("out-contact").innerText = phone + " | " + email + " | " + addr;
+document.getElementById("out-summary").innerText = document.getElementById("f-summary").value;
+document.getElementById("out-exp").innerText = document.getElementById("f-exp").value;
+document.getElementById("out-edu").innerText = document.getElementById("f-edu").value;
+document.getElementById("out-skills").innerText = document.getElementById("f-skills").value;
+document.getElementById("out-personal").innerText = document.getElementById("f-personal").value;
+}
+
+function applyEduScores() {
+var g = document.getElementById("edu-grad-score").value.trim() || "72% / 6.8 CGPA";
+var tw = document.getElementById("edu-12-score").value.trim() || "76% (First Division)";
+var tn = document.getElementById("edu-10-score").value.trim() || "80% (8.0 CGPA)";
+
+var formattedEdu = "• Bachelor's Degree (Graduation) – Recognized University | Score: " + g + "\n" +
+"• Intermediate (12th Standard) – State / Central Board | Score: " + tw + "\n" +
+"• High School (10th Standard) – State / Central Board | Score: " + tn;
+
+document.getElementById("f-edu").value = formattedEdu;
+updateCV();
+}
+
+var presets = {
+warehouse: {
+role: "Senior Store Operations, Inventory & Billing Executive",
+sum: "Results-driven Operations & Supply Chain Professional with comprehensive expertise in high-velocity fulfillment, POS billing, inward/outward stock auditing, and SLA-driven dispatch execution. Proven track record of maintaining 99.9% inventory accuracy and minimizing shrinkage.",
+exp: "• Store Operations & Inventory Associate: Directed end-to-end fulfillment workflows including HHT barcode scanning, rapid picking/packing, and quality checks.\n• POS Billing & Reconciliation: Processed 300+ daily customer invoices with zero discrepancy and maintained stock sheets in MS Excel.\n• Audit & SLA Compliance: Executed daily cycle counts, FIFO stock rotation, and achieved 100% on-time dispatch targets.",
+sk: "• Core Operations: POS Billing & Invoicing, Inventory & Stock Audit, Rapid Order Fulfillment, FIFO & Shrinkage Control\n• Software & Tools: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), ERP/WMS Portals, HHT Barcode Scanners\n• Professional Skills: SLA Time Management, Team Supervision, Quality Assurance (QC), Fast Problem Solving"
+},
+dataentry: {
+role: "MIS Executive & Back Office Operations Specialist",
+sum: "Detail-oriented Back Office and MIS Specialist with high-speed typing precision and advanced command over MS Excel, database management, CRM operations, and corporate documentation with 99.9% accuracy.",
+exp: "• Back Office & MIS Executive: Maintained master databases, created automated daily/monthly Excel MIS dashboards, and verified client KYC documentation.\n• Data Auditing & Billing Support: Audited high-volume transaction logs, rectified ledger discrepancies, and streamlined spreadsheet workflows.\n• Official Documentation: Drafted corporate correspondence and handled inter-departmental data coordination.",
+sk: "• Technical Proficiency: Advanced MS Excel (VLOOKUP, HLOOKUP, Pivot Tables), MS Word & PowerPoint, Google Sheets\n• Data Operations: High-Speed English & Hindi Typing (45+ WPM), CRM Data Entry, KYC Verification, ERP Billing\n• Soft Skills: Analytical Thinking, Data Confidentiality, Zero-Error Execution, Time Management"
+},
+fresher: {
+role: "Graduate Executive Trainee (Operations & Administration)",
+sum: "Dynamic, disciplined, and quick-learning graduate with strong academic percentage, analytical aptitude, bilingual communication skills, and comprehensive computer proficiency. Eager to leverage academic excellence to drive organizational success.",
+exp: "• Academic & Project Coordination: Spearheaded college research projects, academic documentation, and team presentations within strict deadlines.\n• Practical Computer & MIS Training: Completed hands-on training in MS Office Suite (Excel, Word, PowerPoint), digital record keeping, and professional drafting.\n• Core Competencies: Demonstrated ability to master new software tools rapidly and collaborate in cross-functional teams.",
+sk: "• Computer Skills: MS Office Suite (Excel, Word, PowerPoint), Google Workspace, Digital Documentation, Internet Research\n• Operational Skills: Data Management, Fast English/Hindi Typing, Record Keeping, Office Coordination\n• Interpersonal Skills: Bilingual Fluency (Hindi & English), Adaptability, Strong Work Ethic, Problem Solving"
+},
+ssc_govt: {
+role: "Administrative & Clerical Operations Associate",
+sum: "Highly disciplined and methodical graduate with strong quantitative aptitude, general awareness, and certified computer typing speed. Skilled in official drafting, file management, and data verification.",
+exp: "• Office & Documentation Support: Managed structured filing systems, verified official applications, and maintained digital registers on MS Excel.\n• Typing & Correspondence: Drafted formal letters, notices, and summary reports in English and Hindi with zero typographical errors.\n• Public & Team Coordination: Assisted visitors and team members with procedural queries while maintaining strict office decorum.",
+sk: "• Administrative Skills: Official Drafting & Noting, File & Record Management, Data Verification, Public Dealing\n• Computer & Typing: High-Speed English Typing (40+ WPM), MS Excel & Word, E-Office Portals, Digital Archiving\n• Core Attributes: Integrity, Punctuality, Analytical Aptitude, Rule Compliance"
+},
+sales: {
+role: "Business Development & Relationship Executive",
+sum: "Target-driven Sales and Relationship Management professional skilled in B2B/B2C client acquisition, consultative selling, financial product pitching, and territory expansion.",
+exp: "• Sales & Relationship Executive: Identified high-potential prospects, conducted product demos, and achieved 120%+ of monthly sales targets.\n• Client Retention & CRM: Managed an active customer portfolio, resolved post-sales queries swiftly, and drove repeat business.\n• Market Analysis: Monitored local market trends and executed promotional campaigns to expand brand footprint.",
+sk: "• Sales & Marketing: Lead Generation, Consultative Selling, Key Account Management, Field & Inside Sales, Negotiation\n• Tools & Reporting: CRM Software, Sales Funnel Tracking, MS Excel MIS Reporting, Digital Pitching\n• Soft Skills: Persuasive Communication, Client Relationship Building, Target Orientation, Resilience"
+},
+bpo: {
+role: "Customer Relationship & Support Specialist",
+sum: "Emphetic and articulate Customer Support Specialist with strong bilingual communication skills and hands-on experience in handling inbound/outbound calls, CRM ticket resolution, and customer retention.",
+exp: "• Customer Care Executive: Handled 90+ daily customer interactions via voice, email, and live chat, achieving a 97% First-Call Resolution score.\n• Escalation Management: Resolved complex billing, delivery, and service complaints calmly within SLA turnaround times.\n• CRM Documentation: Logged accurate customer feedback and coordinated with backend teams to close service requests.",
+sk: "• Customer Service: Inbound & Outbound Calling, Query & Complaint Resolution, Escalation Handling, CSAT Improvement\n• Systems & Tools: CRM Ticketing Systems, Live Chat Support, Cloud Telephony Dialers, MS Office\n• Communication: Fluent Hindi & Professional English, Active Listening, Empathy, Patience"
+},
+accounts: {
+role: "Accounts & GST Billing Executive",
+sum: "Methodical Accounts and Billing Executive experienced in GST invoicing, ledger reconciliation, vendor payments, and daily cashbook maintenance with 100% statutory compliance.",
+exp: "• Accounts & Billing Associate: Generated GST-compliant tax invoices, e-way bills, and credit/debit notes using Tally Prime and ERP software.\n• Reconciliation & Audits: Performed monthly bank, vendor, and physical stock reconciliations, rectifying ledger mismatches promptly.\n• Cash & Voucher Management: Managed petty cash, verified expense vouchers, and assisted in GSTR-1 and GSTR-3B preparation.",
+sk: "• Accounting & Taxation: Tally Prime / ERP 9, GST Invoicing & E-Way Bills, Ledger & Bank Reconciliation\n• Office Tools: Advanced MS Excel, Financial MIS Reporting, POS & Billing Systems\n• Core Attributes: Numerical Accuracy, Financial Integrity, Audit Compliance, Time-Bound Reporting"
+},
+it: {
+role: "Front-End Web Developer & Technical Associate",
+sum: "Innovative Web Developer and Technical Specialist skilled in building responsive, SEO-friendly web applications using HTML5, CSS3, JavaScript, and modern UI frameworks.",
+exp: "• Web Application Development: Designed and deployed high-speed utility web portals on serverless cloud hosting platforms.\n• UI/UX & SEO Optimization: Implemented mobile-first layouts using Tailwind CSS and JavaScript, integrating Google Search Console metadata.\n• Domain & Cloud Deployment: Configured custom DNS records, SSL certificates, and GitHub deployment workflows.",
+sk: "• Programming & Web: HTML5, CSS3, JavaScript (ES6+), Tailwind CSS, DOM Manipulation, Technical SEO\n• Deployment & Tools: Git & GitHub, Vercel Cloud Hosting, DNS Configuration, Chrome DevTools\n• Core Strengths: Logic Troubleshooting, Code Optimization, Rapid Prototyping, Technical Support"
+},
+hr: {
+role: "HR & Office Administration Executive",
+sum: "Organized and people-oriented HR & Administration Executive skilled in end-to-end recruitment, employee onboarding, attendance & payroll coordination, and daily office management.",
+exp: "• Recruitment & Onboarding: Screened candidate resumes, scheduled interviews, verified documents, and conducted onboarding formalities.\n• Attendance & Payroll Support: Maintained daily biometric attendance logs, leave records, and assisted in monthly salary processing.\n• Office Administration: Supervised facility upkeep, vendor coordination, and official employee communications.",
+sk: "• HR Operations: End-to-End Recruitment, Onboarding & KYC, Attendance & Leave Management, Employee Engagement\n• Tools & Admin: HRMS Portals, MS Excel & Word, Job Portals, Facility Administration\n• Soft Skills: Professional Communication, Conflict Resolution, Confidentiality, Coordination"
+},
+biodata: {
+role: "Executive Candidate Profile (Official Bio-Data)",
+sum: "A disciplined, sincere, and hardworking professional with a strong educational percentage and practical expertise in computer operations, administration, and team coordination.",
+exp: "• Practical Experience: Hands-on experience in office administration, computer billing, inventory record maintenance, and public dealing.\n• Key Strengths: Punctual, honest, quick learner, and capable of handling official responsibilities independently.",
+sk: "• Computer Proficiency: MS Office (Word, Excel), Computer Billing, Hindi & English Typing, Internet Operations\n• Administrative Skills: Record Maintenance, File Management, Team Coordination, Public Dealing\n• Languages & Conduct: Fluent in Hindi & English, Disciplined & Responsible"
+}
+};
+
+var aiCycleIndex = 0;
+
+function applyAIPreset(btn) {
+var key = document.getElementById("ai-role").value;
+var p = presets[key] || presets.warehouse;
+document.getElementById("f-role").value = p.role;
+document.getElementById("f-summary").value = p.sum;
+document.getElementById("f-exp").value = p.exp;
+document.getElementById("f-skills").value = p.sk;
+if (key === "biodata") setTemplate("biodata");
+updateCV();
+flashBtn(btn, "AI Auto-Filled!");
+}
+
+function aiRewriteSummary(btn) {
+var role = document.getElementById("f-role").value || "Operations & Administration Professional";
+var summaries = [
+"Accomplished and detail-oriented " + role + " with a proven track record in streamlining daily workflows, maintaining 99.9% operational accuracy, and delivering exceptional service within strict SLA timelines.",
+"Dynamic and results-driven " + role + " skilled in end-to-end process execution, inventory & record management, MIS reporting, and cross-functional team coordination in fast-paced environments.",
+"Dedicated and performance-focused " + role + " combining strong analytical abilities with hands-on expertise in computerized billing, documentation, and stakeholder coordination.",
+"Highly organized " + role + " with comprehensive knowledge of modern office operations, quality compliance, real-time stock auditing, and digital documentation."
+];
+document.getElementById("f-summary").value = summaries[aiCycleIndex % summaries.length];
+aiCycleIndex++;
+updateCV();
+flashBtn(btn, "Updated!");
+}
+
+function aiRewriteExp(btn) {
+var role = document.getElementById("f-role").value || "Operations Associate";
+var exps = [
+"• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving 99.9% accuracy and 100% SLA compliance.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to reduce turnaround time by 20% and upheld strict quality standards.",
+"• Senior Associate – " + role + ": Managed high-volume daily transactions, inward/outward stock verification, HHT barcode scanning, and customer invoicing with zero discrepancy.\n• Audit & Quality Control: Conducted regular physical stock counts, resolved billing mismatches, and implemented FIFO standards to minimize shrinkage.\n• Training & Coordination: Assisted management in daily scheduling, vendor coordination, and onboarding new team members.",
+"• Executive – " + role + ": Executed end-to-end back-office and floor operations including data entry, invoice processing, and client query resolution.\n• Database & Record Management: Digitized official records, verified compliance documents, and generated automated daily dispatch summaries.\n• Key Achievement: Recognized for high productivity, punctuality, and maintaining seamless operations during peak hours."
+];
+document.getElementById("f-exp").value = exps[aiCycleIndex % exps.length];
+aiCycleIndex++;
+updateCV();
+flashBtn(btn, "Updated!");
+}
+
+function aiRewriteEdu(btn) {
+var g = document.getElementById("edu-grad-score").value.trim();
+var tw = document.getElementById("edu-12-score").value.trim();
+var tn = document.getElementById("edu-10-score").value.trim();
+
+var edus = [
+"• Bachelor of Arts (B.A. Honours) – Central / State University (2025) | Score: " + (g || "6.73 CGPA / First Division") + "\n• Intermediate (12th Standard) – State Examination Board (2022) | Percentage: " + (tw || "75% (First Division)") + "\n• High School (10th Standard) – State Examination Board (2020) | Score: " + (tn || "8.0 CGPA / 80%") + "\n• Professional Certification: Diploma in Computer Applications (DCA) & MS Office Suite",
+"• Bachelor's Degree (Graduation) – Recognized University | Marks: " + (g || "72% (First Division)") + "\n• Senior Secondary (Class XII) – UP / CBSE / State Board | Marks: " + (tw || "78% (First Division)") + "\n• Matriculation (Class X) – UP / CBSE / State Board | Marks: " + (tn || "82% (First Division)") + "\n• Technical Qualification: Certified in Computer Operations, Advanced MS Excel & Fast Typing",
+"• Graduation (B.A. / B.Com / B.Sc) – Recognized University | CGPA / Percentage: " + (g || "7.2 CGPA (70%)") + "\n• Higher Secondary (10+2) – State Board of Education | Percentage: " + (tw || "74%") + "\n• Secondary School (10th) – State Board of Education | Percentage: " + (tn || "80% (8.0 CGPA)")
+];
+document.getElementById("f-edu").value = edus[aiCycleIndex % edus.length];
+aiCycleIndex++;
+updateCV();
+flashBtn(btn, "% Format Applied!");
+}
+
+function aiRewriteSkills(btn) {
+var skillsList = [
+"• Core Competencies: Operations Management, POS Billing & Invoicing, Inventory & Stock Audit, Order Fulfillment, Quality Assurance (QC)\n• Technical & Software: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), MS Word, ERP/WMS Software, HHT Barcode Scanners, Fast Typing\n• Professional Skills: SLA Time Management, Team Coordination, Analytical Problem Solving, Bilingual Communication (Hindi & English)",
+"• Operational Excellence: End-to-End Store & Office Operations, Data Verification, Dispatch Coordination, FIFO & Shrinkage Control\n• Digital Tools: MS Office Suite (Excel, Word, PowerPoint), Billing & Accounting Portals, CRM Tools, Google Workspace\n• Interpersonal Strengths: High Attention to Detail, Adaptability, Leadership & Teamwork, Work Pressure Handling",
+"• Domain Expertise: Retail & Warehouse Operations, Computerized Billing, MIS & Spreadsheet Reporting, Customer & Vendor Dealing\n• Technical Skills: Computer Applications (CCC/DCA Level), Fast English & Hindi Typing (40+ WPM), Data Entry, Digital Record Keeping\n• Soft Skills: Discipline, Integrity, Quick Decision Making, Effective Communication"
+];
+document.getElementById("f-skills").value = skillsList[aiCycleIndex % skillsList.length];
+aiCycleIndex++;
+updateCV();
+flashBtn(btn, "Updated!");
+}
+
+function aiUpgradeAll(btn) {
+aiRewriteSummary(null);
+aiRewriteExp(null);
+aiRewriteEdu(null);
+aiRewriteSkills(null);
+flashBtn(btn, "All Upgraded!");
+}
+
+function setTemplate(type) {
+var tps = ["modern", "dark", "classic", "biodata"];
+for (var i = 0; i < tps.length; i++) {
+var btn = document.getElementById("t-btn-" + tps[i]);
+if (btn) btn.className = "p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer";
+}
+var activeBtn = document.getElementById("t-btn-" + type);
+if (activeBtn) activeBtn.className = "p-3 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-left font-bold text-xs transition cursor-pointer";
+
+var paper = document.getElementById("resume-paper");
+var header = document.getElementById("cv-header");
+paper.className = "p-8 shadow-xl rounded-sm space-y-5 bg-white";
+header.className = "pb-4 flex justify-between items-center gap-4 border-b-4 border-indigo-600";
+
+var headings = [
+document.getElementById("sec-h1"),
+document.getElementById("sec-h2"),
+document.getElementById("sec-h3"),
+document.getElementById("sec-h4"),
+document.getElementById("sec-h5")
+];
+
+if (type === "dark") {
+header.className = "p-6 rounded-xl bg-slate-900 text-white flex justify-between items-center gap-4";
+document.getElementById("out-name").className = "text-2xl sm:text-3xl font-extrabold uppercase text-white";
+document.getElementById("out-role").className = "text-sm font-bold text-amber-400 mt-1";
+document.getElementById("out-contact").className = "text-xs text-slate-300 mt-1";
+for (var h = 0; h < headings.length; h++) {
+if (headings[h]) headings[h].className = "text-xs font-extrabold uppercase tracking-wider text-white bg-slate-800 px-2.5 py-1.5 rounded mb-2";
+}
+} else if (type === "classic") {
+paper.classList.add("tpl-classic-font");
+header.className = "pb-4 flex justify-between items-center gap-4 border-b-2 border-slate-900";
+document.getElementById("out-name").className = "text-2xl sm:text-3xl font-extrabold uppercase text-slate-900";
+document.getElementById("out-role").className = "text-sm font-bold text-slate-700 mt-1";
+document.getElementById("out-contact").className = "text-xs text-slate-600 mt-1";
+for (var h = 0; h < headings.length; h++) {
+if (headings[h]) headings[h].className = "text-xs font-bold uppercase border-b-2 border-slate-800 pb-1 mb-2 text-slate-900 bg-transparent px-0";
+}
+} else if (type === "biodata") {
+paper.classList.add("tpl-biodata-border");
+document.getElementById("out-name").className = "text-2xl sm:text-3xl font-extrabold uppercase text-slate-900";
+document.getElementById("out-role").className = "text-sm font-bold text-slate-700 mt-1";
+document.getElementById("out-contact").className = "text-xs text-slate-600 mt-1";
+for (var h = 0; h < headings.length; h++) {
+if (headings[h]) headings[h].className = "text-xs font-extrabold uppercase bg-slate-200 px-2.5 py-1.5 mb-2 text-slate-900 border-l-4 border-slate-800";
+}
+} else {
+document.getElementById("out-name").className = "text-2xl sm:text-3xl font-extrabold uppercase text-slate-900";
+document.getElementById("out-role").className = "text-sm font-bold text-indigo-600 mt-1";
+document.getElementById("out-contact").className = "text-xs text-slate-600 mt-1";
+for (var h = 0; h < headings.length; h++) {
+if (headings[h]) headings[h].className = "text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2";
+}
+}
+}
+
+function loadCVPhoto(e) {
+var file = e.target.files[0];
+if (!file) return;
+var reader = new FileReader();
+reader.onload = function(ev) {
+var img = document.getElementById("out-photo");
+img.src = ev.target.result;
+img.classList.remove("hidden");
+};
+reader.readAsDataURL(file);
+}
+
+async function handleOldResume(e) {
+var file = e.target.files[0];
+if (!file) return;
+var msg = document.getElementById("upload-msg");
+msg.classList.remove("hidden");
+msg.innerText = "AI aapka purana resume padh raha hai...";
+try {
+if (window.pdfjsLib) {
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+var text = "";
+var ext = file.name.split(".").pop().toLowerCase();
+if (ext === "pdf") {
+var buf = await file.arrayBuffer();
+var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+for (var i = 1; i <= pdf.numPages; i++) {
+var page = await pdf.getPage(i);
+var content = await page.getTextContent();
+for (var j = 0; j < content.items.length; j++) {
+text += content.items[j].str + " ";
+}
+}
+} else if (ext === "docx") {
+var buf2 = await file.arrayBuffer();
+var res = await mammoth.extractRawText({ arrayBuffer: buf2 });
+text = res.value;
+} else {
+text = await file.text();
+}
+var clean = text.replace(/\s+/g, " ").trim();
+var emailMatch = clean.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}/);
+if (emailMatch) document.getElementById("f-email").value = emailMatch[0];
+var phoneMatch = clean.match(/[6-9]\d{9}/);
+if (phoneMatch) document.getElementById("f-phone").value = "+91 " + phoneMatch[0];
+document.getElementById("f-exp").value = clean.slice(0, 600);
+updateCV();
+msg.innerText = "✓ Purana Resume load ho gaya!";
+} catch (err) {
+msg.innerText = "File read karne mein dikkat aayi, neeche form mein edit karein.";
+}
+}
+
+function downloadPDF(btn) {
+updateCV();
+var targetBtn = btn || document.getElementById("dl-btn");
+var oldText = targetBtn ? targetBtn.innerHTML : "";
+if (targetBtn) targetBtn.innerHTML = "⏳ Downloading PDF...";
+
+var source = document.getElementById("resume-paper");
+var cleanName = (document.getElementById("f-name").value || "Resume").replace(/\s+/g, "_");
+
+if (typeof html2pdf === "undefined") {
+window.print();
+if (targetBtn) targetBtn.innerHTML = oldText;
+return;
+}
+
+var opt = {
+margin: [6, 6, 6, 6],
+filename: cleanName + "_FreeCVResume.pdf",
+image: { type: "jpeg", quality: 0.98 },
+html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+};
+
+html2pdf().set(opt).from(source).save().then(function() {
+if (targetBtn) targetBtn.innerHTML = oldText;
+}).catch(function() {
+if (targetBtn) targetBtn.innerHTML = oldText;
+window.print();
+});
+}
+
+// =========================================================================
+// 📚 STUDY NOTES LOGIC (DEFAULT NOTES + SUPABASE + 10s VERIFIED VIEW TIMER)
+// =========================================================================
+var defaultNotes = [
+{
+id: 1,
+title: "भारतीय संविधान के 40 सबसे महत्वपूर्ण अनुच्छेद (SSC व रेलवे स्पेशल)",
+category: "GK & GS",
+author: "Editorial Team",
+views: 1420,
+pdf_url: "#",
+content: "प्रतियोगी परीक्षाओं में भारतीय संविधान (Indian Polity) से हर शिफ्ट में 2 से 3 प्रश्न पूछे जाते हैं। नीचे सबसे महत्वपूर्ण अनुच्छेदों की सूची दी गई है:\n\n1. अनुच्छेद 1: संघ का नाम और राज्य क्षेत्र (भारत अर्थात इंडिया राज्यों का संघ होगा)।\n2. अनुच्छेद 14: विधि के समक्ष समानता (Equality before Law)।\n3. अनुच्छेद 17: अस्पृश्यता का अंत (Abolition of Untouchability) - यह प्रश्न SSC में 10+ बार पूछा जा चुका है।\n4. अनुच्छेद 19(1)(a): बोलने और अभिव्यक्ति की स्वतंत्रता का अधिकार।\n5. अनुच्छेद 21: प्राण और दैहिक स्वतंत्रता का संरक्षण (Right to Life)।\n6. अनुच्छेद 21A: 6 से 14 वर्ष के बच्चों को निःशुल्क और अनिवार्य शिक्षा का अधिकार (86वां संविधान संशोधन, 2002)।\n7. अनुच्छेद 32: संवैधानिक उपचारों का अधिकार (डॉ. भीमराव अंबेडकर ने इसे 'संविधान की आत्मा' कहा है)।\n8. अनुच्छेद 40: ग्राम पंचायतों का संगठन (राज्य के नीति निदेशक तत्व)।\n9. अनुच्छेद 44: नागरिकों के लिए एक समान सिविल संहिता (Uniform Civil Code)।\n10. अनुच्छेद 51A: मौलिक कर्तव्य (42वें संशोधन 1976 द्वारा स्वर्ण सिंह समिति की सिफारिश पर जोड़े गए)।\n11. अनुच्छेद 52: भारत का एक राष्ट्रपति होगा।\n12. अनुच्छेद 61: राष्ट्रपति पर महाभियोग चलाने की प्रक्रिया।\n13. अनुच्छेद 72: राष्ट्रपति की क्षमादान की शक्ति।\n14. अनुच्छेद 110: धन विधेयक (Money Bill) की परिभाषा।\n15. अनुच्छेद 112: वार्षिक वित्तीय विवरण (केंद्रीय बजट)।"
+},
+{
+id: 2,
+title: "SSC CGL & CHSL Quantitative Aptitude: Percentage & Profit-Loss Short Tricks",
+category: "SSC & CGL",
+author: "Maths Mentor",
+views: 980,
+pdf_url: "#",
+content: "गणित (Quantitative Aptitude) में समय बचाने के लिए फ्रैक्शन वैल्यू (Fraction to Percentage) और सक्सेसिव डिस्काउंट के सीधे सूत्र याद होना बहुत ज़रूरी है:\n\n📌 महत्वपूर्ण Fraction से Percentage मान:\n• 1/2 = 50% | 1/3 = 33.33% | 1/4 = 25% | 1/5 = 20%\n• 1/6 = 16.66% | 1/7 = 14.28% | 1/8 = 12.5% | 1/9 = 11.11%\n• 1/11 = 9.09% | 1/12 = 8.33% | 1/15 = 6.66% | 1/16 = 6.25%\n\n📌 Golden Concept 1 (AB Rule):\nयदि किसी वस्तु की कीमत में पहले R% की वृद्धि की जाए, तो खपत में कितने प्रतिशत की कमी करें कि खर्च समान रहे?\nसूत्र: कमी % = [ R / (100 + R) ] × 100\nउदाहरण: चीनी का मूल्य 25% बढ़ने पर खपत में कमी = [25 / 125] × 100 = 20%।\n\n📌 Golden Concept 2 (समतुल्य बट्टा / Successive Discount):\nयदि दो क्रमिक छूट x% और y% दी जाएं, तो कुल एकल छूट:\nTotal Discount = (x + y) - (x × y) / 100\nउदाहरण: 20% और 10% की दो क्रमिक छूट = (20 + 10) - (200/100) = 28%।"
+},
+{
+id: 3,
+title: "RRB NTPC & Group D: सामान्य विज्ञान (Physics & Chemistry) के 50 वन-लाइनर",
+category: "Railway RRB",
+author: "Science Desk",
+views: 1150,
+pdf_url: "#",
+content: "रेलवे भर्ती परीक्षा (RRB NTPC, ALP, Technician और Group D) में NCERT कक्षा 9वीं और 10वीं के विज्ञान से सीधे प्रश्न पूछे जाते हैं:\n\n• कार्य (Work) और ऊर्जा (Energy) का SI मात्रक क्या है? — जूल (Joule)\n• प्रकाश वर्ष (Light Year) किसका मात्रक है? — खगोलीय दूरी का (1 प्रकाश वर्ष = 9.46 × 10¹⁵ मीटर)\n• मानव शरीर की सबसे बड़ी ग्रंथि कौन सी है? — यकृत (Liver)\n• रक्त का थक्का जमाने में कौन सा विटामिन सहायक है? — विटामिन K\n• बेकिंग सोडा (खाने वाला सोडा) का रासायनिक नाम और सूत्र क्या है? — सोडियम बाइकार्बोनेट (NaHCO₃)\n• धोने का सोडा (Washing Soda) का रासायनिक सूत्र क्या है? — Na₂CO₃·10H₂O\n• वाहनों के पीछे का दृश्य देखने के लिए किस दर्पण का प्रयोग किया जाता है? — उत्तल दर्पण (Convex Mirror)\n• निकट दृष्टि दोष (Myopia) को दूर करने के लिए कौन सा लेंस प्रयुक्त होता है? — अवतल लेंस (Concave Lens)"
+},
+{
+id: 4,
+title: "Fresher Job Interview & ATS Resume Guide: पहले प्रयास में इंटरव्यू कैसे पास करें?",
+category: "Career & Interview",
+author: "Career Coach",
+views: 840,
+pdf_url: "#",
+content: "किसी भी प्राइवेट कंपनी, ई-कॉमर्स ऑपरेशंस या कॉर्पोरेट जॉब में अप्लाई करते समय आपका रिज्यूमे और शुरुआती 2 मिनट का परिचय सबसे अहम होता है:\n\n1. ATS-Friendly Resume कैसे बनाएं?\n• अपने रिज्यूमे में कभी भी भारी ग्राफिक्स या टेबल का अति-प्रयोग न करें।\n• जॉब डिस्क्रिप्शन (JD) में दिए गए मुख्य कीवर्ड्स (जैसे: Operations Management, Data Entry, Inventory Control, HTML/CSS, Customer Support) को अपने Skills सेक्शन में ज़रूर शामिल करें।\n\n2. 'Tell me about yourself' का सटीक उत्तर:\n• शुरुआत अपने नाम, शहर और उच्चतम शिक्षा (Graduation/Diploma) से करें।\n• इसके बाद अपने प्रैक्टिकल अनुभव या प्रोजेक्ट्स के बारे में 2 लाइन में बताएं।\n• अंत में बताएं कि आपकी स्किल्स इस कंपनी की ग्रोथ में कैसे मदद कर सकती हैं।"
+}
+];
+
+var allNotes = [];
+var activeNoteCategory = "All";
+var noteTimerInterval = null;
+
+async function initStudyNotes() {
+if (SHOW_EARNING_FEATURES) {
+document.getElementById("earningBadge").classList.remove("hidden");
+document.getElementById("upiFieldGroup").classList.remove("hidden");
+document.getElementById("uploadSubtext").innerText = "अपने नोट्स अपलोड करें और हर 1,000 वेरीफाइड व्यूज पर ₹50 सीधे अपने UPI में पाएं!";
+}
+var localSaved = JSON.parse(localStorage.getItem("user_uploaded_notes") || "[]");
+allNotes = localSaved.concat(defaultNotes);
+
+if (supabaseClient) {
+try {
+var res = await supabaseClient.from("study_notes").select("*").eq("status", "approved").order("id", { ascending: false });
+if (!res.error && res.data && res.data.length > 0) {
+allNotes = res.data.concat(defaultNotes);
+}
+} catch (e) {}
+}
+renderNotesGrid();
+}
+
+function renderNotesGrid() {
+var grid = document.getElementById("notesGrid");
+if (!grid) return;
+var q = (document.getElementById("notesSearchInput").value || "").toLowerCase();
+grid.innerHTML = "";
+
+var filtered = allNotes.filter(function(n) {
+var cMatch = activeNoteCategory === "All" || n.category === activeNoteCategory;
+var sMatch = n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q);
+return cMatch && sMatch;
+});
+
+if (filtered.length === 0) {
+grid.innerHTML = "<div class='col-span-full text-center py-10 text-slate-500 text-xs font-bold'>कोई नोट नहीं मिला। कृपया दूसरा कीवर्ड सर्च करें।</div>";
+return;
+}
+
+for (var i = 0; i < filtered.length; i++) {
+var note = filtered[i];
+var rightStat = SHOW_EARNING_FEATURES
+? "<span class='text-emerald-600 font-extrabold'>₹" + ((note.views / 1000) * 50).toFixed(1) + " Earned</span>"
+: "<span>👁️ " + note.views + " Views</span>";
+
+var card = document.createElement("div");
+card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between";
+card.innerHTML = "<div>" +
+"<span class='inline-block bg-indigo-50 text-indigo-700 text-[11px] font-extrabold px-2.5 py-1 rounded-md mb-2.5'>" + note.category + "</span>" +
+"<h3 class='text-sm font-extrabold text-slate-900 mb-2'>" + note.title + "</h3>" +
+"<p class='text-xs text-slate-500 line-clamp-3 mb-4'>" + note.content + "</p>" +
+"</div>" +
+"<div>" +
+"<div class='border-t border-slate-100 pt-3 flex justify-between items-center text-[11px] text-slate-500 font-semibold mb-3'>" +
+"<span>✍️ " + note.author + "</span>" + rightStat +
+"</div>" +
+"<button type='button' onclick='openNoteReader(" + note.id + ")' class='w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition'>📖 पूरा नोट पढ़ें व PDF डाउनलोड करें</button>" +
+"</div>";
+grid.appendChild(card);
+}
+}
+
+function setNoteCategory(cat, btn) {
+activeNoteCategory = cat;
+var btns = document.querySelectorAll(".note-cat-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap";
+}
+btn.className = "note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
+renderNotesGrid();
+}
+
+function filterNotes() {
+renderNotesGrid();
+}
+
+function openNoteReader(noteId) {
+var note = null;
+for (var i = 0; i < allNotes.length; i++) {
+if (allNotes[i].id === noteId) { note = allNotes[i]; break; }
+}
+if (!note) return;
+
+document.getElementById("modalCategory").innerText = note.category;
+document.getElementById("modalTitle").innerText = note.title;
+document.getElementById("modalMeta").innerText = "✍️ लेखक: " + note.author + " • 👁️ " + note.views + " बार पढ़ा गया";
+document.getElementById("modalContent").innerText = note.content;
+
+var timerText = document.getElementById("timerText");
+var dlBtn = document.getElementById("downloadNoteBtn");
+var cd = document.getElementById("countdown");
+
+timerText.classList.remove("hidden");
+dlBtn.classList.add("hidden");
+dlBtn.href = (note.pdf_url && note.pdf_url !== "#") ? note.pdf_url : "javascript:window.print()";
+
+var sec = 10;
+cd.innerText = sec;
+if (noteTimerInterval) clearInterval(noteTimerInterval);
+noteTimerInterval = setInterval(function() {
+sec--;
+cd.innerText = sec;
+if (sec <= 0) {
+clearInterval(noteTimerInterval);
+timerText.classList.add("hidden");
+dlBtn.classList.remove("hidden");
+incrementVerifiedView(note.id);
+}
+}, 1000);
+
+document.getElementById("readerModal").classList.remove("hidden");
+}
+
+function closeReaderModal() {
+if (noteTimerInterval) clearInterval(noteTimerInterval);
+document.getElementById("readerModal").classList.add("hidden");
+}
+
+async function incrementVerifiedView(noteId) {
+var key = "viewed_note_" + noteId;
+if (localStorage.getItem(key)) return;
+localStorage.setItem(key, "true");
+
+for (var i = 0; i < allNotes.length; i++) {
+if (allNotes[i].id === noteId) {
+allNotes[i].views += 1;
+break;
+}
+}
+renderNotesGrid();
+if (supabaseClient) {
+try { await supabaseClient.rpc("increment_note_view", { row_id: noteId }); } catch (e) {}
+}
+}
+
+function openUploadModal() {
+document.getElementById("uploadModal").classList.remove("hidden");
+}
+
+function closeUploadModal() {
+document.getElementById("uploadModal").classList.add("hidden");
+}
+
+async function submitNewNote(e) {
+e.preventDefault();
+var newNote = {
+id: Date.now(),
+author: document.getElementById("authorName").value.trim(),
+upi_id: document.getElementById("authorUpi").value.trim(),
+title: document.getElementById("noteTitle").value.trim(),
+category: document.getElementById("noteCategory").value,
+content: document.getElementById("noteContent").value.trim(),
+pdf_url: document.getElementById("pdfUrl").value.trim() || "#",
+views: 1,
+status: "approved"
+};
+
+var saved = JSON.parse(localStorage.getItem("user_uploaded_notes") || "[]");
+saved.unshift(newNote);
+localStorage.setItem("user_uploaded_notes", JSON.stringify(saved));
+
+if (supabaseClient) {
+try { await supabaseClient.from("study_notes").insert([newNote]); } catch (err) {}
+}
+
+allNotes.unshift(newNote);
+renderNotesGrid();
+closeUploadModal();
+document.getElementById("uploadNoteForm").reset();
+alert("बधाई हो! आपका स्टडी नोट सफलतापूर्वक पब्लिश हो गया है।");
+}
+
+// =========================================================================
+// PHOTO RESIZER & TYPING TEST LOGIC
+// =========================================================================
+var rawExamImg = null;
+var outExamUrl = "";
+
+function loadExamFile(e) {
+var file = e.target.files[0];
+if (!file) return;
+var r = new FileReader();
+r.onload = function(ev) {
+var im = new Image();
+im.onload = function() {
+rawExamImg = im;
+drawExamPhoto();
+};
+im.src = ev.target.result;
+};
+r.readAsDataURL(file);
+}
+
+function drawExamPhoto() {
+var c = document.getElementById("p-canvas");
+var ctx = c.getContext("2d");
+var type = document.getElementById("p-type").value;
+var nm = document.getElementById("p-name").value.trim();
+var dt = document.getElementById("p-date").value.trim();
+var q = parseInt(document.getElementById("p-qual").value) / 100;
+
+c.width = (type === "photo") ? 350 : 400;
+c.height = (type === "photo") ? 450 : 200;
+
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, c.width, c.height);
+
+if (rawExamImg) {
+ctx.drawImage(rawExamImg, 0, 0, c.width, c.height);
+}
+
+if (type === "photo" && (nm || dt)) {
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, c.height - 65, c.width, 65);
+ctx.fillStyle = "#000000";
+ctx.textAlign = "center";
+ctx.font = "bold 19px Arial";
+ctx.fillText(nm.toUpperCase(), c.width / 2, c.height - 38);
+ctx.font = "bold 17px Arial";
+ctx.fillText(dt.toUpperCase(), c.width / 2, c.height - 12);
+}
+
+outExamUrl = c.toDataURL("image/jpeg", q);
+var kb = Math.round(((outExamUrl.length - 22) * 0.75) / 1024);
+document.getElementById("p-kb").innerText = "Ready File Size: ~" + kb + " KB";
+}
+
+function saveExamPhoto() {
+if (!rawExamImg) { alert("Pehle photo select karein!"); return; }
+var a = document.createElement("a");
+a.href = outExamUrl;
+a.download = "Exam_Photo_Ready.jpg";
+a.click();
+}
+
+var typingPassages = {
+ssc: [
+"Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across India.",
+"The Staff Selection Commission conducts skill tests every year to recruit talented youth into central government ministries. Maintaining composure and zero error rate is the key to clearing the data entry speed test.",
+"Public administration plays a vital role in implementing welfare schemes at the grassroots level. Efficient documentation, digital record management, and timely citizen service delivery build strong trust in governance.",
+"Candidates appearing for clerical and stenographer examinations must practice on standard keyboard layouts daily. Focus on rhythm and finger placement rather than looking at the keys while typing official paragraphs."
+],
+economy: [
+"Quick commerce and modern supply chain networks have transformed urban retail across India. Automated fulfillment centers, barcode scanners, and real-time inventory tracking allow products to reach customers within minutes.",
+"Digital payment infrastructure in India has set a global benchmark for financial inclusion. Millions of small merchants and citizens now use instant mobile transfers for daily retail and business transactions seamlessly.",
+"Financial literacy and disciplined investment habits are essential for young professionals entering the workforce. Understanding equity markets, mutual funds, and banking instruments helps build long-term wealth."
+],
+tech: [
+"Artificial intelligence is revolutionizing how job seekers prepare their resumes and apply for career opportunities. Automated formatting tools highlight relevant skills so candidates pass applicant tracking systems easily.",
+"Cloud computing and modern web frameworks allow developers to deploy fast applications within minutes. Optimizing page speed, mobile responsiveness, and search engine metadata ensures helpful tools reach users nationwide.",
+"Cybersecurity awareness is critical in an increasingly connected digital world. Using strong authentication protocols, verifying official links, and keeping software updated protects sensitive data from unauthorized access."
+],
+corporate: [
+"Dear Team, please find attached the monthly inventory and billing reconciliation report for the second quarter. Kindly verify all inward and outward dispatch entries before Friday afternoon for final audit submission.",
+"Effective workplace communication requires clarity, politeness, and attention to detail. Maintaining organized spreadsheets, responding promptly to official emails, and collaborating smoothly creates a productive office environment.",
+"Standard operating procedures ensure quality compliance across all warehouse and back-office departments. Every associate must verify invoice numbers, batch codes, and packaging standards before dispatching customer orders."
+]
+};
+
+var aiStart = ["Modern digital workflows", "Consistent typing practice", "Automated inventory systems", "Disciplined time management", "Accurate MIS reporting"];
+var aiMid = ["significantly improves", "directly accelerates", "seamlessly strengthens", "effectively transforms", "consistently optimizes"];
+var aiEnd = ["daily operational accuracy across offices in India.", "career growth opportunities for dedicated graduates.", "transparent service delivery and citizen satisfaction.", "real-time stock auditing and billing precision.", "overall productivity in competitive environments."];
+
+var tyPassageIndex = 0;
+var tyTimer = null;
+var tyLeft = 60;
+var tyRunning = false;
+
+function aiChangeTypingText(btn) {
+var topic = document.getElementById("ty-topic").value;
+var newText = "";
+if (topic === "ai_mix") {
+var s = [];
+for (var i = 0; i < 3; i++) {
+var a = aiStart[Math.floor(Math.random() * aiStart.length)];
+var b = aiMid[Math.floor(Math.random() * aiMid.length)];
+var c = aiEnd[Math.floor(Math.random() * aiEnd.length)];
+s.push(a + " " + b + " " + c);
+}
+newText = s.join(" ");
+} else {
+var list = typingPassages[topic] || typingPassages.ssc;
+tyPassageIndex = (tyPassageIndex + 1) % list.length;
+var extra = aiStart[tyPassageIndex % aiStart.length] + " " + aiMid[tyPassageIndex % aiMid.length] + " " + aiEnd[tyPassageIndex % aiEnd.length];
+newText = list[tyPassageIndex] + " " + extra;
+}
+document.getElementById("ty-text").innerText = newText;
+resetTypingTest();
+if (btn) flashBtn(btn, "Words Changed!");
+}
+
+function runTyping() {
+var inp = document.getElementById("ty-input").value;
+var tgt = document.getElementById("ty-text").innerText;
+if (!tyRunning && inp.length > 0) {
+tyRunning = true;
+tyTimer = setInterval(function() {
+tyLeft--;
+document.getElementById("ty-time").innerText = tyLeft + "s";
+if (tyLeft <= 0) {
+clearInterval(tyTimer);
+document.getElementById("ty-input").disabled = true;
+}
+}, 1000);
+}
+var ok = 0;
+for (var i = 0; i < inp.length; i++) {
+if (inp[i] === tgt[i]) ok++;
+}
+var mins = Math.max((60 - tyLeft) / 60, 1 / 60);
+document.getElementById("ty-wpm").innerText = Math.round((ok / 5) / mins);
+document.getElementById("ty-acc").innerText = (inp.length ? Math.round((ok / inp.length) * 100) : 100) + "%";
+}
+
+function resetTypingTest() {
+clearInterval(tyTimer);
+tyLeft = 60;
+tyRunning = false;
+var el = document.getElementById("ty-input");
+el.disabled = false;
+el.value = "";
+document.getElementById("ty-time").innerText = "60s";
+document.getElementById("ty-wpm").innerText = "0";
+document.getElementById("ty-acc").innerText = "100%";
+}
+
+function openLegalModal(type) {
+var content = document.getElementById("legal-modal-content");
+if (type === "about") {
+content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is a 100% free digital utility and study platform designed for job seekers, students, and competitive exam aspirants across India. We offer AI-driven Resume creation, free competitive exam study notes, instant 20KB-50KB passport photo and signature resizing, and live typing speed tests without requiring login or storing personal data.</p>";
+} else if (type === "privacy") {
+content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Privacy Policy</h3><p>At FreeCVResume.co.in, your privacy is our priority. We do not store, collect, or transmit your personal resume data or photograph files to any external server. All resume and photo processing happens strictly within your browser.</p><p class='mt-2 font-bold'>Cookies & Third-Party Advertising:</p><p>We use third-party vendors, including Google AdSense, which use cookies to serve ads based on user visits.</p>";
+} else if (type === "terms") {
+content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Terms of Service</h3><p>By using FreeCVResume.co.in, you agree to use our tools and study notes for lawful personal and educational purposes. Users are responsible for verifying all details on their generated resumes and resized exam photos before official submission.</p>";
+} else if (type === "contact") {
+content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Contact Us</h3><p>For any queries, feedback, or support, reach out to us via our official portal:</p><p class='mt-2 font-bold'>Website: https://freecvresume.co.in</p><p>Location: India</p>";
+}
+document.getElementById("legal-modal").classList.remove("hidden");
+}
+
+function closeLegalModal() {
+document.getElementById("legal-modal").classList.add("hidden");
+}
+
+updateCV();
+initStudyNotes();
+</script>
+</body>
+</html>
