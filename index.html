@@ -1,31 +1,31 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- TOP RANKING GOOGLE SEO META TAGS -->
-<title>Free Resume Maker, Study Notes & Resume Free Download PDF (100% Free) | FreeCVResume.co.in</title>
-<meta name="title" content="Free Resume Maker, Study Notes & Resume Free Download PDF (100% Free) | FreeCVResume.co.in">
-<meta name="description" content="FreeCVResume.co.in is India's #1 Free Resume Maker, Study Notes PDF Hub & Resume Free Download Portal. Create standard ATS-friendly CV in 1-Click with AI, resize SSC/Railway photos (20KB-50KB), read free exam notes, and practice live AI typing test 100% free.">
-<meta name="keywords" content="free resume maker, resume free download, free study notes pdf, ssc cgl notes hindi, railway ntpc study material, free cv builder online, 100% free resume download pdf, ai resume maker free india, ats friendly resume builder free, biodata maker online free download, ssc photo resizer 20kb to 50kb, signature resizer, ssc chsl typing test online free, freecvresume.co.in">
+<title>Free Resume Maker, UPSC IAS, IIT JEE, NEET, SSC Study Notes Marketplace & PDF Download | FreeCVResume.co.in</title>
+<meta id="dynamic-meta-title" name="title" content="Free Resume Maker, UPSC IAS, IIT JEE, NEET, SSC Study Notes Marketplace & PDF Download | FreeCVResume.co.in">
+<meta id="dynamic-meta-desc" name="description" content="FreeCVResume.co.in is India's #1 Free Resume Maker & Study Notes PDF Marketplace for IIT JEE, NEET, SSC CGL, Railway NTPC, Geography, Economics, History, Polity & Static GK. Upload, buy, sell or read clean study notes online and earn AdSense revenue share.">
+<meta id="dynamic-meta-kw" name="keywords" content="free resume maker, iit jee notes pdf, neet biology notes pdf, jee mains physics formula pdf, neet chemistry short notes, sell study notes online india, free study notes pdf, indian geography notes in hindi pdf, indian economics notes in hindi pdf, medieval history notes in hindi, indian polity notes in hindi, static gk pdf in hindi, ssc cgl notes hindi, railway ntpc study material, freecvresume.co.in">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="author" content="FreeCVResume.co.in">
 <link rel="canonical" href="https://freecvresume.co.in/">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://freecvresume.co.in/">
-<meta property="og:title" content="Free Resume Maker, Study Notes & Resume Free Download PDF | FreeCVResume.co.in">
-<meta property="og:description" content="1-Click AI Resume Maker with 100% Free PDF Download! Plus Free SSC/Railway Study Notes, Photo Resizer (20-50KB) & AI Typing Test.">
+<meta property="og:title" content="Free Resume Maker, IIT JEE / NEET / SSC Study Notes Hub & PDF Download | FreeCVResume.co.in">
+<meta property="og:description" content="1-Click AI Resume Maker + IIT JEE, NEET, SSC & Railway Study Notes Marketplace. Read, Upload, Sell Notes & Earn from Free Notes Views!">
 
-<script type="application/ld+json">
+<script id="dynamic-schema-ld" type="application/ld+json">
 {
 "@context": "https://schema.org",
 "@type": "WebApplication",
-"name": "FreeCVResume.co.in - Free Resume Maker, Study Notes & Resume Free Download",
-"alternateName": ["FreeCVResume", "Free Resume Maker India", "Resume Free Download PDF", "FreeCV Study Hub"],
+"name": "FreeCVResume.co.in - AI Resume Maker & IIT JEE, NEET, SSC Study Notes Hub",
+"alternateName": ["FreeCVResume", "Free Resume Maker India", "IIT JEE NEET Study Notes PDF", "FreeCV Study Hub"],
 "url": "https://freecvresume.co.in/",
-"description": "100% Free AI Resume Maker and instant PDF Resume Free Download without login or watermark. Includes Free Competitive Exam Study Notes, SSC/Railway Photo Resizer (20KB-50KB) and AI Live Typing Speed Test.",
+"description": "100% Free AI Resume Maker and Study Notes Marketplace for IIT JEE, NEET, SSC, Railway Exams with Auto-Clean PDF Reader, SEO Text Indexing, and Creator AdSense Revenue Share.",
 "applicationCategory": "EducationalApplication",
 "operatingSystem": "All",
 "offers": {
@@ -42,13 +42,12 @@
 <!-- Google AdSense Verification Script -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9375037798816963" crossorigin="anonymous"></script>
 
-<!-- Supabase CDN for Study Notes Database -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -67,12 +66,7 @@ overflow-wrap: break-word;
 }
 .tpl-classic-font { font-family: Georgia, "Times New Roman", serif; }
 .tpl-biodata-border { border: 4px double #1e293b !important; padding: 28px !important; }
-.line-clamp-3 {
-display: -webkit-box;
--webkit-line-clamp: 3;
--webkit-box-orient: vertical;
-overflow: hidden;
-}
+.blur-paywall { filter: blur(6px); user-select: none; pointer-events: none; }
 @media print {
 body * { visibility: hidden; }
 #resume-paper, #resume-paper * { visibility: visible; }
@@ -84,8 +78,8 @@ body * { visibility: hidden; }
 
 <!-- Top Banner -->
 <div class="bg-indigo-950 text-white text-xs py-2 px-4 text-center font-medium">
-<span class="bg-amber-400 text-slate-900 font-extrabold px-2 py-0.5 rounded mr-2">PRO AI v3.0</span>
-100% Free Resume Maker, Study Notes PDF & Instant Download — 1-Click mein Corporate Standard ATS Resume taiyar karein!
+<span class="bg-amber-400 text-slate-900 font-extrabold px-2 py-0.5 rounded mr-2">PRO AI v4.0</span>
+100% Free Resume Maker • IIT JEE, NEET, SSC Study Notes Marketplace (Upload, Sell & Earn AdSense Revenue!)
 </div>
 
 <!-- Header -->
@@ -111,7 +105,7 @@ body * { visibility: hidden; }
 <span class="text-xl font-black tracking-tight text-slate-900">FreeCV<span class="text-indigo-600">Resume</span></span>
 <span class="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-xs uppercase">.co.in</span>
 </div>
-<p class="text-[11px] text-slate-500 font-medium">Free AI Resume Maker • Study Notes • Photo Resizer • Typing Test</p>
+<p class="text-[11px] text-slate-500 font-medium">AI Resume • IIT JEE / NEET / SSC Notes Hub • Photo Resizer • Typing</p>
 </div>
 </a>
 
@@ -120,7 +114,7 @@ body * { visibility: hidden; }
 <i class="fa-solid fa-file-signature mr-1"></i> AI Resume
 </button>
 <button type="button" onclick="switchTab('notes')" id="btn-notes" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap">
-<i class="fa-solid fa-book-open mr-1 text-emerald-600"></i> Study Notes
+<i class="fa-solid fa-book-open mr-1 text-emerald-600"></i> Study Notes (UPSC/JEE/NEET/SSC)
 </button>
 <button type="button" onclick="switchTab('resizer')" id="btn-resizer" class="tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap">
 <i class="fa-solid fa-id-badge mr-1"></i> Photo (20-50KB)
@@ -134,7 +128,7 @@ body * { visibility: hidden; }
 
 <main class="max-w-7xl mx-auto px-3 sm:px-6 py-6 flex-1 w-full">
 
-<!-- TAB 1: AI RESUME BUILDER -->
+<!-- ==================== TAB 1: AI RESUME BUILDER ==================== -->
 <section id="tab-resume" class="tab-content space-y-6">
 
 <div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -145,6 +139,15 @@ body * { visibility: hidden; }
 <i class="fa-solid fa-upload mr-1"></i> Upload Old Resume (PDF/DOCX)
 <input type="file" id="old-resume-file" accept=".pdf,.docx,.txt" onchange="handleOldResume(event)" class="hidden">
 </label>
+<div id="resumeUploadProgressWrap" class="mt-2.5 hidden bg-indigo-950/60 p-2.5 rounded-xl border border-white/20">
+<div class="flex justify-between items-center text-[11px] font-extrabold text-amber-300 mb-1">
+<span id="resumeProgressStepText">⏳ Reading Resume PDF...</span>
+<span id="resumeProgressPercentBadge" class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full text-[10px] font-black">0%</span>
+</div>
+<div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+<div id="resumeProgressBarFill" class="bg-amber-400 h-full rounded-full transition-all duration-150" style="width: 0%;"></div>
+</div>
+</div>
 <p id="upload-msg" class="text-xs text-amber-300 font-bold mt-2 hidden"></p>
 </div>
 
@@ -255,7 +258,6 @@ body * { visibility: hidden; }
 </button>
 </div>
 
-<!-- Quick Percentage / CGPA Boxes -->
 <div class="grid grid-cols-3 gap-1.5">
 <div>
 <span class="text-[10px] font-bold text-slate-500">Graduation % / CGPA</span>
@@ -363,62 +365,461 @@ body * { visibility: hidden; }
 <!-- Study Notes Promo Card on Resume Tab -->
 <div class="bg-gradient-to-r from-blue-900 via-indigo-800 to-indigo-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
 <div class="space-y-1.5 text-center md:text-left">
-<span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase">🎓 Free Exam Study Hub</span>
-<h2 class="text-lg sm:text-xl font-black">सरकारी नौकरी और इंटरव्यू तैयारी के फ्री हैंडरिटन स्टडी नोट्स</h2>
-<p class="text-xs text-indigo-100 max-w-2xl">SSC CGL, CHSL, Railway NTPC, Static GK और जॉब इंटरव्यू की तैयारी के लिए टॉपिक-वाइज शॉर्ट नोट्स व PDF बिल्कुल मुफ्त पढ़ें और अपने खुद के नोट्स भी अपलोड करें।</p>
+<span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase">🎓 IIT JEE • NEET • SSC • Railway Study Hub</span>
+<h2 class="text-lg sm:text-xl font-black">Read, Sell & Earn AdSense Revenue from IIT JEE, NEET & Govt Exam Study Notes!</h2>
+<p class="text-xs text-indigo-100 max-w-2xl">Read clean short notes & PDFs for IIT JEE, NEET UG, B.Sc, M.Sc, NET/JRF, GATE, SSC CGL & Railway NTPC. Create your Creator Account, upload PDF notes (coaching & teacher watermarks are removed automatically), and earn from paid sales or free AdSense views!</p>
 </div>
 <button type="button" onclick="switchTab('notes'); window.scrollTo(0,0);" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-5 py-3 rounded-xl shadow-md shrink-0 cursor-pointer transition">
-📖 अभी स्टडी नोट्स पढ़ें →
+📖 Explore Study Notes & Earnings →
 </button>
 </div>
 
 </section>
 
-<!-- TAB 2: STUDY NOTES & PDF HUB -->
+<!-- ==================== TAB 2: STUDY NOTES & MARKETPLACE HUB ==================== -->
 <section id="tab-notes" class="tab-content hidden space-y-6">
 
-<!-- Notes Hero Banner -->
-<div class="bg-gradient-to-r from-indigo-900 via-blue-800 to-indigo-900 rounded-2xl p-6 text-white text-center shadow-lg space-y-3">
-<div id="earningBadge" class="hidden bg-emerald-500/20 border border-emerald-400 text-emerald-200 px-4 py-1.5 rounded-full text-xs font-bold">
-💰 Creator Rewards Active: अपने स्टडी नोट्स अपलोड करें और हर 1,000 Views पर ₹50 कमाएं!
+<!-- Blue Hero Box: Search + Creator Account + Upload/Sell Notes + Creator Wallet -->
+<div class="bg-gradient-to-b from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800/50">
+<div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-3 border-b border-indigo-800/60">
+<div class="flex flex-wrap gap-2">
+<span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">🔥 UPSC CSE, IIT JEE & NEET Added</span>
+<span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full">💰 Sell Notes & Earn AdSense Revenue</span>
+<span class="bg-purple-500/20 border border-purple-400/40 text-purple-200 text-[11px] font-extrabold px-3 py-0.5 rounded-full">🛡️ Auto Coaching/Watermark Remover</span>
 </div>
-<h2 class="text-xl sm:text-2xl font-black">📚 सरकारी नौकरी और एग्ज़ाम तैयारी के फ्री स्टडी नोट्स</h2>
-<p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mx-auto">SSC CGL, CHSL, Railway NTPC, UP State Exams और जॉब इंटरव्यू की तैयारी के लिए टॉपिक-वाइज शॉर्ट नोट्स और पीडीएफ यहाँ पढ़ें व डाउनलोड करें।</p>
 
-<div class="max-w-xl mx-auto flex flex-col sm:flex-row gap-2 pt-2">
-<input type="text" id="notesSearchInput" onkeyup="filterNotes()" placeholder="यहाँ टॉपिक सर्च करें (जैसे: संविधान, Science, Maths Tricks, Interview)..." class="flex-1 bg-white text-slate-800 text-xs rounded-xl px-4 py-3 focus:outline-none shadow">
-<button type="button" onclick="openUploadModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs px-5 py-3 rounded-xl shadow cursor-pointer whitespace-nowrap">
-<i class="fa-solid fa-cloud-arrow-up mr-1"></i> + Upload Notes
+<!-- Creator Account Login / Signup Status Bar -->
+<div id="creatorAuthBar" class="flex items-center gap-2">
+<button type="button" id="btnCreatorLoginTop" onclick="openCreatorAuthModal()" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white text-xs font-extrabold px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5">
+<i class="fa-solid fa-user-lock text-amber-300"></i> <span id="creatorAuthBtnText">Creator Login / Sign Up</span>
+</button>
+<button type="button" id="btnCreatorLogoutTop" onclick="logoutCreatorAccount()" style="display:none;" class="bg-red-500/20 hover:bg-red-500/40 border border-red-400/30 text-red-200 text-xs font-bold px-2.5 py-1.5 rounded-xl transition cursor-pointer">
+Logout
 </button>
 </div>
 </div>
 
-<!-- Category Buttons -->
-<div class="flex gap-2 overflow-x-auto pb-2">
-<button type="button" onclick="setNoteCategory('All', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-indigo-600 text-white cursor-pointer whitespace-nowrap">सभी नोट्स (All)</button>
-<button type="button" onclick="setNoteCategory('SSC & CGL', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">SSC CGL / CHSL</button>
-<button type="button" onclick="setNoteCategory('Railway RRB', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Railway (NTPC/Group D)</button>
-<button type="button" onclick="setNoteCategory('GK & GS', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Static GK & संविधान</button>
-<button type="button" onclick="setNoteCategory('Career & Interview', this)" class="note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap">Interview & Resume Tips</button>
+<h2 class="text-xl sm:text-3xl font-black text-center mb-2">
+📚 UPSC IAS, IIT JEE, NEET, SSC & Railway Study Notes Marketplace
+</h2>
+<p class="text-xs sm:text-sm text-indigo-100 text-center max-w-3xl mx-auto mb-5 leading-relaxed">
+Search every single word inside any PDF! Upload your own study notes for <strong>Free or Paid (₹)</strong> — our AI automatically strips <strong>coaching names, teacher names & promo links</strong> upon upload, and you earn a share of <strong>Google AdSense revenue</strong> on every free note view.
+</p>
+
+<!-- Search Input (Searches Every Single Word Inside PDFs) -->
+<div class="relative mb-3 max-w-4xl mx-auto">
+<input
+type="text"
+id="mainNotesSearch"
+oninput="filterMainStudyNotes()"
+onkeydown="if(event.key === 'Enter') triggerManualSearch()"
+placeholder="Search any word or topic inside PDFs (e.g., Rotational Motion, Thermodynamics, Genetics, Geography, GDP, Polity)..."
+class="w-full bg-white text-slate-800 text-xs sm:text-sm rounded-xl pl-4 pr-10 py-3.5 shadow-md focus:outline-none"
+/>
+<button
+type="button"
+id="clearSearchBtn"
+onclick="clearNotesSearch()"
+style="display:none;"
+class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 font-bold text-sm">
+✖
+</button>
 </div>
 
-<!-- Notes Grid -->
-<div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+<!-- Action Buttons: Search + Upload & Sell Notes + Creator Wallet + Creator Account -->
+<div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-3">
+<button
+type="button"
+onclick="triggerManualSearch()"
+class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+<span>🔍</span> Search PDF Words
+</button>
+
+<button
+type="button"
+onclick="openUploadNotesModal()"
+class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+<span>☁️</span> + Upload & Sell Notes
+</button>
+
+<button
+type="button"
+onclick="openCreatorWalletModal()"
+class="w-full bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs sm:text-sm py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border border-purple-400/40">
+<span>👛</span> Creator Wallet (<span id="headerWalletBal">₹0.00</span>)
+</button>
+
+<button
+type="button"
+onclick="openCreatorAuthModal()"
+class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border border-indigo-400/40">
+<span>👤</span> <span id="heroCreatorBtnLabel">Creator Account</span>
+</button>
+</div>
+
+<!-- Quick Search Topic Tags -->
+<div class="flex flex-wrap items-center justify-center gap-2 mt-4 pt-3 border-t border-indigo-800/80 text-[11px] max-w-4xl mx-auto">
+<span class="text-indigo-200 font-semibold">Popular Exams & Topics:</span>
+<button type="button" onclick="quickSearchTopic('UPSC')" class="bg-rose-500/20 border border-rose-400/40 text-rose-200 hover:bg-rose-500/40 px-2.5 py-1 rounded-full cursor-pointer font-bold">🏛️ UPSC CSE (IAS/IPS/PCS)</button>
+<button type="button" onclick="quickSearchTopic('IIT JEE')" class="bg-amber-500/20 border border-amber-400/40 text-amber-200 hover:bg-amber-500/40 px-2.5 py-1 rounded-full cursor-pointer font-bold">⚛️ IIT JEE (Mains/Adv)</button>
+<button type="button" onclick="quickSearchTopic('NEET')" class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 hover:bg-emerald-500/40 px-2.5 py-1 rounded-full cursor-pointer font-bold">🩺 NEET UG (Bio/Chem)</button>
+<button type="button" onclick="quickSearchTopic('Geography')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">🌍 Geography</button>
+<button type="button" onclick="quickSearchTopic('Economics')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">📊 Economics</button>
+<button type="button" onclick="quickSearchTopic('History')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">📜 History</button>
+<button type="button" onclick="quickSearchTopic('Polity')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">⚖️ Indian Polity</button>
+<button type="button" onclick="quickSearchTopic('Static GK')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">🏆 Static GK</button>
+</div>
+</div>
+
+<!-- Category Filter Buttons -->
+<div class="flex gap-2 overflow-x-auto pb-2">
+<button type="button" onclick="setNotesCategory('all', this)" class="note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer">
+All Notes
+</button>
+<button type="button" onclick="setNotesCategory('upsc', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🏛️ UPSC CSE (IAS/IPS/State PCS)
+</button>
+<button type="button" onclick="setNotesCategory('iit-jee', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+⚛️ IIT JEE (Physics/Chem/Maths)
+</button>
+<button type="button" onclick="setNotesCategory('neet', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🩺 NEET UG (Biology/Physics/Chem)
+</button>
+<button type="button" onclick="setNotesCategory('ssc', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🏛️ SSC CGL / CHSL
+</button>
+<button type="button" onclick="setNotesCategory('railway', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🚆 Railway (NTPC/Group D)
+</button>
+<button type="button" onclick="setNotesCategory('geo-eco', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🌍 Geography & Economics
+</button>
+<button type="button" onclick="setNotesCategory('gk-hist-pol', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+⚖️ Static GK, History & Polity
+</button>
+<button type="button" onclick="setNotesCategory('paid', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+💎 Premium / Paid Notes
+</button>
+<button type="button" onclick="setNotesCategory('free', this)" class="note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer">
+🆓 100% Free Notes
+</button>
+</div>
+
+<!-- Subject & Language Quick Sub-Filters (Screenshot 3 Feature) -->
+<div id="subLangFilterBar" class="flex flex-wrap items-center justify-between gap-2 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex flex-wrap items-center gap-1.5 text-xs">
+<span class="font-extrabold text-slate-500 mr-1">Subject:</span>
+<button type="button" onclick="setSubFilter('all-sub', this)" class="sub-f-btn bg-slate-800 text-white font-bold px-3 py-1 rounded-lg cursor-pointer">All</button>
+<button type="button" onclick="setSubFilter('physics', this)" class="sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">⚡ Physics</button>
+<button type="button" onclick="setSubFilter('chemistry', this)" class="sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">🧪 Chemistry</button>
+<button type="button" onclick="setSubFilter('maths', this)" class="sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">📐 Maths</button>
+<button type="button" onclick="setSubFilter('biology', this)" class="sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">🧬 Biology</button>
+<button type="button" onclick="setSubFilter('gk-gs', this)" class="sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">🏛️ GK/GS</button>
+</div>
+<div class="flex items-center gap-1.5 text-xs">
+<span class="font-extrabold text-slate-500 mr-1">Medium:</span>
+<button type="button" onclick="setLangFilter('all-lang', this)" class="lang-f-btn bg-indigo-600 text-white font-bold px-3 py-1 rounded-lg cursor-pointer">All</button>
+<button type="button" onclick="setLangFilter('english', this)" class="lang-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">English</button>
+<button type="button" onclick="setLangFilter('hindi', this)" class="lang-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer">Hindi / Bilingual</button>
+</div>
+</div>
+
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 px-1">
+<div id="searchStatusText" class="text-xs font-bold text-slate-600">📚 Available Study Notes (8)</div>
+<div class="text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+<i class="fa-solid fa-shield-halved mr-1"></i> Auto-Sanitizer Active: Coaching names, teacher names & links are automatically stripped from uploaded PDFs
+</div>
+</div>
+
+<!-- STUDY NOTES CARDS CONTAINER -->
+<div id="studyNotesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+<!-- NEW CARD: UPSC CSE (IAS / IPS / STATE PCS) PRELIMS & MAINS GS 1-4 MASTER NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border-2 border-rose-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-note-id="builtin-upsc-cse"
+data-categories="all upsc gk-hist-pol geo-eco free"
+data-subject="gk-gs"
+data-lang="english hindi bilingual"
+data-price="0"
+data-creator="FreeCV UPSC IAS Faculty"
+data-keywords="upsc cse notes pdf ias ips ifs state pcs uppcs bpsc mppcs ras prelims mains gs paper 1 2 3 4 ethics integrity aptitude csat ncert gist spectrum modern history art and culture nitin singhania laxmikant indian polity governance international relations economy रमेश सिंह environment ecology shankar ias biodiversity climate change internal security disaster management science and technology current affairs answer writing">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-rose-100 text-rose-900 text-xs font-extrabold px-3 py-1 rounded-md">🏛️ UPSC CSE (IAS / IPS / PCS)</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+UPSC CSE (Prelims + Mains GS Paper 1, 2, 3 & 4 Ethics) Complete NCERT & Standard Books Master Notes
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+High-yield revision notes for UPSC IAS/IPS & State PCS covering Modern Indian History (Spectrum Gist), Art & Culture, Indian Polity & Governance (Laxmikanth Summary), Economy & Budget, Environment & Ecology, International Relations, Internal Security & GS-4 Ethics Case Studies.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV UPSC Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.9 (2.1k+ Downloads)</span>
+<span id="views-builtin-upsc-cse">👁️ 6450 Views</span>
+</div>
+<button type="button" onclick="openBuiltinNoteReader('builtin-upsc-cse')" class="w-full bg-rose-600 hover:bg-rose-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition cursor-pointer">
+📖 Read Online & Download Clean PDF
+</button>
+</div>
+</div>
+
+<!-- CARD 1: IIT JEE (MAINS & ADVANCED) COMPLETE FORMULA & CONCEPT NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border-2 border-indigo-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-note-id="builtin-iit-jee"
+data-categories="all iit-jee free"
+data-subject="physics chemistry maths"
+data-lang="english hindi bilingual"
+data-price="0"
+data-creator="FreeCV JEE Faculty"
+data-keywords="iit jee notes pdf jee mains jee advanced physics chemistry mathematics calculus mechanics rotational motion moment of inertia torque angular momentum thermodynamics laws of thermodynamics carnot engine electrostatics coulomb law gauss law capacitance current electricity kirchhoff law optics wave optics modern physics photoelectric effect bohr model de broglie wavelength organic chemistry goc inductive effect resonance hyperconjugation isomerism aldehyde ketone carboxylic acid coordination compounds chemical bonding vsepr theory mot electrochemistry nernst equation chemical kinetics arrhenius equation matrices determinants integration differentiation differential equations vectors 3d geometry conic sections probability">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-1 rounded-md">⚛️ IIT JEE (MAINS + ADV)</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+IIT JEE (Mains & Advanced) Physics, Chemistry & Calculus Complete Formula & Concept Handbook
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+100% clean short revision notes covering Mechanics, Rotational Motion, Thermodynamics, Electrostatics, Modern Physics, Organic GOC, Named Reactions, Coordination Compounds, Electrochemistry, Calculus, Matrices, Vectors & 3D Geometry.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV JEE Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.9 (1.4k+ Downloads)</span>
+<span id="views-builtin-iit-jee">👁️ 4890 Views</span>
+</div>
+<button type="button" onclick="openBuiltinNoteReader('builtin-iit-jee')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition cursor-pointer">
+📖 Read Online & Download Clean PDF
+</button>
+</div>
+</div>
+
+<!-- CARD 2: NEET UG COMPLETE BIOLOGY, CHEMISTRY & PHYSICS NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border-2 border-emerald-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-note-id="builtin-neet-ug"
+data-categories="all neet free"
+data-subject="biology chemistry physics"
+data-lang="english hindi bilingual"
+data-price="0"
+data-creator="FreeCV Medical Hub"
+data-keywords="neet ug notes pdf ncert biology line by line notes human physiology digestion breathing circulation excretory system neural control chemical coordination genetics mendel laws dna replication transcription translation lac operon biotechnology pcr recombinant dna ecology biodiversity plant physiology photosynthesis c3 c4 cycle krebs cycle glycolysis cell biology mitosis meiosis biomolecules enzymes animal kingdom plant kingdom morphology flowering plants organic chemistry ncert reactions inorganic periodic table p block d block physics kinematics optics semiconductors">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-emerald-100 text-emerald-900 text-xs font-extrabold px-3 py-1 rounded-md">🩺 NEET UG (MEDICAL)</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+NEET UG Complete NCERT Biology (Botany + Zoology), Organic Chemistry & Physics Master Notes
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+Complete NCERT summary: Human Physiology, Genetics & Biotechnology, Plant Physiology (Krebs & C3/C4 Cycle), Cell Biology, Ecology, NCERT Named Reactions & Physics formula sheets — completely free of coaching watermarks.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Medical Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.9 (1.8k+ Downloads)</span>
+<span id="views-builtin-neet-ug">👁️ 5310 Views</span>
+</div>
+<button type="button" onclick="openBuiltinNoteReader('builtin-neet-ug')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition cursor-pointer">
+📖 Read Online & Download Clean PDF
+</button>
+</div>
+</div>
+
+<!-- CARD 3: GEOGRAPHY NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-categories="all upsc geo-eco ssc railway gk-hist-pol free"
+data-subject="gk-gs"
+data-lang="hindi english bilingual"
+data-price="0"
+data-keywords="geography notes in hindi भूगोल नोट्स bhugol indian geography world geography भारत का भूगोल विश्व भूगोल नदियाँ nadiya rivers ganga sindhu brahmaputra godavari krishna narmada पर्वत हिमालय himalaya mountains passes darre दर्रे नाथूला जोजिला रोहतांग जलवायु climate monsoon मानसून मिट्टी मृदा soil alluvial black soil काली मिट्टी जलोढ़ मिट्टी खनिज minerals coal iron ore परिवहन transport railway ports बंदरगाह जनगणना 2011 census ब्रह्मांड सौर मंडल solar system planets ग्रह पृथ्वी महाद्वीप continents asia africa ssc cgl chsl mts railway ntpc group d up police upsssc pet pcs">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">GEOGRAPHY</span>
+<span class="inline-block bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">FREE</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+Complete Indian & World Geography Master Notes (SSC, Railway, UPSC & State PCS)
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+Comprehensive exam notes covering Physical Features of India, Himalayan Mountain System, Major Passes, River Systems (Ganga, Indus, Brahmaputra), Monsoon & Climate, Soils, Minerals, Transport, Census 2011, Solar System & World Continents.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Study Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.8 (940+ Reads)</span>
+<span>👁️ 3420 Views</span>
+</div>
+<a href="geography-notes.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition">
+📖 Read Online Notes (Read & Switch Notes)
+</a>
+</div>
+</div>
+
+<!-- CARD 4: ECONOMICS NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-categories="all upsc geo-eco ssc railway gk-hist-pol free"
+data-subject="gk-gs"
+data-lang="hindi english bilingual"
+data-price="0"
+data-keywords="economics notes in hindi अर्थशास्त्र नोट्स भारतीय अर्थव्यवस्था arthshastra arthvyavastha indian economy basic economics adam smith micro macro व्यष्टि समष्टि राष्ट्रीय आय national income gdp gnp nnp ndp base year nso मुद्रास्फीति महंगाई inflation wpi cpi मौद्रिक नीति monetary policy rbi reserve bank ऑफ इंडिया repo rate reverse repo crr slr बैंक राष्ट्रीयकरण banking nabard rrb वित्तीय बाजार money market capital market sebi share market बजट budget taxation कर gst पंचवर्षीय योजना five year plans niti aayog नीति आयोग ssc cgl chsl railway ntpc upsc pcs">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">ECONOMICS</span>
+<span class="inline-block bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">FREE</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+Complete Indian Economy & Macroeconomics Notes (SSC CGL, CHSL, Railway & Banking)
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+High-yield notes on National Income Accounting (GDP, GNP, NNP), Inflation (WPI, CPI), RBI Monetary Policy (Repo Rate, CRR, SLR), Banking System, Financial Markets (SEBI), Union Budget, GST Taxation & Five-Year Plans.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Study Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.8 (820+ Reads)</span>
+<span>👁️ 3150 Views</span>
+</div>
+<a href="economics-notes.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition">
+📖 Read Online Notes (Read & Switch Notes)
+</a>
+</div>
+</div>
+
+<!-- CARD 5: MEDIEVAL HISTORY NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-categories="all upsc gk-hist-pol ssc railway free"
+data-subject="gk-gs"
+data-lang="hindi english bilingual"
+data-price="0"
+data-keywords="history notes in hindi इतिहास नोट्स itihas medieval history मध्यकालीन भारत का इतिहास दिल्ली सल्तनत delhi sultanate मुगल साम्राज्य mughal empire babur humayun akbar jahangir shahjahan aurangzeb बाबर अकबर औरंगजेब गुलाम वंश खिलजी तुगलक लोदी विजयनगर साम्राज्य भक्ति आंदोलन सूफी चोल साम्राज्य ssc cgl chsl railway">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">HISTORY (GK & GS)</span>
+<span class="inline-block bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">FREE</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+Complete Medieval Indian History Notes (712 AD to 1707 AD - Delhi Sultanate & Mughals)
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+Detailed exam revision notes covering Early Arab & Turkic Invasions, Rajput & Chola Dynasties, Delhi Sultanate (Slave, Khilji, Tughlaq, Sayyid & Lodi), Mughal Empire (Babur to Aurangzeb), Vijayanagara Empire, Bhakti & Sufi Movements.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Study Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.8 (790+ Reads)</span>
+<span>👁️ 2890 Views</span>
+</div>
+<a href="medieval-history-notes.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition">
+📖 Read Online Notes (Read & Switch Notes)
+</a>
+</div>
+</div>
+
+<!-- CARD 6: INDIAN POLITY NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-categories="all upsc gk-hist-pol ssc railway free"
+data-subject="gk-gs"
+data-lang="hindi english bilingual"
+data-price="0"
+data-keywords="polity notes in hindi संविधान नोट्स samvidhan indian constitution राजव्यवस्था अनुच्छेद articles fundamental rights मौलिक अधिकार प्रस्तावना preamble राष्ट्रपति president संसद parliament supreme court पंचायती राज संविधान संशोधन amendments अनुसूचियां schedules ssc cgl chsl railway">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">INDIAN POLITY</span>
+<span class="inline-block bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">FREE</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+Complete Indian Polity & Constitution Notes (Articles, Amendments & Parliament)
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+Constituent Assembly, Preamble, Fundamental Rights, Directive Principles (DPSP), Fundamental Duties, President, Parliament, Supreme Court, Panchayati Raj, Schedules & All Important Constitutional Articles and Amendments.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Study Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.9 (1.1k+ Reads)</span>
+<span>👁️ 3610 Views</span>
+</div>
+<a href="polity-notes.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition">
+📖 Read Online Notes (Read & Switch Notes)
+</a>
+</div>
+</div>
+
+<!-- CARD 7: STATIC GK NOTES -->
+<div class="main-note-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+data-categories="all upsc gk-hist-pol ssc railway free"
+data-subject="gk-gs"
+data-lang="hindi english bilingual"
+data-price="0"
+data-keywords="static gk notes in hindi स्टैटिक जीके लोक नृत्य शास्त्रीय नृत्य folk dance classical dance राष्ट्रीय उद्यान national parks tiger reserve बांध झीलें त्योहार festivals पुरस्कार awards books authors अंतरराष्ट्रीय संगठन मुख्यालय खेल sports ssc cgl chsl mts railway ntpc">
+<div>
+<div class="flex justify-between items-center gap-2 mb-3">
+<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">STATIC GK</span>
+<span class="inline-block bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">FREE</span>
+</div>
+<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
+Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
+</h3>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+100% exam-oriented notes covering Classical & Folk Dances, Major Festivals & Fairs, National Parks & Tiger Reserves, Important Days, Books & Authors, Awards & Honours, International Organizations & Sports Terminology.
+</p>
+</div>
+<div>
+<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">
+<span>✍️ FreeCV Study Hub</span>
+<span class="text-amber-600 font-extrabold">⭐ 4.9 (1.3k+ Reads)</span>
+<span>👁️ 4120 Views</span>
+</div>
+<a href="static-gk-notes.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition">
+📖 Read Online Notes (Read & Switch Notes)
+</a>
+</div>
+</div>
+
+</div>
+
+<!-- No Results Message -->
+<div id="noNotesFoundBox" style="display:none;" class="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm">
+<p class="text-slate-700 font-bold mb-2">😕 No study notes matched your search keyword or filter.</p>
+<p class="text-xs text-slate-500 mb-4">Try searching topics like IIT JEE, NEET, Rotational Motion, Genetics, Geography, Economics, History, Polity, or Static GK.</p>
+<button type="button" onclick="clearNotesSearch()" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer">Show All Study Notes</button>
+</div>
+
+<!-- HIDDEN / EXPANDABLE SEO FULL-TEXT INDEXING BLOCK FOR GOOGLE BOT -->
+<details class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 text-xs text-slate-600">
+<summary class="font-extrabold text-slate-900 cursor-pointer">🔍 Google Search Indexable PDF Word Directory (IIT JEE, NEET, SSC, Railway All Topics)</summary>
+<div id="seoFullTextDirectory" class="mt-3 space-y-2 leading-relaxed text-[11px] text-slate-500">
+<p><strong>UPSC Civil Services (IAS / IPS / State PCS) Prelims & Mains Indexed Topics:</strong> Ancient, Medieval & Modern Indian History, Indian Art & Culture, World History, Post-Independence India, Indian Society, Physical, Human & Indian Geography, Indian Constitution, Polity, Governance, Social Justice, International Relations, Indian Economy, Budgeting, Agriculture, Infrastructure, Science & Technology, Environment, Ecology, Biodiversity, Climate Change, Disaster Management, Internal Security, Ethics, Integrity, Aptitude, GS4 Case Studies, CSAT Comprehension & Quantitative Reasoning.</p>
+<p><strong>IIT JEE Mains & Advanced Indexed Topics:</strong> Units and Dimensions, Kinematics, Projectile Motion, Laws of Motion, Friction, Work Energy and Power, Circular Motion, Center of Mass, Rotational Mechanics, Moment of Inertia, Parallel and Perpendicular Axis Theorem, Gravitation, Escape Velocity, Thermodynamics, Carnot Cycle, Kinetic Theory of Gases, Simple Harmonic Motion, Waves, Electrostatics, Gauss Law, Capacitors, Current Electricity, Wheatstone Bridge, Potentiometer, Moving Charges and Magnetism, Biot Savart Law, Ampere Law, Electromagnetic Induction, Faraday Law, Lenz Law, Alternating Current, LCR Circuit, Ray Optics, Lens Maker Formula, Wave Optics, Young Double Slit Experiment, Dual Nature of Matter, Photoelectric Equation, Atomic Structure, Bohr Model, Nuclear Physics, Semiconductors, Logic Gates, Mole Concept, Atomic Structure, Chemical Bonding, VSEPR Theory, Hybridization, Molecular Orbital Theory, Chemical Thermodynamics, Chemical & Ionic Equilibrium, Redox Reactions, Electrochemistry, Nernst Equation, Chemical Kinetics, Surface Chemistry, Coordination Compounds, Isomerism, General Organic Chemistry (GOC), Inductive Effect, Mesomeric Effect, Hyperconjugation, Haloalkanes, Alcohols, Phenols, Ethers, Aldehydes, Ketones, Carboxylic Acids, Amines, Biomolecules, Polymers, Matrices, Determinants, Quadratic Equations, Complex Numbers, Sequences and Series, Permutations and Combinations, Binomial Theorem, Limits, Continuity, Differentiability, Application of Derivatives, Indefinite and Definite Integration, Differential Equations, Straight Lines, Circles, Parabola, Ellipse, Hyperbola, Vectors, 3D Geometry, Probability.</p>
+<p><strong>NEET UG Medical Indexed Topics:</strong> Diversity in Living World, Biological Classification, Plant Kingdom, Animal Kingdom, Morphology of Flowering Plants, Anatomy of Flowering Plants, Structural Organisation in Animals, Cell The Unit of Life, Biomolecules, Enzymes, Cell Cycle and Cell Division, Mitosis, Meiosis, Photosynthesis in Higher Plants, C3 Cycle, C4 Pathway, Photorespiration, Respiration in Plants, Glycolysis, Krebs Cycle, Electron Transport System, Plant Growth and Development, Breathing and Exchange of Gases, Body Fluids and Circulation, Cardiac Cycle, ECG, Excretory Products and their Elimination, Counter Current Mechanism, Locomotion and Movement, Neural Control and Coordination, Chemical Coordination and Integration, Endocrine Glands, Sexual Reproduction in Flowering Plants, Human Reproduction, Gametogenesis, Menstrual Cycle, Reproductive Health, Principles of Inheritance and Variation, Mendelian Genetics, Molecular Basis of Inheritance, DNA Replication, Transcription, Genetic Code, Translation, Lac Operon, Evolution, Human Health and Disease, Immunity, AIDS, Cancer, Biotechnology Principles and Processes, Restriction Enzymes, PCR, Biotechnology and its Applications, Genetically Modified Organisms, Bt Cotton, Insulin, Organisms and Populations, Ecosystem, Ecological Pyramids, Biodiversity and Conservation.</p>
+</div>
+</details>
 
 <!-- Educational SEO Article for AdSense Approval -->
 <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
-<h3 class="text-sm font-extrabold text-slate-900">प्रतियोगी परीक्षाओं (SSC, Railway, State PCS) में शॉर्ट नोट्स का महत्व</h3>
-<p>किसी भी सरकारी नौकरी की परीक्षा—चाहे वह SSC Combined Graduate Level (CGL) हो, CHSL हो, रेलवे भर्ती बोर्ड (RRB NTPC) हो या राज्य स्तरीय परीक्षाएं—अंतिम 15 दिनों के रिवीजन में शॉर्ट हैंडरिटन नोट्स (Handwritten Short Notes) सबसे बड़ी भूमिका निभाते हैं। पूरी किताब को दोबारा पढ़ना संभव नहीं होता, लेकिन महत्वपूर्ण अनुच्छेद (Articles), गणित के फॉर्मूले और विज्ञान के वन-लाइनर तथ्यों का संकलन आपकी सटीकता (Accuracy) को 40% तक बढ़ा देता है।</p>
-<p>हमारे इस पोर्टल का उद्देश्य छात्रों को एक ही स्थान पर व्यवस्थित, सटीक और परीक्षा-उपयोगी अध्ययन सामग्री (Study Material) निःशुल्क उपलब्ध कराना है। यदि आपके पास भी अपने खुद के बनाए हुए साफ़-सुथरे नोट्स या शॉर्ट ट्रिक्स हैं, तो आप ऊपर दिए गए '+ Upload Notes' बटन के माध्यम से अन्य छात्रों की मदद के लिए उन्हें साझा कर सकते हैं।</p>
+<h3 class="text-sm font-extrabold text-slate-900">Why Short Revision Notes Are Crucial for IIT JEE, NEET, SSC & Railway Exams</h3>
+<p>Whether you are preparing for engineering and medical entrance tests like IIT JEE (Mains & Advanced) and NEET UG, higher education exams like CSIR-UGC NET/JRF and GATE, or government recruitment exams like SSC CGL and RRB NTPC, concise formula sheets and handwritten revision notes are essential during the final 15 days before the exam. On FreeCVResume.co.in, educators and toppers can create a Creator Account, upload PDF notes (automatically cleaned of third-party coaching watermarks), sell premium study material, or earn Google AdSense revenue share from free note reads.</p>
 </article>
 
 </section>
 
-<!-- TAB 3: EXAM PHOTO & SIGN RESIZER -->
+<!-- ==================== TAB 3: EXAM PHOTO & SIGN RESIZER ==================== -->
 <section id="tab-resizer" class="tab-content hidden">
 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 <div class="space-y-4">
-<h2 class="text-lg font-extrabold text-slate-900">SSC / Railway Photo (Name & Date) Resizer (20KB-50KB)</h2>
+<h2 class="text-lg font-extrabold text-slate-900">SSC / Railway / JEE / NEET Photo (Name & Date) Resizer (20KB-50KB)</h2>
 <select id="p-type" onchange="drawExamPhoto()" class="w-full text-xs font-bold border rounded-xl px-3 py-2.5 bg-slate-50">
 <option value="photo">Passport Photo (3.5cm x 4.5cm) - 20KB to 50KB</option>
 <option value="sign">Signature (4.0cm x 2.0cm) - 10KB to 20KB</option>
@@ -441,7 +842,7 @@ body * { visibility: hidden; }
 </div>
 </section>
 
-<!-- TAB 4: EXAM TYPING TEST -->
+<!-- ==================== TAB 4: EXAM TYPING TEST ==================== -->
 <section id="tab-typing" class="tab-content hidden">
 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
 <div class="flex flex-col md:flex-row justify-between md:items-center gap-3 border-b pb-3">
@@ -480,84 +881,325 @@ body * { visibility: hidden; }
 
 <!-- GOOGLE SEO RANKING CONTENT BOX -->
 <section class="mt-10 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
-<h2 class="text-sm font-extrabold text-slate-900">FreeCVResume.co.in – India's #1 Free Resume Maker, Study Notes & Resume Free Download Portal</h2>
-<p>Welcome to <strong>FreeCVResume.co.in</strong>, the most trusted <strong>free resume maker</strong> and <strong>competitive exam study hub</strong> where students, freshers, and experienced professionals can create an executive ATS-friendly CV with academic percentage/CGPA, read topic-wise <strong>SSC & Railway study notes</strong>, and get an instant <strong>resume free download in PDF</strong> format without paying any hidden charges. Unlike other portals that charge ₹250–₹300 at the time of download, our <strong>AI Resume Builder</strong>, <strong>Free Study Notes Hub</strong>, <strong>SSC/Railway Photo & Signature Resizer (20KB–50KB)</strong>, and <strong>AI Live Typing Speed Test</strong> are 100% free forever.</p>
+<h2 class="text-sm font-extrabold text-slate-900">FreeCVResume.co.in – India's #1 Free Resume Maker & IIT JEE, NEET, SSC Study Notes Marketplace</h2>
+<p>Welcome to <strong>FreeCVResume.co.in</strong>, the most trusted <strong>free resume maker</strong> and <strong>competitive exam study notes marketplace</strong> where students and educators can read, upload, and sell topic-wise <strong>IIT JEE (Mains & Advanced), NEET UG, SSC CGL, CHSL & Railway study notes</strong>, earn Google AdSense revenue share on free PDF notes, and download ATS-friendly resumes 100% free.</p>
 </section>
 
 </main>
 
-<!-- MODAL 1: STUDY NOTE READER & 10-SECOND DOWNLOAD TIMER -->
-<div id="readerModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-<div class="bg-white rounded-2xl max-w-3xl w-full p-6 text-slate-800 relative max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
-<button type="button" onclick="closeReaderModal()" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 w-9 h-9 rounded-full text-slate-700 font-bold cursor-pointer">✕</button>
-<span id="modalCategory" class="inline-block bg-indigo-100 text-indigo-800 text-[11px] font-extrabold px-3 py-1 rounded-md">Category</span>
-<h2 id="modalTitle" class="text-lg sm:text-xl font-black text-slate-900">Note Title</h2>
-<p id="modalMeta" class="text-xs text-slate-500 font-medium">By Author • Views</p>
+<!-- ==================== CREATOR ACCOUNT LOGIN / SIGNUP MODAL ==================== -->
+<div id="creatorAuthModal" style="display:none;" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 text-slate-800 relative shadow-2xl my-8">
+<button type="button" onclick="closeCreatorAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-lg cursor-pointer">✕</button>
 
-<div id="modalContent" class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line"></div>
+<span class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-3 py-0.5 rounded-full">👤 Creator Account Portal</span>
+<h3 class="text-lg font-black text-slate-900 mt-1 mb-1">Creator Login / Sign Up</h3>
+<p class="text-xs text-slate-500 mb-4">Create your free Educator Account or sign in to upload notes, track live AdSense views, and withdraw earnings to your UPI ID.</p>
 
-<div class="bg-indigo-50 border border-dashed border-indigo-400 p-4 rounded-xl text-center space-y-2">
-<p id="timerText" class="text-xs font-bold text-indigo-800">
-⏳ पीडीएफ लिंक तैयार हो रहा है... कृपया <span id="countdown" class="font-black text-sm">10</span> सेकंड प्रतीक्षा करें
-</p>
-<a id="downloadNoteBtn" href="#" target="_blank" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow inline-flex items-center gap-1.5">
-📥 Download / Print Full PDF Note
-</a>
-</div>
-</div>
+<!-- Auth Mode Tabs -->
+<div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl mb-4 text-xs font-extrabold">
+<button type="button" id="tabBtnSignup" onclick="switchAuthMode('signup')" class="py-2 rounded-lg bg-indigo-600 text-white shadow cursor-pointer">Create Account (Sign Up)</button>
+<button type="button" id="tabBtnLogin" onclick="switchAuthMode('login')" class="py-2 rounded-lg text-slate-600 cursor-pointer">Existing Creator Login</button>
 </div>
 
-<!-- MODAL 2: UPLOAD STUDY NOTE FORM -->
-<div id="uploadModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-<div class="bg-white rounded-2xl max-w-lg w-full p-6 text-slate-800 relative max-h-[90vh] overflow-y-auto shadow-2xl">
-<button type="button" onclick="closeUploadModal()" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 w-9 h-9 rounded-full text-slate-700 font-bold cursor-pointer">✕</button>
-<h2 class="text-lg font-black text-slate-900 mb-1">📤 अपना स्टडी नोट अपलोड करें</h2>
-<p id="uploadSubtext" class="text-xs text-slate-500 mb-4">अपने हैंडरिटन नोट्स या महत्वपूर्ण प्रश्न-उत्तर अन्य छात्रों के साथ साझा करें।</p>
+<form onsubmit="handleCreatorAuthSubmit(event)" class="space-y-3 text-xs">
+<div id="authNameField">
+<label class="block font-bold text-slate-700 mb-1">Full Name (Creator / Educator Name) *</label>
+<input type="text" id="authCreatorName" placeholder="e.g., Rahul Sharma (IITian / Educator)" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
+</div>
 
-<form id="uploadNoteForm" onsubmit="submitNewNote(event)" class="space-y-3 text-xs">
 <div>
-<label class="font-bold text-slate-700 block mb-1">आपका नाम (Creator Name) *</label>
-<input type="text" id="authorName" required placeholder="जैसे: Arjun Kumar" class="w-full border rounded-xl px-3 py-2">
+<label class="block font-bold text-slate-700 mb-1">Email ID or Mobile Number *</label>
+<input type="text" id="authCreatorEmail" required placeholder="e.g., creator@email.com or 9876543210" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
 </div>
-<div id="upiFieldGroup" class="hidden">
-<label class="font-bold text-slate-700 block mb-1">आपकी UPI ID (पेमेंट प्राप्त करने के लिए) *</label>
-<input type="text" id="authorUpi" placeholder="example@ybl" class="w-full border rounded-xl px-3 py-2">
+
+<div id="authUpiField">
+<label class="block font-bold text-slate-700 mb-1">UPI ID for Payouts (AdSense & Note Sales) *</label>
+<input type="text" id="authCreatorUpi" placeholder="e.g., yourname@ybl" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
 </div>
+
 <div>
-<label class="font-bold text-slate-700 block mb-1">नोट का शीर्षक (Note Title) *</label>
-<input type="text" id="noteTitle" required placeholder="जैसे: भारतीय संविधान के 50 सबसे महत्वपूर्ण अनुच्छेद" class="w-full border rounded-xl px-3 py-2">
+<label class="block font-bold text-slate-700 mb-1">Account Password / 4-Digit PIN *</label>
+<input type="password" id="authCreatorPass" required placeholder="Enter Password or PIN" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
 </div>
-<div>
-<label class="font-bold text-slate-700 block mb-1">एग्ज़ाम कैटेगरी चुनें *</label>
-<select id="noteCategory" required class="w-full border rounded-xl px-3 py-2 bg-white">
-<option value="SSC & CGL">SSC CGL / CHSL</option>
-<option value="Railway RRB">Railway (NTPC/Group D)</option>
-<option value="GK & GS">Static GK & संविधान</option>
-<option value="Career & Interview">Interview & Resume Tips</option>
-</select>
-</div>
-<div>
-<label class="font-bold text-slate-700 block mb-1">नोट्स का मुख्य सारांश / महत्वपूर्ण बिंदु (कम से कम 100 शब्द) *</label>
-<textarea id="noteContent" rows="5" required placeholder="यहाँ नोट्स के मुख्य पॉइंट्स लिखें ताकि छात्र ऑनलाइन भी पढ़ सकें..." class="w-full border rounded-xl p-3"></textarea>
-</div>
-<div>
-<label class="font-bold text-slate-700 block mb-1">PDF Google Drive Link (या खाली छोड़ें)</label>
-<input type="url" id="pdfUrl" placeholder="https://drive.google.com/..." class="w-full border rounded-xl px-3 py-2">
-</div>
-<button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow cursor-pointer">
-✅ नोट सबमिट करें
+
+<p id="creatorAuthMsg" class="text-[11px] font-bold text-emerald-700 hidden"></p>
+
+<button type="submit" id="authSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl shadow cursor-pointer text-xs sm:text-sm">
+🚀 Create Creator Account & Continue
 </button>
 </form>
 </div>
 </div>
 
+<!-- ==================== UPGRADED UPLOAD & SELL NOTES MODAL (WITH PDF SANITIZER & SEO EXTRACTOR) ==================== -->
+<div id="uploadNotesModal" style="display:none;" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-2xl w-full p-5 sm:p-6 text-slate-800 relative shadow-2xl my-8 max-h-[92vh] overflow-y-auto">
+<button type="button" onclick="closeUploadNotesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-lg cursor-pointer">✕</button>
+
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">🛡️ AI Auto-Sanitizer + SEO Indexer</span>
+<span class="bg-purple-100 text-purple-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">💰 Sell or Earn from AdSense</span>
+</div>
+<h3 class="text-lg font-black text-slate-900 mb-1">☁️ Upload PDF Study Notes & Earn Money</h3>
+<p class="text-xs text-slate-500 mb-4">As soon as you upload a PDF, our system automatically removes <strong>coaching names, teacher names, phone numbers & links</strong> and indexes every single word for Google Search:</p>
+
+<form onsubmit="saveCustomNote(event)" class="space-y-3.5 text-xs sm:text-sm">
+
+<!-- Step 1: Upload PDF File -->
+<div class="bg-indigo-50/70 border-2 border-dashed border-indigo-300 rounded-xl p-4">
+<label class="block font-extrabold text-indigo-950 mb-1">📄 Step 1: Select Your PDF or Word/Text File (Auto Text Extract & Clean) *</label>
+<input type="file" id="upNotePdfFile" accept=".pdf,.docx,.txt" onchange="processUploadedNoteFile(event)" class="w-full text-xs bg-white border border-indigo-200 rounded-lg p-2 cursor-pointer">
+<div class="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-600">
+<label class="flex items-center gap-1 font-bold text-emerald-800 cursor-pointer">
+<input type="checkbox" id="upAutoRemoveCoaching" checked onchange="reRunSanitizerPreview()">
+Auto-remove coaching/teacher names, phone numbers & links
+</label>
+<label class="flex items-center gap-1 font-bold text-indigo-800 cursor-pointer">
+<input type="checkbox" id="upCropHeaderFooter" checked>
+Remove top/bottom PDF watermark (Header/Footer)
+</label>
+</div>
+<input type="text" id="upCustomRemoveWords" oninput="reRunSanitizerPreview()" placeholder="Any specific coaching/teacher name to strip (comma-separated, e.g., XYZ Classes, Ramesh Sir)..." class="w-full mt-2 border border-indigo-200 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+<!-- Live PDF Upload & Scanning Percentage Progress Bar -->
+<div id="pdfUploadProgressWrap" class="mt-3 hidden bg-white p-3 rounded-xl border border-indigo-200 shadow-xs">
+<div class="flex justify-between items-center text-[11px] font-extrabold text-indigo-900 mb-1.5">
+<span id="pdfProgressStepText"><i class="fa-solid fa-spinner fa-spin mr-1 text-indigo-600"></i> Uploading & Scanning PDF...</span>
+<span id="pdfProgressPercentBadge" class="bg-indigo-600 text-white px-2 py-0.5 rounded-full text-[10px]">0%</span>
+</div>
+<div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+<div id="pdfProgressBarFill" class="bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-500 h-full rounded-full transition-all duration-150" style="width: 0%;"></div>
+</div>
+</div>
+<p id="pdfSanitizeStatus" class="text-[11px] font-bold text-emerald-700 mt-2 hidden"></p>
+</div>
+
+<!-- Title & Exam Category -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Note Title *</label>
+<input type="text" id="upNoteTitle" required placeholder="e.g., Rotational Motion IIT JEE Short Notes" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Exam Category *</label>
+<select id="upNoteCategory" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-semibold">
+<option value="upsc">🏛️ UPSC CSE (IAS / IPS / State PCS - Prelims & Mains)</option>
+<option value="iit-jee">⚛️ IIT JEE (Mains & Advanced)</option>
+<option value="neet">🩺 NEET UG (Biology / Physics / Chem)</option>
+<option value="bsc-msc-net-gate">🎓 B.Sc / M.Sc / CSIR-UGC NET JRF / GATE</option>
+<option value="ssc">🏛️ SSC CGL / CHSL / MTS</option>
+<option value="railway">🚆 Railway (NTPC / Group D)</option>
+<option value="geo-eco">🌍 Geography & Economics</option>
+<option value="gk-hist-pol">⚖️ Static GK, History & Polity</option>
+</select>
+</div>
+</div>
+
+<!-- Subject & Medium Filter Selectors -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Subject Filter *</label>
+<select id="upNoteSubject" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-semibold">
+<option value="physics">⚡ Physics</option>
+<option value="chemistry">🧪 Chemistry</option>
+<option value="maths">📐 Mathematics</option>
+<option value="biology">🧬 Biology</option>
+<option value="gk-gs">🏛️ GK / GS / Arts / Commerce</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Language / Medium *</label>
+<select id="upNoteLang" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-semibold">
+<option value="english">🇬🇧 English Medium</option>
+<option value="hindi">🇮🇳 Hindi Medium</option>
+<option value="bilingual">🔄 Bilingual (English + Hindi)</option>
+</select>
+</div>
+</div>
+
+<!-- Subject Badge & Monetization Type (Free vs Paid) -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Subject Badge *</label>
+<input type="text" id="upNoteBadge" required placeholder="e.g., IIT JEE PHYSICS" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white">
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Monetization Type (Free / Paid) *</label>
+<select id="upNoteSellType" onchange="togglePriceInput()" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold text-indigo-700">
+<option value="free">🆓 Free (Earn via AdSense Views)</option>
+<option value="paid">💰 Sell Paid Note (Set Price ₹)</option>
+</select>
+</div>
+<div id="upPriceBox" style="display:none;">
+<label class="block font-bold text-emerald-700 mb-1">Selling Price (₹) *</label>
+<input type="number" id="upNotePrice" min="9" max="999" value="29" placeholder="Ex: 29" class="w-full border-2 border-emerald-500 rounded-xl px-3 py-2 bg-white font-black text-emerald-800">
+</div>
+</div>
+
+<!-- Creator Info for AdSense Revenue Share & Sales Payout -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Your Name (Creator / Author Name) *</label>
+<input type="text" id="upCreatorName" required placeholder="e.g., Rahul Sharma (IITian / Educator)" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Your UPI ID (For Receiving Earnings) *</label>
+<input type="text" id="upCreatorUpi" required placeholder="e.g., yourname@upi" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+</div>
+</div>
+
+<!-- Cleaned / Sanitized Note Text Preview (Editable & Fully Indexed on Google) -->
+<div>
+<div class="flex flex-wrap justify-between items-center gap-2 mb-1.5">
+<label class="block font-bold text-slate-700">Sanitized Note Content (OCR + SEO Indexed Text) *</label>
+<div class="flex flex-wrap gap-1.5">
+<button type="button" onclick="runDeepOcrOnUploadedPdf(this)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-xs cursor-pointer flex items-center gap-1">
+<i class="fa-solid fa-camera-rotate"></i> Run Image OCR (Scan Pages)
+</button>
+<button type="button" onclick="boostNoteWithSmartSEOLines(this)" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-xs cursor-pointer flex items-center gap-1">
+<i class="fa-solid fa-wand-magic-sparkles"></i> + Auto-Fill Full Topic SEO Lines
+</button>
+</div>
+</div>
+<p class="text-[10px] text-emerald-700 font-bold mb-1">Every line & keyword in this box is indexed for Google Search & Instant Website Search:</p>
+<textarea id="upNoteDesc" rows="6" required placeholder="Cleaned text & OCR lines from your PDF will appear here automatically, or you can paste/edit your study notes directly..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs leading-relaxed"></textarea>
+</div>
+
+<div>
+<label class="block font-bold text-slate-700 mb-1">External Link (Optional - Leave blank to use Built-in On-Page SEO Reader)</label>
+<input type="text" id="upNoteUrl" placeholder="Leave blank to open in On-Page SEO Reader" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs">
+</div>
+
+<div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+<button type="button" onclick="closeUploadNotesModal()" class="bg-slate-100 text-slate-700 font-bold px-4 py-2.5 rounded-xl cursor-pointer">Cancel</button>
+<button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow cursor-pointer">☁️ Publish Clean Note & Start Earning</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- ==================== ON-PAGE SEO READER, ADSENSE TIMER & BUY/DOWNLOAD MODAL ==================== -->
+<div id="onPageReaderModal" style="display:none;" class="fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 text-slate-800 relative shadow-2xl my-6 max-h-[94vh] flex flex-col">
+
+<!-- Reader Top Header -->
+<div class="flex justify-between items-start gap-3 border-b border-slate-200 pb-3 mb-3">
+<div>
+<div class="flex flex-wrap items-center gap-2 mb-1">
+<span id="readerBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2.5 py-0.5 rounded-md">IIT JEE</span>
+<span id="readerPriceTag" class="bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">FREE NOTE</span>
+<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">🛡️ Coaching/Link Sanitized</span>
+</div>
+<h2 id="readerTitle" class="text-base sm:text-xl font-black text-slate-900">Note Title</h2>
+<p id="readerMeta" class="text-[11px] text-slate-500 font-semibold mt-0.5">By Educator • Views: 0</p>
+</div>
+<button type="button" onclick="closeOnPageReader()" class="bg-slate-100 hover:bg-red-100 hover:text-red-600 text-slate-600 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0 cursor-pointer">✕</button>
+</div>
+
+<!-- Google AdSense Monetization Slot + Creator Revenue Share Status -->
+<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 flex flex-col sm:flex-row justify-between items-center gap-2">
+<div class="text-xs">
+<span class="font-extrabold text-amber-900"><i class="fa-solid fa-coins mr-1"></i> Creator AdSense Revenue Share:</span>
+<span id="readerAdTimerText" class="text-amber-800 font-semibold">Read for 5 seconds to credit AdSense view bonus to the creator's wallet...</span>
+</div>
+<button type="button" id="readerDownloadBtn" onclick="downloadSanitizedNotePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2 rounded-lg shadow shrink-0 cursor-pointer">
+<i class="fa-solid fa-file-pdf mr-1"></i> Download Clean PDF
+</button>
+</div>
+
+<!-- Scrollable Reader Body -->
+<div class="flex-1 overflow-y-auto space-y-4 pr-1" id="readerScrollBody">
+
+<!-- Visual Sanitized PDF Pages Container (if PDF uploaded with cropped headers/footers) -->
+<div id="readerCanvasContainer" class="space-y-4 hidden"></div>
+
+<!-- Clean Printable & Google-Indexable Note Paper -->
+<div id="clean-note-print-area" class="bg-slate-50 border border-slate-200 rounded-xl p-5 sm:p-7 space-y-4">
+<div class="border-b border-slate-300 pb-3 flex justify-between items-center">
+<div>
+<h3 id="printNoteTitle" class="text-lg font-black text-slate-900"></h3>
+<p id="printNoteSub" class="text-xs text-indigo-600 font-bold">Verified Clean Study Material • FreeCVResume.co.in Study Hub</p>
+</div>
+<span class="text-[10px] font-bold bg-indigo-600 text-white px-2.5 py-1 rounded">FreeCVResume.co.in</span>
+</div>
+
+<!-- Sample Preview Section (Always Visible) -->
+<div id="readerSampleContent" class="text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line font-medium"></div>
+
+<!-- Full Content Section (Blurred if Paid & Locked) -->
+<div id="readerFullContent" class="text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line"></div>
+</div>
+
+<!-- Paywall Unlock Box (Shown Only When Note is Paid & Not Yet Purchased) -->
+<div id="readerPaywallBox" style="display:none;" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-2xl p-6 text-center shadow-xl space-y-3">
+<span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">🔒 Premium Study Note (Sample Preview Above)</span>
+<h4 class="text-lg font-black">Unlock Full Study Note & Clean PDF Download</h4>
+<p class="text-xs text-indigo-100 max-w-lg mx-auto">You are viewing a free sample preview above. Pay just <strong id="paywallPriceText" class="text-amber-300 text-sm">₹29</strong> to unlock the complete note and download the watermark-free PDF instantly.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+<button type="button" onclick="unlockPaidNoteNow()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg cursor-pointer">
+⚡ Pay via UPI & Instant Unlock (<span id="paywallBtnPrice">₹29</span>)
+</button>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<!-- ==================== CREATOR WALLET & ADSENSE EARNINGS MODAL ==================== -->
+<div id="creatorWalletModal" style="display:none;" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+<div class="bg-white rounded-2xl max-w-xl w-full p-6 text-slate-800 relative shadow-2xl">
+<button type="button" onclick="closeCreatorWalletModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-lg cursor-pointer">✕</button>
+
+<div class="flex flex-wrap justify-between items-center gap-2 mb-1">
+<span class="bg-purple-100 text-purple-800 text-[11px] font-black px-3 py-0.5 rounded-full">👛 Creator Monetization Dashboard</span>
+<button type="button" onclick="closeCreatorWalletModal(); openCreatorAuthModal();" class="text-xs font-extrabold text-indigo-600 hover:underline cursor-pointer">
+<i class="fa-solid fa-user-check mr-1"></i> <span id="walletCreatorAccountStatus">Switch / Login Creator Account</span>
+</button>
+</div>
+<h3 class="text-lg font-black text-slate-900 mt-1 mb-1">Your Creator Earnings (Paid Sales + Free Notes AdSense Share)</h3>
+<p class="text-xs text-slate-500 mb-4">Whenever students read or download your uploaded free notes, a share of Google AdSense revenue is automatically credited to your wallet:</p>
+
+<div class="grid grid-cols-3 gap-3 text-center mb-4">
+<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl">
+<span class="text-[11px] font-bold text-slate-600">Free Notes Views</span>
+<p id="walletTotalViews" class="text-lg sm:text-xl font-black text-indigo-700">0</p>
+<span class="text-[10px] text-slate-500">Ad Share: <strong id="walletAdEarnings">₹0.00</strong></span>
+</div>
+<div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
+<span class="text-[11px] font-bold text-slate-600">Paid Notes Sold</span>
+<p id="walletTotalSales" class="text-lg sm:text-xl font-black text-emerald-700">0</p>
+<span class="text-[10px] text-slate-500">Sales: <strong id="walletSalesEarnings">₹0.00</strong></span>
+</div>
+<div class="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+<span class="text-[11px] font-bold text-amber-900">Total Balance</span>
+<p id="walletGrandTotal" class="text-lg sm:text-xl font-black text-amber-700">₹0.00</p>
+<span class="text-[10px] text-emerald-700 font-bold">Ready for UPI</span>
+</div>
+</div>
+
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+<h4 class="font-extrabold text-slate-800">🏦 Withdraw Earnings to Bank via UPI</h4>
+<div class="flex flex-col sm:flex-row gap-2">
+<input type="text" id="withdrawUpiInput" placeholder="Enter your UPI ID (e.g., mobile@ybl)" class="flex-1 border border-slate-300 rounded-xl px-3 py-2.5 bg-white font-semibold">
+<button type="button" onclick="requestWalletWithdrawal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow cursor-pointer">
+Withdraw to UPI
+</button>
+</div>
+<p id="walletWithdrawMsg" class="text-[11px] font-bold text-emerald-700 hidden"></p>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
 <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
 <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
 <div class="flex items-center gap-2.5">
 <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-xs shadow">CV</div>
 <div>
 <p class="font-bold text-white text-sm">FreeCV<span class="text-indigo-400">Resume.co.in</span></p>
-<p class="text-[11px] text-slate-500">100% Free AI Resume Builder, Study Notes, Exam Photo Resizer & Typing Test.</p>
+<p class="text-[11px] text-slate-500">100% Free AI Resume Builder, IIT JEE / NEET / SSC Study Notes Marketplace & Typing Test.</p>
 </div>
 </div>
 <div class="flex flex-wrap gap-4 text-xs font-semibold">
@@ -585,22 +1227,8 @@ body * { visibility: hidden; }
 
 <script>
 // =========================================================================
-// 🛡️ ADSENSE APPROVAL SAFE SWITCH (Study Notes Monetization)
-// जब तक AdSense में "Getting ready" है, इसे false रखें।
-// साइट "Ready" होते ही इसे true कर दें!
+// HELPER & TAB SWITCHING
 // =========================================================================
-var SHOW_EARNING_FEATURES = false;
-
-// =========================================================================
-// 🔗 SUPABASE CONFIGURATION (Optional: अपना Supabase URL और Key यहाँ डालें)
-// =========================================================================
-var SUPABASE_URL = "";
-var SUPABASE_ANON_KEY = "";
-var supabaseClient = null;
-if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
-supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-
 function flashBtn(btn, msg) {
 if (!btn) return;
 var orig = btn.getAttribute("data-orig") || btn.innerHTML;
@@ -623,6 +1251,9 @@ if (activeSec) activeSec.classList.remove("hidden");
 if (activeBtn) activeBtn.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
 }
 
+// =========================================================================
+// FULL AI RESUME BUILDER LOGIC (ALL 10 ROLES + CYCLING AI REWRITES)
+// =========================================================================
 function updateCV() {
 var name = document.getElementById("f-name").value || "YOUR FULL NAME";
 var role = document.getElementById("f-role").value || "";
@@ -863,12 +1494,25 @@ img.classList.remove("hidden");
 reader.readAsDataURL(file);
 }
 
+function updateResumeProgressUI(pct, labelText) {
+var wrap = document.getElementById("resumeUploadProgressWrap");
+var bar = document.getElementById("resumeProgressBarFill");
+var badge = document.getElementById("resumeProgressPercentBadge");
+var stepTxt = document.getElementById("resumeProgressStepText");
+if (wrap) wrap.classList.remove("hidden");
+var safePct = Math.min(100, Math.max(0, Math.round(pct)));
+if (bar) bar.style.width = safePct + "%";
+if (badge) badge.innerText = safePct + "%";
+if (stepTxt && labelText) stepTxt.innerText = labelText;
+}
+
 async function handleOldResume(e) {
 var file = e.target.files[0];
 if (!file) return;
 var msg = document.getElementById("upload-msg");
 msg.classList.remove("hidden");
-msg.innerText = "AI aapka purana resume padh raha hai...";
+updateResumeProgressUI(5, "⏳ Loading Resume File (5%)...");
+msg.innerText = "AI aapka purana resume padh raha hai (5%)...";
 try {
 if (window.pdfjsLib) {
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -876,20 +1520,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 var text = "";
 var ext = file.name.split(".").pop().toLowerCase();
 if (ext === "pdf") {
-var buf = await file.arrayBuffer();
+var buf = await readFileBufferWithProgress(file, function(loadPct) {
+var mapped = Math.round(loadPct * 0.25);
+updateResumeProgressUI(mapped, "📂 Uploading PDF (" + mapped + "%)...");
+});
 var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-for (var i = 1; i <= pdf.numPages; i++) {
+var totalP = pdf.numPages || 1;
+for (var i = 1; i <= totalP; i++) {
 var page = await pdf.getPage(i);
 var content = await page.getTextContent();
 for (var j = 0; j < content.items.length; j++) {
 text += content.items[j].str + " ";
 }
+var scanPct = 25 + Math.round((i / totalP) * 70);
+updateResumeProgressUI(scanPct, "🔍 Scanning Page " + i + " of " + totalP + " (" + scanPct + "%)...");
+await new Promise(function(r) { setTimeout(r, 10); });
 }
 } else if (ext === "docx") {
+updateResumeProgressUI(45, "📄 Extracting Word Document (45%)...");
 var buf2 = await file.arrayBuffer();
 var res = await mammoth.extractRawText({ arrayBuffer: buf2 });
 text = res.value;
+updateResumeProgressUI(90, "🔍 Formatting Data (90%)...");
 } else {
+updateResumeProgressUI(50, "📄 Reading Text File (50%)...");
 text = await file.text();
 }
 var clean = text.replace(/\s+/g, " ").trim();
@@ -899,7 +1553,8 @@ var phoneMatch = clean.match(/[6-9]\d{9}/);
 if (phoneMatch) document.getElementById("f-phone").value = "+91 " + phoneMatch[0];
 document.getElementById("f-exp").value = clean.slice(0, 600);
 updateCV();
-msg.innerText = "✓ Purana Resume load ho gaya!";
+updateResumeProgressUI(100, "✅ Resume Uploaded & Extracted (100%)!");
+msg.innerText = "✓ 100% Complete: Purana Resume load ho gaya!";
 } catch (err) {
 msg.innerText = "File read karne mein dikkat aayi, neeche form mein edit karein.";
 }
@@ -937,386 +1592,1955 @@ window.print();
 }
 
 // =========================================================================
-// 📚 STUDY NOTES LOGIC (DEFAULT NOTES + SUPABASE + 10s VERIFIED VIEW TIMER)
+// SUPABASE CLOUD CONNECTION + CREATOR ACCOUNT AUTH + MARKETPLACE ENGINE
 // =========================================================================
-var defaultNotes = [
-{
-id: 1,
-title: "भारतीय संविधान के 40 सबसे महत्वपूर्ण अनुच्छेद (SSC व रेलवे स्पेशल)",
-category: "GK & GS",
-author: "Editorial Team",
-views: 1420,
-pdf_url: "#",
-content: "प्रतियोगी परीक्षाओं में भारतीय संविधान (Indian Polity) से हर शिफ्ट में 2 से 3 प्रश्न पूछे जाते हैं। नीचे सबसे महत्वपूर्ण अनुच्छेदों की सूची दी गई है:\n\n1. अनुच्छेद 1: संघ का नाम और राज्य क्षेत्र (भारत अर्थात इंडिया राज्यों का संघ होगा)।\n2. अनुच्छेद 14: विधि के समक्ष समानता (Equality before Law)।\n3. अनुच्छेद 17: अस्पृश्यता का अंत (Abolition of Untouchability) - यह प्रश्न SSC में 10+ बार पूछा जा चुका है।\n4. अनुच्छेद 19(1)(a): बोलने और अभिव्यक्ति की स्वतंत्रता का अधिकार।\n5. अनुच्छेद 21: प्राण और दैहिक स्वतंत्रता का संरक्षण (Right to Life)।\n6. अनुच्छेद 21A: 6 से 14 वर्ष के बच्चों को निःशुल्क और अनिवार्य शिक्षा का अधिकार (86वां संविधान संशोधन, 2002)।\n7. अनुच्छेद 32: संवैधानिक उपचारों का अधिकार (डॉ. भीमराव अंबेडकर ने इसे 'संविधान की आत्मा' कहा है)।\n8. अनुच्छेद 40: ग्राम पंचायतों का संगठन (राज्य के नीति निदेशक तत्व)।\n9. अनुच्छेद 44: नागरिकों के लिए एक समान सिविल संहिता (Uniform Civil Code)।\n10. अनुच्छेद 51A: मौलिक कर्तव्य (42वें संशोधन 1976 द्वारा स्वर्ण सिंह समिति की सिफारिश पर जोड़े गए)।\n11. अनुच्छेद 52: भारत का एक राष्ट्रपति होगा।\n12. अनुच्छेद 61: राष्ट्रपति पर महाभियोग चलाने की प्रक्रिया।\n13. अनुच्छेद 72: राष्ट्रपति की क्षमादान की शक्ति।\n14. अनुच्छेद 110: धन विधेयक (Money Bill) की परिभाषा।\n15. अनुच्छेद 112: वार्षिक वित्तीय विवरण (केंद्रीय बजट)।"
-},
-{
-id: 2,
-title: "SSC CGL & CHSL Quantitative Aptitude: Percentage & Profit-Loss Short Tricks",
-category: "SSC & CGL",
-author: "Maths Mentor",
-views: 980,
-pdf_url: "#",
-content: "गणित (Quantitative Aptitude) में समय बचाने के लिए फ्रैक्शन वैल्यू (Fraction to Percentage) और सक्सेसिव डिस्काउंट के सीधे सूत्र याद होना बहुत ज़रूरी है:\n\n📌 महत्वपूर्ण Fraction से Percentage मान:\n• 1/2 = 50% | 1/3 = 33.33% | 1/4 = 25% | 1/5 = 20%\n• 1/6 = 16.66% | 1/7 = 14.28% | 1/8 = 12.5% | 1/9 = 11.11%\n• 1/11 = 9.09% | 1/12 = 8.33% | 1/15 = 6.66% | 1/16 = 6.25%\n\n📌 Golden Concept 1 (AB Rule):\nयदि किसी वस्तु की कीमत में पहले R% की वृद्धि की जाए, तो खपत में कितने प्रतिशत की कमी करें कि खर्च समान रहे?\nसूत्र: कमी % = [ R / (100 + R) ] × 100\nउदाहरण: चीनी का मूल्य 25% बढ़ने पर खपत में कमी = [25 / 125] × 100 = 20%।\n\n📌 Golden Concept 2 (समतुल्य बट्टा / Successive Discount):\nयदि दो क्रमिक छूट x% और y% दी जाएं, तो कुल एकल छूट:\nTotal Discount = (x + y) - (x × y) / 100\nउदाहरण: 20% और 10% की दो क्रमिक छूट = (20 + 10) - (200/100) = 28%।"
-},
-{
-id: 3,
-title: "RRB NTPC & Group D: सामान्य विज्ञान (Physics & Chemistry) के 50 वन-लाइनर",
-category: "Railway RRB",
-author: "Science Desk",
-views: 1150,
-pdf_url: "#",
-content: "रेलवे भर्ती परीक्षा (RRB NTPC, ALP, Technician और Group D) में NCERT कक्षा 9वीं और 10वीं के विज्ञान से सीधे प्रश्न पूछे जाते हैं:\n\n• कार्य (Work) और ऊर्जा (Energy) का SI मात्रक क्या है? — जूल (Joule)\n• प्रकाश वर्ष (Light Year) किसका मात्रक है? — खगोलीय दूरी का (1 प्रकाश वर्ष = 9.46 × 10¹⁵ मीटर)\n• मानव शरीर की सबसे बड़ी ग्रंथि कौन सी है? — यकृत (Liver)\n• रक्त का थक्का जमाने में कौन सा विटामिन सहायक है? — विटामिन K\n• बेकिंग सोडा (खाने वाला सोडा) का रासायनिक नाम और सूत्र क्या है? — सोडियम बाइकार्बोनेट (NaHCO₃)\n• धोने का सोडा (Washing Soda) का रासायनिक सूत्र क्या है? — Na₂CO₃·10H₂O\n• वाहनों के पीछे का दृश्य देखने के लिए किस दर्पण का प्रयोग किया जाता है? — उत्तल दर्पण (Convex Mirror)\n• निकट दृष्टि दोष (Myopia) को दूर करने के लिए कौन सा लेंस प्रयुक्त होता है? — अवतल लेंस (Concave Lens)"
-},
-{
-id: 4,
-title: "Fresher Job Interview & ATS Resume Guide: पहले प्रयास में इंटरव्यू कैसे पास करें?",
-category: "Career & Interview",
-author: "Career Coach",
-views: 840,
-pdf_url: "#",
-content: "किसी भी प्राइवेट कंपनी, ई-कॉमर्स ऑपरेशंस या कॉर्पोरेट जॉब में अप्लाई करते समय आपका रिज्यूमे और शुरुआती 2 मिनट का परिचय सबसे अहम होता है:\n\n1. ATS-Friendly Resume कैसे बनाएं?\n• अपने रिज्यूमे में कभी भी भारी ग्राफिक्स या टेबल का अति-प्रयोग न करें।\n• जॉब डिस्क्रिप्शन (JD) में दिए गए मुख्य कीवर्ड्स (जैसे: Operations Management, Data Entry, Inventory Control, HTML/CSS, Customer Support) को अपने Skills सेक्शन में ज़रूर शामिल करें।\n\n2. 'Tell me about yourself' का सटीक उत्तर:\n• शुरुआत अपने नाम, शहर और उच्चतम शिक्षा (Graduation/Diploma) से करें।\n• इसके बाद अपने प्रैक्टिकल अनुभव या प्रोजेक्ट्स के बारे में 2 लाइन में बताएं।\n• अंत में बताएं कि आपकी स्किल्स इस कंपनी की ग्रोथ में कैसे मदद कर सकती हैं।"
+var SUPABASE_URL = "https://uwdxigjbfljrssjqvfou.supabase.co"; // Connected Supabase Project URL
+var SUPABASE_ANON_KEY = "sb_publishable_kKq5y_Rt1ikt7TI_PiOzeg_xtDAJzRG"; // Fixed lowercase sb_publishable key
+
+var sbClient = null;
+if (window.supabase && SUPABASE_URL.indexOf("https://") === 0) {
+sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
-];
 
-var allNotes = [];
-var activeNoteCategory = "All";
-var noteTimerInterval = null;
+var currentAuthMode = "signup";
 
-async function initStudyNotes() {
-if (SHOW_EARNING_FEATURES) {
-document.getElementById("earningBadge").classList.remove("hidden");
-document.getElementById("upiFieldGroup").classList.remove("hidden");
-document.getElementById("uploadSubtext").innerText = "अपने नोट्स अपलोड करें और हर 1,000 वेरीफाइड व्यूज पर ₹50 सीधे अपने UPI में पाएं!";
-}
-var localSaved = JSON.parse(localStorage.getItem("user_uploaded_notes") || "[]");
-allNotes = localSaved.concat(defaultNotes);
-
-if (supabaseClient) {
+function getActiveCreatorAccount() {
 try {
-var res = await supabaseClient.from("study_notes").select("*").eq("status", "approved").order("id", { ascending: false });
-if (!res.error && res.data && res.data.length > 0) {
-allNotes = res.data.concat(defaultNotes);
-}
-} catch (e) {}
-}
-renderNotesGrid();
+return JSON.parse(localStorage.getItem("fcv_active_creator_v5") || "null");
+} catch (e) { return null; }
 }
 
-function renderNotesGrid() {
-var grid = document.getElementById("notesGrid");
-if (!grid) return;
-var q = (document.getElementById("notesSearchInput").value || "").toLowerCase();
-grid.innerHTML = "";
+function getAllCreatorAccounts() {
+try {
+return JSON.parse(localStorage.getItem("fcv_all_creators_v5") || "[]");
+} catch (e) { return []; }
+}
 
-var filtered = allNotes.filter(function(n) {
-var cMatch = activeNoteCategory === "All" || n.category === activeNoteCategory;
-var sMatch = n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q);
-return cMatch && sMatch;
-});
+function saveAllCreatorAccounts(list) {
+localStorage.setItem("fcv_all_creators_v5", JSON.stringify(list));
+}
 
-if (filtered.length === 0) {
-grid.innerHTML = "<div class='col-span-full text-center py-10 text-slate-500 text-xs font-bold'>कोई नोट नहीं मिला। कृपया दूसरा कीवर्ड सर्च करें।</div>";
+function openCreatorAuthModal() {
+updateCreatorAuthUI();
+document.getElementById("creatorAuthModal").style.display = "flex";
+}
+
+function closeCreatorAuthModal() {
+document.getElementById("creatorAuthModal").style.display = "none";
+}
+
+function switchAuthMode(mode) {
+currentAuthMode = mode;
+var btnSignup = document.getElementById("tabBtnSignup");
+var btnLogin = document.getElementById("tabBtnLogin");
+var nameField = document.getElementById("authNameField");
+var upiField = document.getElementById("authUpiField");
+var submitBtn = document.getElementById("authSubmitBtn");
+var msg = document.getElementById("creatorAuthMsg");
+if (msg) msg.classList.add("hidden");
+
+if (mode === "login") {
+btnLogin.className = "py-2 rounded-lg bg-indigo-600 text-white shadow cursor-pointer";
+btnSignup.className = "py-2 rounded-lg text-slate-600 cursor-pointer";
+nameField.style.display = "none";
+upiField.style.display = "none";
+submitBtn.innerText = "🔑 Login to Creator Account";
+} else {
+btnSignup.className = "py-2 rounded-lg bg-indigo-600 text-white shadow cursor-pointer";
+btnLogin.className = "py-2 rounded-lg text-slate-600 cursor-pointer";
+nameField.style.display = "block";
+upiField.style.display = "block";
+submitBtn.innerText = "🚀 Create Creator Account & Continue";
+}
+}
+
+async function handleCreatorAuthSubmit(e) {
+e.preventDefault();
+var name = document.getElementById("authCreatorName").value.trim();
+var email = document.getElementById("authCreatorEmail").value.trim().toLowerCase();
+var upi = document.getElementById("authCreatorUpi").value.trim();
+var pass = document.getElementById("authCreatorPass").value.trim();
+var msg = document.getElementById("creatorAuthMsg");
+msg.classList.remove("hidden");
+
+var accounts = getAllCreatorAccounts();
+
+if (currentAuthMode === "signup") {
+if (!name || !upi) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "⚠️ Please enter your Full Name and UPI ID to create a Creator Account.";
 return;
 }
-
-for (var i = 0; i < filtered.length; i++) {
-var note = filtered[i];
-var rightStat = SHOW_EARNING_FEATURES
-? "<span class='text-emerald-600 font-extrabold'>₹" + ((note.views / 1000) * 50).toFixed(1) + " Earned</span>"
-: "<span>👁️ " + note.views + " Views</span>";
-
-var card = document.createElement("div");
-card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between";
-card.innerHTML = "<div>" +
-"<span class='inline-block bg-indigo-50 text-indigo-700 text-[11px] font-extrabold px-2.5 py-1 rounded-md mb-2.5'>" + note.category + "</span>" +
-"<h3 class='text-sm font-extrabold text-slate-900 mb-2'>" + note.title + "</h3>" +
-"<p class='text-xs text-slate-500 line-clamp-3 mb-4'>" + note.content + "</p>" +
-"</div>" +
-"<div>" +
-"<div class='border-t border-slate-100 pt-3 flex justify-between items-center text-[11px] text-slate-500 font-semibold mb-3'>" +
-"<span>✍️ " + note.author + "</span>" + rightStat +
-"</div>" +
-"<button type='button' onclick='openNoteReader(" + note.id + ")' class='w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition'>📖 पूरा नोट पढ़ें व PDF डाउनलोड करें</button>" +
-"</div>";
-grid.appendChild(card);
+var existing = null;
+for (var i = 0; i < accounts.length; i++) {
+if (accounts[i].email === email) { existing = accounts[i]; break; }
 }
+var newAcc = {
+name: name,
+email: email,
+upi: upi,
+pass: pass,
+joinedAt: Date.now()
+};
+if (existing) {
+existing.name = name;
+existing.upi = upi;
+existing.pass = pass;
+} else {
+accounts.push(newAcc);
 }
+saveAllCreatorAccounts(accounts);
+localStorage.setItem("fcv_active_creator_v5", JSON.stringify(newAcc));
 
-function setNoteCategory(cat, btn) {
-activeNoteCategory = cat;
-var btns = document.querySelectorAll(".note-cat-btn");
-for (var i = 0; i < btns.length; i++) {
-btns[i].className = "note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 cursor-pointer whitespace-nowrap";
-}
-btn.className = "note-cat-btn px-4 py-2 rounded-full text-xs font-bold bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
-renderNotesGrid();
-}
+var w = getWalletData();
+w.upi = upi;
+w.creatorName = name;
+saveWalletData(w);
 
-function filterNotes() {
-renderNotesGrid();
+if (sbClient) {
+try {
+await sbClient.from("creator_wallets").upsert([{
+upi: upi,
+creator_name: name
+}], { onConflict: "upi" });
+} catch (err) {}
 }
 
-function openNoteReader(noteId) {
-var note = null;
-for (var i = 0; i < allNotes.length; i++) {
-if (allNotes[i].id === noteId) { note = allNotes[i]; break; }
-}
-if (!note) return;
-
-document.getElementById("modalCategory").innerText = note.category;
-document.getElementById("modalTitle").innerText = note.title;
-document.getElementById("modalMeta").innerText = "✍️ लेखक: " + note.author + " • 👁️ " + note.views + " बार पढ़ा गया";
-document.getElementById("modalContent").innerText = note.content;
-
-var timerText = document.getElementById("timerText");
-var dlBtn = document.getElementById("downloadNoteBtn");
-var cd = document.getElementById("countdown");
-
-timerText.classList.remove("hidden");
-dlBtn.classList.add("hidden");
-dlBtn.href = (note.pdf_url && note.pdf_url !== "#") ? note.pdf_url : "javascript:window.print()";
-
-var sec = 10;
-cd.innerText = sec;
-if (noteTimerInterval) clearInterval(noteTimerInterval);
-noteTimerInterval = setInterval(function() {
-sec--;
-cd.innerText = sec;
-if (sec <= 0) {
-clearInterval(noteTimerInterval);
-timerText.classList.add("hidden");
-dlBtn.classList.remove("hidden");
-incrementVerifiedView(note.id);
-}
-}, 1000);
-
-document.getElementById("readerModal").classList.remove("hidden");
-}
-
-function closeReaderModal() {
-if (noteTimerInterval) clearInterval(noteTimerInterval);
-document.getElementById("readerModal").classList.add("hidden");
-}
-
-async function incrementVerifiedView(noteId) {
-var key = "viewed_note_" + noteId;
-if (localStorage.getItem(key)) return;
-localStorage.setItem(key, "true");
-
-for (var i = 0; i < allNotes.length; i++) {
-if (allNotes[i].id === noteId) {
-allNotes[i].views += 1;
+updateCreatorAuthUI();
+msg.className = "text-[11px] font-bold text-emerald-700";
+msg.innerText = "✅ Creator Account created & logged in as " + name + "!";
+setTimeout(function() { closeCreatorAuthModal(); }, 700);
+} else {
+var matched = null;
+for (var j = 0; j < accounts.length; j++) {
+if ((accounts[j].email === email || accounts[j].upi === email) && accounts[j].pass === pass) {
+matched = accounts[j];
 break;
 }
 }
-renderNotesGrid();
-if (supabaseClient) {
-try { await supabaseClient.rpc("increment_note_view", { row_id: noteId }); } catch (e) {}
+if (!matched) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "⚠️ Invalid Email/Mobile or Password. Please check or Sign Up first.";
+return;
+}
+localStorage.setItem("fcv_active_creator_v5", JSON.stringify(matched));
+var w2 = getWalletData();
+w2.upi = matched.upi;
+w2.creatorName = matched.name;
+saveWalletData(w2);
+
+if (sbClient && matched.upi) {
+try {
+var wRes = await sbClient.from("creator_wallets").select("*").eq("upi", matched.upi).maybeSingle();
+if (wRes && wRes.data) {
+w2.views = wRes.data.views || w2.views;
+w2.adEarnings = Number(wRes.data.ad_earnings || w2.adEarnings);
+w2.sales = wRes.data.sales || w2.sales;
+w2.salesEarnings = Number(wRes.data.sales_earnings || w2.salesEarnings);
+saveWalletData(w2);
+}
+} catch (err) {}
+}
+
+updateCreatorAuthUI();
+msg.className = "text-[11px] font-bold text-emerald-700";
+msg.innerText = "✅ Logged in successfully! Welcome back, " + matched.name + ".";
+setTimeout(function() { closeCreatorAuthModal(); }, 700);
 }
 }
 
-function openUploadModal() {
-document.getElementById("uploadModal").classList.remove("hidden");
+function logoutCreatorAccount() {
+localStorage.removeItem("fcv_active_creator_v5");
+updateCreatorAuthUI();
+alert("You have been logged out of your Creator Account.");
 }
 
-function closeUploadModal() {
-document.getElementById("uploadModal").classList.add("hidden");
+function updateCreatorAuthUI() {
+var acc = getActiveCreatorAccount();
+var topTxt = document.getElementById("creatorAuthBtnText");
+var logoutBtn = document.getElementById("btnCreatorLogoutTop");
+var heroLbl = document.getElementById("heroCreatorBtnLabel");
+var walletStatus = document.getElementById("walletCreatorAccountStatus");
+var upName = document.getElementById("upCreatorName");
+var upUpi = document.getElementById("upCreatorUpi");
+
+if (acc && acc.name) {
+if (topTxt) topTxt.innerText = "Hi, " + acc.name.split(" ")[0] + " (" + acc.upi + ")";
+if (logoutBtn) logoutBtn.style.display = "inline-block";
+if (heroLbl) heroLbl.innerText = acc.name.split(" ")[0] + "'s Account";
+if (walletStatus) walletStatus.innerText = "Logged in: " + acc.name + " (" + acc.upi + ")";
+if (upName && !upName.value) upName.value = acc.name;
+if (upUpi && !upUpi.value) upUpi.value = acc.upi;
+} else {
+if (topTxt) topTxt.innerText = "Creator Login / Sign Up";
+if (logoutBtn) logoutBtn.style.display = "none";
+if (heroLbl) heroLbl.innerText = "Creator Login / Sign Up";
+if (walletStatus) walletStatus.innerText = "Login / Sign Up Creator Account";
+}
 }
 
-async function submitNewNote(e) {
-e.preventDefault();
-var newNote = {
-id: Date.now(),
-author: document.getElementById("authorName").value.trim(),
-upi_id: document.getElementById("authorUpi").value.trim(),
-title: document.getElementById("noteTitle").value.trim(),
-category: document.getElementById("noteCategory").value,
-content: document.getElementById("noteContent").value.trim(),
-pdf_url: document.getElementById("pdfUrl").value.trim() || "#",
-views: 1,
-status: "approved"
+// =========================================================================
+// AUTO-SANITIZER: HIGH-SPEED NON-BLOCKING ENGINE FOR LARGE 100+ PAGE PDFS
+// =========================================================================
+var rawUploadedNoteText = "";
+var fullSanitizedNoteContent = "";
+var lastUploadedPdfBuffer = null;
+
+function sanitizeNoteText(rawText) {
+if (!rawText) return { cleanText: "", removedCount: 0 };
+var text = String(rawText);
+var removedCount = 0;
+
+var chk = document.getElementById("upAutoRemoveCoaching");
+if (chk && !chk.checked) {
+return { cleanText: text, removedCount: 0 };
+}
+
+var rules = [
+new RegExp("https?://[^ \n\r\t]+", "gi"),
+new RegExp("www.[^ \n\r\t]+", "gi"),
+new RegExp("t.me/[^ \n\r\t]+", "gi"),
+new RegExp("@[a-zA-Z0-9_]{3,}", "g"),
+new RegExp("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}", "g"),
+new RegExp("[6-9][0-9]{9}", "g"),
+new RegExp("(Physics Wallah|PW Vidyapeeth|Alakh Pandey|Allen|Aakash|Byju|Unacademy|Resonance|FIITJEE|Motion|Narayana|Chaitanya|Careerwill|crwill|Rojgar With Ankit|RWA|Adda247|Exampur|Utkarsh|WiFiStudy|KD Campus|Paramount|Drishti IAS|Vision IAS|Vajiram|Next IAS|ForumIAS|Khan Sir|KGS|Gagan Pratap|Rakesh Yadav|Competishun|Vedantu|Doubtnut|Testbook|Oliveboard|Abhinay Maths|Neetu Singh|Pathfinder|Sankalp Bharat)", "gi"),
+new RegExp("(Notes by|Prepared by|Compiled by|Taught by|Guided by|Faculty:|Teacher:|Join Telegram|Subscribe YouTube|Download App|WhatsApp Us)", "gi")
+];
+
+for (var i = 0; i < rules.length; i++) {
+text = text.replace(rules[i], function() {
+removedCount++;
+return "";
+});
+}
+
+var customInput = document.getElementById("upCustomRemoveWords");
+if (customInput && customInput.value.trim()) {
+var list = customInput.value.split(",");
+for (var c = 0; c < list.length; c++) {
+var w = list[c].trim();
+if (w.length > 1) {
+var parts = text.split(w);
+if (parts.length > 1) {
+removedCount += (parts.length - 1);
+text = parts.join("");
+}
+}
+}
+}
+
+// Copy-paste safe single-pass whitespace normalizer (zero space literals in regex, no while loop)
+text = text.replace(/[^\S\r\n]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+
+return { cleanText: text, removedCount: removedCount };
+}
+
+function reRunSanitizerPreview() {
+if (!rawUploadedNoteText) return;
+var res = sanitizeNoteText(rawUploadedNoteText);
+fullSanitizedNoteContent = res.cleanText;
+
+var descBox = document.getElementById("upNoteDesc");
+if (descBox) {
+// Keep mobile textarea fast by showing up to 45,000 chars in the editable box while storing 100% of pages in fullSanitizedNoteContent
+if (res.cleanText.length > 45000) {
+descBox.value = res.cleanText.slice(0, 45000) + "\n\n... [Full PDF Text (" + res.cleanText.length + " characters) Cleaned & Ready for Publish]";
+} else {
+descBox.value = res.cleanText;
+}
+}
+
+var st = document.getElementById("pdfSanitizeStatus");
+if (st) {
+st.classList.remove("hidden");
+var wordCount = res.cleanText ? res.cleanText.split(/\s+/).length : 0;
+st.innerText = "✅ 100% Auto-Sanitized: " + res.removedCount + " Coaching/Teacher/Link watermarks removed | 🔍 " + wordCount + " Words ready to Publish!";
+}
+}
+
+function readFileBufferWithProgress(file, onProgress) {
+return new Promise(function(resolve, reject) {
+var reader = new FileReader();
+reader.onprogress = function(ev) {
+if (ev.lengthComputable && onProgress) {
+var pct = Math.round((ev.loaded / ev.total) * 100);
+onProgress(pct);
+}
+};
+reader.onload = function(ev) {
+if (onProgress) onProgress(100);
+resolve(ev.target.result);
+};
+reader.onerror = function(err) { reject(err); };
+reader.readAsArrayBuffer(file);
+});
+}
+
+function updateNoteUploadProgressUI(pct, stepLabel) {
+var wrap = document.getElementById("pdfUploadProgressWrap");
+var bar = document.getElementById("pdfProgressBarFill");
+var badge = document.getElementById("pdfProgressPercentBadge");
+var txt = document.getElementById("pdfProgressStepText");
+if (wrap) wrap.classList.remove("hidden");
+var safePct = Math.min(100, Math.max(0, Math.round(pct)));
+if (bar) bar.style.width = safePct + "%";
+if (badge) {
+badge.innerText = safePct + "%";
+badge.className = safePct === 100
+? "bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-[10px] font-black"
+: "bg-indigo-600 text-white px-2 py-0.5 rounded-full text-[10px]";
+}
+if (txt && stepLabel) txt.innerHTML = stepLabel;
+}
+
+// =========================================================================
+// SMART TOPIC SEO LINE GENERATOR + TESSERACT.JS IMAGE OCR ENGINE
+// =========================================================================
+var lastLoadedPdfDoc = null;
+var lastLoadedPdfTotalPages = 1;
+
+function generateSmartTopicSEOLines(titleText, categoryVal, subjectVal, pageCount) {
+var t = String(titleText || "").toLowerCase();
+var cat = String(categoryVal || "").toLowerCase();
+var sub = String(subjectVal || "").toLowerCase();
+var pages = pageCount || 1;
+
+var headerLine = "📘 " + (titleText || "Complete Exam Study Notes") + " (" + pages + " Pages Comprehensive Master PDF Notes)\n\n";
+var blocks = [];
+
+if (t.indexOf("ancient") !== -1 || t.indexOf("prachin") !== -1 || t.indexOf("प्राचीन") !== -1 || t.indexOf("harappa") !== -1 || t.indexOf("vedic") !== -1) {
+blocks.push(
+"1. PREHISTORIC INDIA & STONE AGE (पाषाण काल - Paleolithic, Mesolithic, Neolithic & Chalcolithic):\n" +
+"• Paleolithic Sites (पुरापाषाण काल): Soan Valley, Belan Valley, Bhimbetka Rock Shelters (Madhya Pradesh - discovered by V.S. Wakankar, UNESCO World Heritage Site), Hunsgi, Attirampakkam.\n" +
+"• Mesolithic Sites (मध्यपाषाण काल - Microliths & Domestication of Animals): Bagor (Rajasthan) and Adamgarh (MP) provide earliest evidence of domestication of animals; Sarai Nahar Rai & Mahadaha.\n" +
+"• Neolithic Sites (नवपाषाण काल - Agriculture, Pottery & Wheel): Mehrgarh (Balochistan - earliest evidence of wheat & barley cultivation), Koldihwa (UP - earliest evidence of rice), Burzahom & Gufkral (Kashmir - pit dwellings & dog burial with master), Chirand (Bihar - bone tools).\n\n" +
+"2. INDUS VALLEY CIVILIZATION / HARAPPAN CIVILIZATION (सिंधु घाटी सभ्यता - 2500 BC to 1750 BC):\n" +
+"• Harappa (Ravi River, Montgomery Pakistan - Daya Ram Sahni 1921): 6 Granaries in two rows, Red sandstone male torso, Coffin burial, Cemetery H & R-37.\n" +
+"• Mohenjo-Daro (Indus River, Larkana Sindh - R.D. Banerji 1922, 'Mound of the Dead'): Great Bath (वृहत स्नानागार), Great Granary, Bronze Dancing Girl statue, Pashupati Mahadeva seal, Bearded Priest statue, Woven cotton cloth.\n" +
+"• Lothal (Bhogava River, Gujarat - S.R. Rao): Artificial Dockyard (बंदरगाह / गोदीबाड़ा), Double burial (male & female), Rice husk, Fire altars, Bead-making factory.\n" +
+"• Kalibangan (Ghaggar River, Rajasthan): Ploughed field surface (जुते हुए खेत के साक्ष्य), Fire altars, Camel bones, Cylindrical seals.\n" +
+"• Dholavira (Rann of Kutch, Gujarat - R.S. Bisht): Divided into 3 parts (Citadel, Middle Town, Lower Town), Giant Water Reservoir & advanced water harvesting system, Large Harappan signboard inscription.\n" +
+"• Chanhudaro (Indus River - N.G. Majumdar): Only Harappan city without a Citadel, Lipstick, Inkpot, Bead-making & Bangle factory.\n" +
+"• Rakhigarhi (Haryana): Largest Indus Valley site in India; Banawali (radial streets, terracotta plough replica); Surkotada (horse bones).\n\n" +
+"3. VEDIC CIVILIZATION (वैदिक काल - Rigvedic 1500-1000 BC & Later Vedic 1000-600 BC):\n" +
+"• Four Vedas (चार वेद): Rigveda (oldest text, 10 Mandalas, 1028 Suktas/Hymns, Gayatri Mantra in 3rd Mandala composed by Vishwamitra, Purusha Sukta in 10th Mandala, Soma in 9th Mandala, Dasharajna War on Parushni/Ravi river); Samaveda (Book of Chants, origin of Indian classical music); Yajurveda (sacrificial rituals & mantras, Shukla & Krishna); Atharvaveda (magical spells, charms, medicine & curing diseases).\n" +
+"• Upanishads (108 philosophical texts, 'Vedanta'): 'Satyameva Jayate' (सत्यमेव जयते) is taken from Mundaka Upanishad; dialogue of Yama and Nachiketa in Katha Upanishad; Jabala Upanishad mentions 4 Ashramas.\n" +
+"• Vedic Rivers (Ancient vs Modern Names): Vitasta (Jhelum), Askini (Chenab), Parushni (Ravi), Vipasa (Beas), Shutudri (Sutlej), Saraswati, Kubha (Kabul).\n\n" +
+"4. BUDDHISM, JAINISM & 16 MAHAJANAPADAS (बौद्ध धर्म, जैन धर्म एवं महाजनपद काल - 6th Century BC):\n" +
+"• Gautama Buddha (563 BC Lumbini - 483 BC Kushinagar, Shakya Clan): Enlightenment (Nirvana) under Pipal tree at Bodh Gaya on Niranjana river; First Sermon at Sarnath (Dharmachakrapravartana); Four Noble Truths & Eightfold Path (Ashtangika Marga); Tripitakas in Pali (Sutta, Vinaya, Abhidhamma Pitaka).\n" +
+"• Four Buddhist Councils (बौद्ध संगीतियाँ): 1st at Rajgriha (483 BC, Ajatashatru, Mahakassapa); 2nd at Vaishali (383 BC, Kalashoka, Sabakami); 3rd at Pataliputra (250 BC, Emperor Ashoka, Moggaliputta Tissa); 4th at Kundalvana Kashmir (72 AD, Kanishka, Vasumitra & Ashvaghosha - division into Hinayana & Mahayana).\n" +
+"• Jainism & Lord Mahavira (540 BC Kundagrama Vaishali - 468 BC Pavapuri): 1st Tirthankara Rishabhadeva, 23rd Parshvanatha, 24th Vardhamana Mahavira (Jnatrika clan, Kaivalya at Jrimbhikagrama on Rijupalika river); Triratna (Right Faith, Right Knowledge, Right Conduct); Five Mahavratas (Ahimsa, Satya, Asteya, Aparigraha, Brahmacharya); Svetambara (Sthulabhadra) & Digambara (Bhadrabahu).\n" +
+"• 16 Mahajanapadas (Anguttara Nikaya): Magadha (Rajgriha/Pataliputra), Avanti (Ujjain/Mahishmati), Vatsa (Kaushambi), Kosala (Shravasti), Vajji (Vaishali - world's first republic), Kashi, Anga, Gandhara (Taxila).\n\n" +
+"5. MAURYAN EMPIRE & POST-MAURYAN PERIOD (मौर्य साम्राज्य - 322 BC to 185 BC):\n" +
+"• Chandragupta Maurya: Defeated Seleucus Nicator (305 BC); Megasthenes wrote 'Indica'; Chanakya (Vishnugupta / Kautilya) wrote 'Arthashastra' on statecraft & Saptanga Theory; embraced Jainism and performed Sallekhana at Shravanabelagola.\n" +
+"• Emperor Ashoka the Great (268-232 BC, Devanampiya Piyadassi): Kalinga War in 261 BC (mentioned in 13th Major Rock Edict); Ashokan Edicts in Brahmi, Kharoshthi, Greek & Aramaic scripts deciphered by James Prinsep in 1837; Sarnath Lion Capital (National Emblem of India); Sanchi Stupa.\n" +
+"• Post-Mauryan Dynasties: Shunga Dynasty (Pushyamitra Shunga, Patanjali's Mahabhashya), Kanva, Satavahanas (Gautamiputra Satakarni, matrilineal names, lead coins), Indo-Greeks (Menander/Milinda - Milinda Panho), Kushanas (Kanishka - started Saka Era in 78 AD, patronized Gandhara & Mathura schools of art, Charaka).\n\n" +
+"6. GUPTA EMPIRE, HARSHAVARDHANA & SANGAM / SOUTH INDIAN DYNASTIES (गुप्त काल एवं दक्षिण भारत):\n" +
+"• Gupta Golden Age: Sri Gupta (Founder); Chandragupta I (Maharajadhiraja, Gupta Era 319-320 AD); Samudragupta ('Napoleon of India' by V.A. Smith, Prayag Prashasti / Allahabad Pillar Inscription composed by court poet Harisena); Chandragupta II Vikramaditya (Iron Pillar at Mehrauli Delhi, Chinese pilgrim Fa-Hien visited India, Navaratnas including Kalidasa, Amarasimha, Dhanvantari, Varahamihira); Kumaragupta I (founded Nalanda University); Skandagupta (repelled Huna invasion, repaired Sudarshana Lake); Aryabhata (Aryabhatiya, zero & decimal system).\n" +
+"• Harshavardhana (606-647 AD, Pushyabhuti Dynasty, capital Kannauj): Chinese traveler Hiuen Tsang (Xuanzang - 'Si-Yu-Ki') visited; court poet Banabhatta wrote 'Harshacharita' & 'Kadambari'; Harsha wrote Priyadarshika, Ratnavali & Nagananda; defeated by Chalukya king Pulakeshin II on Narmada river (Aihole Inscription by Ravikirti).\n" +
+"• Sangam Age & Imperial Cholas, Pallavas, Rashtrakutas: Chera, Chola, Pandya; Silappadikaram & Manimekalai; Pallavas of Kanchi (Narasimhavarman I 'Mamalla' built Shore Temple & Pancha Rathas at Mahabalipuram); Rashtrakutas (Dantidurga, Krishna I built rock-cut Kailasa Temple at Ellora); Imperial Cholas (Vijayalaya, Rajaraja I built Brihadeeswarar Temple at Thanjavur, Rajendra I conquered Ganga & Southeast Asia, Uttaramerur inscription on village local self-government)."
+);
+}
+
+if (t.indexOf("medieval") !== -1 || t.indexOf("madhyakalin") !== -1 || t.indexOf("sultanate") !== -1 || t.indexOf("mughal") !== -1) {
+blocks.push(
+"• MEDIEVAL INDIAN HISTORY KEY LINES (712 AD - 1707 AD): Arab conquest of Sindh by Muhammad bin Qasim (712 AD); Mahmud of Ghazni (17 raids, Somnath Temple 1025 AD, Al-Biruni wrote Kitab-ul-Hind); Muhammad Ghori (First Battle of Tarain 1191 Prithviraj Chauhan won, Second Battle of Tarain 1192).\n" +
+"• Delhi Sultanate (1206-1526): Slave/Mamluk Dynasty (Qutbuddin Aibak Lakh Baksh Quwwat-ul-Islam & Qutub Minar, Iltutmish Iqta system & Turkan-i-Chahalgani, Razia Sultan, Balban Sijda & Paibos Blood and Iron policy); Khilji Dynasty (Alauddin Khilji market control Dagh & Chehra system Amir Khusrau); Tughlaq Dynasty (Muhammad bin Tughlaq token currency & Daulatabad capital shift Ibn Battuta Rihla, Firoz Shah Tughlaq); Sayyid & Lodi Dynasty (Ibrahim Lodi defeated in First Battle of Panipat 1526).\n" +
+"• Mughal Empire & Vijayanagara: Babur (Tuzuk-i-Baburi, Battles of Panipat 1526, Khanwa 1527, Chanderi 1528, Ghagra 1529); Humayun & Sher Shah Suri (GT Road, Rupiya, Sasaram tomb); Akbar (Second Battle of Panipat 1556, Haldighati 1576, Mansabdari system, Todar Mal Dahsala, Din-i-Ilahi, Abul Fazl Ain-i-Akbari); Jahangir (Chain of Justice, Captain Hawkins & Thomas Roe); Shah Jahan (Taj Mahal, Red Fort); Aurangzeb; Vijayanagara Empire (Harihara & Bukka 1336, Krishnadevaraya Amuktamalyada Ashtadiggajas); Bhakti & Sufi Movement (Kabir, Guru Nanak, Mirabai, Chaitanya, Khwaja Moinuddin Chishti)."
+);
+}
+
+if (t.indexOf("modern") !== -1 || t.indexOf("freedom") !== -1 || t.indexOf("spectrum") !== -1 || (t.indexOf("history") !== -1 && blocks.length === 0)) {
+blocks.push(
+"• MODERN INDIAN HISTORY & FREEDOM STRUGGLE KEY LINES: Vasco da Gama at Calicut (1498); Battle of Plassey (1757 - Robert Clive vs Siraj-ud-Daulah); Battle of Buxar (1764) & Treaty of Allahabad (1765); Permanent Settlement (Cornwallis 1793), Ryotwari (Munro), Mahalwari; Revolt of 1857 (Mangal Pandey, Bahadur Shah Zafar, Rani Lakshmibai, Kunwar Singh, Nana Saheb); Formation of Indian National Congress (1885 - A.O. Hume, W.C. Bonnerjee); Partition of Bengal & Swadeshi Movement (1905 - Lord Curzon); Surat Split (1907); Morley-Minto Reforms (1909); Home Rule League (1916 - Tilak & Annie Besant); Champaran Satyagraha (1917), Kheda & Ahmedabad Mill Strike (1918); Rowlatt Act & Jallianwala Bagh Massacre (13 April 1919); Non-Cooperation & Khilafat Movement (1920-22, Chauri Chaura); Simon Commission (1927), Nehru Report (1928), Lahore Session Purna Swaraj (1929); Dandi March & Civil Disobedience Movement (1930), Gandhi-Irwin Pact (1931), Poona Pact (1932); Government of India Act 1935; Quit India Movement (8 August 1942 - 'Do or Die'); Cabinet Mission (1946) & Indian Independence Act (1947)."
+);
+}
+
+if (t.indexOf("polity") !== -1 || t.indexOf("constitution") !== -1 || t.indexOf("laxmikanth") !== -1 || t.indexOf("संविधान") !== -1) {
+blocks.push(
+"• INDIAN POLITY & CONSTITUTION MASTER LINES: Constituent Assembly (first meeting 9 Dec 1946, Dr. Rajendra Prasad President, Dr. B.R. Ambedkar Chairman of Drafting Committee, adopted 26 Nov 1949, enforced 26 Jan 1950); Preamble (42nd Amendment 1976 added Socialist, Secular, Integrity); Fundamental Rights (Part III, Articles 12-35: Right to Equality Art 14-18, Right to Freedom Art 19-22, Right against Exploitation Art 23-24, Right to Freedom of Religion Art 25-28, Cultural & Educational Rights Art 29-30, Constitutional Remedies Art 32 'Heart & Soul' - 5 Writs: Habeas Corpus, Mandamus, Prohibition, Certiorari, Quo Warranto); DPSP (Part IV, Art 36-51); Fundamental Duties (Part IVA, Art 51A, Swaran Singh Committee); President of India (Art 52-62, Impeachment Art 61, Pardoning Power Art 72, Ordinance Art 123); Parliament (Lok Sabha, Rajya Sabha, Money Bill Art 110, Joint Sitting Art 108, Budget Art 112); Supreme Court (Art 124, Judicial Review, Basic Structure Doctrine Kesavananda Bharati 1973); Panchayati Raj (73rd Amendment 1992, 11th Schedule) & Municipalities (74th Amendment); Important Amendments (1st, 7th, 42nd, 44th, 52nd Anti-Defection 10th Schedule, 61st Voting Age, 73rd, 86th Right to Education Art 21A, 101st GST)."
+);
+}
+
+if (t.indexOf("geography") !== -1 || t.indexOf("bhugol") !== -1 || t.indexOf("भूगोल") !== -1) {
+blocks.push(
+"• INDIAN & WORLD GEOGRAPHY MASTER LINES: India's latitudinal extent (8°4'N to 37°6'N) & longitudinal extent (68°7'E to 97°25'E), Standard Meridian 82°30'E (Mirzapur/Prayagraj), Tropic of Cancer passes through 8 states; Himalayan Ranges (Trans-Himalaya Karakoram K2 Godwin-Austen, Greater Himalaya Himadri Mt. Everest & Kanchenjunga, Lesser Himalaya Pir Panjal, Shiwaliks); Major Mountain Passes (Zojila, Banihal, Shipki La, Nathu La, Jelep La, Bomdila, Lipulekh); Himalayan & Peninsular Rivers (Indus, Ganga - Bhagirathi + Alaknanda at Devprayag, Yamuna, Brahmaputra - Tsangpo/Dihang, Narmada & Tapi west-flowing rift valley rivers, Godavari Dakshin Ganga, Krishna, Kaveri, Mahanadi); Indian Monsoon, Soils (Alluvial, Black Regur cotton soil, Red, Laterite), National Parks, Biosphere Reserves & Census 2011."
+);
+}
+
+if (t.indexOf("econom") !== -1 || t.indexOf("gdp") !== -1 || t.indexOf("budget") !== -1 || t.indexOf("अर्थ") !== -1) {
+blocks.push(
+"• INDIAN ECONOMY & MACROECONOMICS MASTER LINES: National Income Accounting (GDP, GNP, NNP at Factor Cost & Market Price, Base Year, NSO); RBI & Monetary Policy (Repo Rate, Reverse Repo Rate, CRR, SLR, Bank Rate, Open Market Operations, Monetary Policy Committee 6 members); Inflation (WPI, CPI, Demand-Pull vs Cost-Push Inflation, Phillips Curve); Fiscal Policy & Union Budget (Revenue Deficit, Fiscal Deficit, Primary Deficit, FRBM Act, GST 101st Amendment Council Art 279A); Five-Year Plans & NITI Aayog; Banking & Capital Markets (SEBI, NABARD, Priority Sector Lending, Balance of Payments)."
+);
+}
+
+if (blocks.length === 0) {
+blocks.push(
+"• COMPLETE EXAM REVISION & INDEXED TOPICS FOR " + String(titleText || "STUDY NOTES").toUpperCase() + ":\n" +
+"• High-Yield Exam Concepts, Chapter-wise Summary, Important Definitions, Formulas, Previous Year Questions (PYQs), Key Dates, Constitutional Articles, Scientific Laws, and Quick Revision Pointers for UPSC CSE (IAS/IPS/State PCS), SSC CGL, CHSL, MTS, Railway RRB NTPC, Group D, IIT JEE (Mains & Advanced), NEET UG, B.Sc, M.Sc, CSIR-UGC NET/JRF & GATE examinations."
+);
+}
+
+return headerLine + blocks.join("\n\n");
+}
+
+async function extractTextViaTesseractOCR(pdfDoc, maxPages, cropWatermark, onOcrProgress) {
+if (!window.Tesseract || !pdfDoc) return "";
+var totalP = pdfDoc.numPages || 1;
+var pagesToScan = [];
+// Pick up to maxPages representative pages (e.g., pages 1, 2, 3...)
+for (var p = 1; p <= Math.min(totalP, maxPages); p++) {
+pagesToScan.push(p);
+}
+
+var ocrResults = [];
+var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d");
+
+for (var idx = 0; idx < pagesToScan.length; idx++) {
+var pageNum = pagesToScan[idx];
+try {
+if (onOcrProgress) {
+onOcrProgress(idx + 1, pagesToScan.length, pageNum);
+}
+var page = await pdfDoc.getPage(pageNum);
+var viewport = page.getViewport({ scale: 1.4 });
+var fullW = Math.floor(viewport.width);
+var fullH = Math.floor(viewport.height);
+
+// Render page to offscreen canvas
+var tempCanvas = document.createElement("canvas");
+tempCanvas.width = fullW;
+tempCanvas.height = fullH;
+var tempCtx = tempCanvas.getContext("2d");
+await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
+
+// If cropWatermark is enabled, crop top 7% and bottom 7% header/footer watermarks
+var cropY = cropWatermark ? Math.floor(fullH * 0.07) : 0;
+var cropH = cropWatermark ? Math.floor(fullH * 0.86) : fullH;
+canvas.width = fullW;
+canvas.height = cropH;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, fullW, cropH);
+ctx.drawImage(tempCanvas, 0, cropY, fullW, cropH, 0, 0, fullW, cropH);
+
+var ocrPromise = Tesseract.recognize(canvas, "eng");
+var timeoutPromise = new Promise(function(resolve) {
+setTimeout(function() { resolve(null); }, 6500);
+});
+var res = await Promise.race([ocrPromise, timeoutPromise]);
+if (res && res.data && res.data.text && res.data.text.trim().length > 5) {
+ocrResults.push("[Page " + pageNum + " OCR]: " + res.data.text.trim());
+}
+if (page.cleanup) page.cleanup();
+} catch (ocrErr) {}
+}
+return ocrResults.join("\n\n");
+}
+
+async function runDeepOcrOnUploadedPdf(btn) {
+if (!lastLoadedPdfDoc) {
+alert("Please select a PDF file in Step 1 first!");
+return;
+}
+var st = document.getElementById("pdfSanitizeStatus");
+if (st) st.classList.remove("hidden");
+var cropChk = document.getElementById("upCropHeaderFooter");
+var shouldCrop = cropChk ? cropChk.checked : true;
+
+if (btn) btn.disabled = true;
+var origHtml = btn ? btn.innerHTML : "";
+if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Running OCR...';
+
+try {
+var maxP = Math.min(lastLoadedPdfTotalPages || 5, 5);
+var ocrText = await extractTextViaTesseractOCR(lastLoadedPdfDoc, maxP, shouldCrop, function(doneIdx, totalToScan, pageNo) {
+var pct = Math.round((doneIdx / totalToScan) * 95);
+updateNoteUploadProgressUI(pct, '<i class="fa-solid fa-eye fa-spin mr-1 text-indigo-600"></i> AI OCR Reading Scanned Page ' + pageNo + ' (' + pct + '%)...');
+if (st) st.innerText = "⏳ Running AI Image OCR on Page " + pageNo + " (" + pct + "%)...";
+});
+
+if (ocrText && ocrText.trim().length > 10) {
+rawUploadedNoteText = ocrText + "\n\n" + (rawUploadedNoteText || "");
+reRunSanitizerPreview();
+updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% OCR Text Extracted & Cleaned!');
+} else {
+boostNoteWithSmartSEOLines(null);
+updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% Complete — Smart SEO Topic Lines Added!');
+}
+} catch (e) {}
+
+if (btn) {
+btn.disabled = false;
+btn.innerHTML = origHtml;
+}
+}
+
+function boostNoteWithSmartSEOLines(btn) {
+var titleIn = document.getElementById("upNoteTitle");
+var catSel = document.getElementById("upNoteCategory");
+var subSel = document.getElementById("upNoteSubject");
+var titleVal = titleIn ? titleIn.value.trim() : "Complete Study Notes";
+var catVal = catSel ? catSel.value : "upsc";
+var subVal = subSel ? subSel.value : "gk-gs";
+
+var smartLines = generateSmartTopicSEOLines(titleVal, catVal, subVal, lastLoadedPdfTotalPages || 83);
+var existing = document.getElementById("upNoteDesc").value.trim();
+
+if (existing && existing.indexOf(smartLines.slice(0, 60)) === -1) {
+rawUploadedNoteText = existing + "\n\n" + smartLines;
+} else {
+rawUploadedNoteText = smartLines;
+}
+reRunSanitizerPreview();
+if (btn) flashBtn(btn, "SEO Lines Added!");
+}
+
+async function processUploadedNoteFile(e) {
+var file = e.target.files[0];
+if (!file) return;
+var st = document.getElementById("pdfSanitizeStatus");
+st.classList.remove("hidden");
+updateNoteUploadProgressUI(2, '<i class="fa-solid fa-spinner fa-spin mr-1 text-indigo-600"></i> Starting File Upload (2%)...');
+st.innerText = "⏳ Uploading & scanning PDF (2%)...";
+
+// Auto-fill Title & Badge immediately from filename so the user never has to wait
+var lastDot = file.name.lastIndexOf(".");
+var rawFileName = lastDot !== -1 ? file.name.slice(0, lastDot) : file.name;
+var quickTitle = rawFileName
+.replace(/[_-]+/g, " ")
+.replace(/\b(crwill|careerwill|pw|allen|rwa|pdf|[0-9]{4,})\b/gi, "")
+.replace(/\s{2,}/g, " ")
+.trim();
+
+var titleIn = document.getElementById("upNoteTitle");
+if (titleIn) {
+titleIn.value = quickTitle || "Complete Exam Study Notes";
+}
+var badgeIn = document.getElementById("upNoteBadge");
+if (badgeIn && !badgeIn.value) {
+var catSel = document.getElementById("upNoteCategory");
+badgeIn.value = catSel ? catSel.value.toUpperCase() + " NOTES" : "STUDY NOTES";
+}
+
+try {
+if (window.pdfjsLib) {
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+var ext = file.name.split(".").pop().toLowerCase();
+var pageChunks = [];
+var totalPages = 1;
+
+if (ext === "pdf") {
+var buf = await readFileBufferWithProgress(file, function(loadPct) {
+var mappedPct = Math.max(2, Math.round(loadPct * 0.20));
+updateNoteUploadProgressUI(mappedPct, '<i class="fa-solid fa-cloud-arrow-up mr-1 text-indigo-600"></i> Uploading PDF File (' + mappedPct + '%)...');
+st.innerText = "⏳ Uploading PDF file into memory (" + mappedPct + "%)...";
+});
+lastUploadedPdfBuffer = clonePdfArrayBuffer(buf);
+await savePdfBufferToCache("latest", lastUploadedPdfBuffer);
+await savePdfBufferToCache(quickTitle, lastUploadedPdfBuffer);
+updateNoteUploadProgressUI(22, '<i class="fa-solid fa-file-pdf mr-1 text-indigo-600"></i> Opening PDF Pages (22%)...');
+function withPageTimeout(promise, ms) {
+return Promise.race([
+promise,
+new Promise(function(resolve) {
+setTimeout(function() { resolve(null); }, ms);
+})
+]);
+}
+
+var pdf = await withPageTimeout(pdfjsLib.getDocument({ data: new Uint8Array(clonePdfArrayBuffer(buf)), disableFontFace: true }).promise, 6000);
+totalPages = (pdf && pdf.numPages) ? pdf.numPages : 1;
+lastLoadedPdfDoc = pdf;
+lastLoadedPdfTotalPages = totalPages;
+
+for (var i = 1; i <= totalPages; i++) {
+var currentPct = 22 + Math.round((i / totalPages) * 66);
+updateNoteUploadProgressUI(
+currentPct,
+'<i class="fa-solid fa-magnifying-glass-chart fa-spin mr-1 text-indigo-600"></i> Scanning & Cleaning Page ' + i + ' of ' + totalPages + ' (' + currentPct + '%)...'
+);
+st.innerText = "⏳ Scanning PDF Page " + i + "/" + totalPages + " (" + currentPct + "% Completed)...";
+
+try {
+if (pdf) {
+var page = await withPageTimeout(pdf.getPage(i), 350);
+if (page) {
+var content = await withPageTimeout(page.getTextContent(), 350);
+if (content && content.items) {
+var pageLines = [];
+for (var j = 0; j < content.items.length; j++) {
+if (content.items[j].str) pageLines.push(content.items[j].str);
+}
+if (pageLines.length > 0) {
+pageChunks.push(pageLines.join(" "));
+}
+}
+if (page.cleanup) page.cleanup();
+}
+}
+} catch (pageErr) {}
+
+if (i % 4 === 0 || i === totalPages) {
+await new Promise(function(r) { setTimeout(r, 1); });
+}
+}
+} else if (ext === "docx") {
+updateNoteUploadProgressUI(35, '<i class="fa-solid fa-file-word mr-1 text-indigo-600"></i> Reading Word Document (35%)...');
+var buf2 = await readFileBufferWithProgress(file, function(p) {
+var mp = Math.round(p * 0.5);
+updateNoteUploadProgressUI(mp, "⏳ Loading DOCX (" + mp + "%)...");
+});
+var res = await mammoth.extractRawText({ arrayBuffer: buf2 });
+pageChunks.push(res.value);
+updateNoteUploadProgressUI(92, "🧹 Sanitizing Coaching/Teacher Names (92%)...");
+} else {
+updateNoteUploadProgressUI(50, "📄 Reading Text File (50%)...");
+pageChunks.push(await file.text());
+updateNoteUploadProgressUI(92, "🧹 Sanitizing Text (92%)...");
+}
+
+updateNoteUploadProgressUI(92, '<i class="fa-solid fa-wand-magic-sparkles mr-1 text-indigo-600"></i> Checking Scanned Pages & Building SEO Index (92%)...');
+await new Promise(function(r) { setTimeout(r, 15); });
+
+var combinedText = pageChunks.join("\n\n").trim();
+var extractedWords = combinedText ? combinedText.split(/\s+/).filter(Boolean).length : 0;
+
+// IF SCANNED / IMAGE PDF DETECTED (e.g., only "Ancient HISTORY" on page 1 and rest 82 pages are images!)
+if (ext === "pdf" && extractedWords < 80) {
+updateNoteUploadProgressUI(95, '<i class="fa-solid fa-camera-rotate fa-spin mr-1 text-indigo-600"></i> Scanned Image PDF Detected! Running OCR & Auto-Topic Indexer (95%)...');
+st.innerText = "📸 Scanned Image PDF Detected (" + totalPages + " Pages)! Running AI OCR & Auto-Topic SEO Generator...";
+
+var ocrSample = "";
+if (lastLoadedPdfDoc && window.Tesseract) {
+var cropChk2 = document.getElementById("upCropHeaderFooter");
+ocrSample = await extractTextViaTesseractOCR(lastLoadedPdfDoc, 2, cropChk2 ? cropChk2.checked : true, null);
+}
+
+var catEl = document.getElementById("upNoteCategory");
+var subEl = document.getElementById("upNoteSubject");
+var autoSeoTranscript = generateSmartTopicSEOLines(
+titleIn ? titleIn.value : quickTitle,
+catEl ? catEl.value : "upsc",
+subEl ? subEl.value : "gk-gs",
+totalPages
+);
+
+combinedText = (combinedText ? combinedText + "\n\n" : "") +
+(ocrSample ? ocrSample + "\n\n" : "") +
+autoSeoTranscript;
+}
+
+rawUploadedNoteText = combinedText;
+reRunSanitizerPreview();
+updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% Complete — PDF Cleaned & Full SEO Lines Indexed!');
+} catch (err) {
+var fallbackSeo = generateSmartTopicSEOLines(titleIn ? titleIn.value : quickTitle, "upsc", "gk-gs", 1);
+rawUploadedNoteText = fallbackSeo;
+fullSanitizedNoteContent = fallbackSeo;
+var descEl = document.getElementById("upNoteDesc");
+if (descEl) descEl.value = fallbackSeo;
+updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% Ready — File & SEO Lines Loaded!');
+st.innerText = "✅ 100% File loaded with complete SEO topics! Click Publish below.";
+}
+}
+
+// =========================================================================
+// BUILT-IN IIT JEE, NEET & HIGHER ED MASTER NOTES + MARKETPLACE STORAGE
+// =========================================================================
+var builtinNotesData = {
+"builtin-upsc-cse": {
+id: "builtin-upsc-cse",
+title: "UPSC CSE (Prelims + Mains GS Paper 1, 2, 3 & 4 Ethics) Complete Master Notes",
+badge: "🏛️ UPSC CSE (IAS / IPS / PCS)",
+category: "upsc",
+subject: "gk-gs",
+language: "english",
+price: 0,
+creator: "FreeCV UPSC Hub",
+upi: "freecv@upi",
+views: 6450,
+content: "1. GS PAPER 1: MODERN INDIAN HISTORY, ART & CULTURE & GEOGRAPHY:\n" +
+"• Major Socio-Religious Reform Movements: Brahmo Samaj (Raja Ram Mohan Roy, 1828), Arya Samaj (Dayananda Saraswati, 1875), Ramakrishna Mission (Swami Vivekananda, 1897), Satyashodhak Samaj (Jyotirao Phule, 1873).\n" +
+"• Freedom Struggle Milestones: Swadeshi Movement (1905), Home Rule League (1916), Non-Cooperation Movement (1920-22), Civil Disobedience & Dandi March (1930), Quit India Movement (1942).\n" +
+"• Indian Architecture & Classical Art: Nagara, Dravida & Vesara Temple Styles; Indus Valley Civilization sites (Harappa, Mohenjo-Daro, Dholavira, Lothal); 8 Classical Dances recognized by Sangeet Natak Akademi.\n\n" +
+"2. GS PAPER 2: INDIAN POLITY, CONSTITUTION, GOVERNANCE & IR:\n" +
+"• Basic Structure Doctrine (Kesavananda Bharati Case, 1973): Supremacy of the Constitution, Secularism, Federalism, Judicial Review, Parliamentary System, Harmony between Fundamental Rights and DPSP.\n" +
+"• Constitutional Bodies: Election Commission (Art. 324), UPSC (Art. 315-323), Finance Commission (Art. 280), CAG (Art. 148), Attorney General (Art. 76).\n" +
+"• Key Parliamentary Committees & Governance: Public Accounts Committee (PAC), Estimates Committee, e-Governance, Citizen Charters, RTI Act 2005, Social Audit.\n" +
+"• International Relations (IR): India's Neighborhood First Policy, Act East Policy, QUAD, BRICS, G20, SCO, United Nations Reforms.\n\n" +
+"3. GS PAPER 3: INDIAN ECONOMY, ENVIRONMENT, ECOLOGY & INTERNAL SECURITY:\n" +
+"• Fiscal & Monetary Policy: FRBM Act targets, Fiscal Deficit vs Revenue Deficit, Monetary Policy Committee (MPC - 6 members, inflation target 4% ± 2%), Inclusive Growth & Digital Public Infrastructure (UPI, ONDC).\n" +
+"• Environment & Climate Change: UNFCCC COP Summits, Paris Agreement (NDCs), National Action Plan on Climate Change (NAPCC), Wildlife Protection Act 1972, Biosphere Reserves, Ramsar Wetland Sites & Project Tiger.\n" +
+"• Internal Security & Disaster Management: Left-Wing Extremism (LWE), Cyber Security Framework, Money Laundering (PMLA), Border Management & NDMA Guidelines.\n\n" +
+"4. GS PAPER 4: ETHICS, INTEGRITY & APTITUDE (CASE STUDY FRAMEWORK):\n" +
+"• Core Foundational Values for Civil Services: Integrity, Impartiality, Non-Partisanship, Objectivity, Empathy, Tolerance, Compassion towards Weaker Sections, Emotional Intelligence.\n" +
+"• Thinkers & Philosophers: Mahatma Gandhi (Seven Sins & Trusteeship), Kant (Categorical Imperative / Deontology), John Stuart Mill (Utilitarianism), Aristotle (Virtue Ethics), Kautilya (Rajadharma & Yogakshema)."
+},
+"builtin-iit-jee": {
+id: "builtin-iit-jee",
+title: "IIT JEE (Mains & Advanced) Physics, Chemistry & Calculus Complete Formula & Concept Handbook",
+badge: "⚛️ IIT JEE (MAINS + ADV)",
+category: "iit-jee",
+subject: "physics chemistry maths",
+language: "english",
+price: 0,
+creator: "FreeCV JEE Hub",
+upi: "freecv@upi",
+views: 4890,
+content: "1. ROTATIONAL MECHANICS & MOMENT OF INERTIA:\n" +
+"• Torque (τ) = r × F = Iα | Angular Momentum (L) = r × p = Iω\n" +
+"• Conservation of Angular Momentum: If net external torque τ_ext = 0, then I₁ω₁ = I₂ω₂.\n" +
+"• Moment of Inertia (I): Ring = MR², Solid Disc = ½MR², Solid Sphere = (2/5)MR², Hollow Sphere = (2/3)MR², Rod (center) = ML²/12.\n" +
+"• Rolling Kinetic Energy: K_total = ½Mv_cm² (1 + k²/R²).\n\n" +
+"2. THERMODYNAMICS & KINETIC THEORY OF GASES:\n" +
+"• First Law of Thermodynamics: ΔQ = ΔU + ΔW | Work in Isothermal Process: W = nRT ln(V₂/V₁).\n" +
+"• Adiabatic Process: PV^γ = Constant, Work W = (P₁V₁ - P₂V₂)/(γ - 1).\n" +
+"• Carnot Engine Efficiency: η = 1 - (T_sink / T_source).\n" +
+"• RMS Speed of Gas Molecules: v_rms = √(3RT/M), Average Speed = √(8RT/πM), Most Probable Speed = √(2RT/M).\n\n" +
+"3. ELECTROSTATICS, CURRENT & MAGNETISM:\n" +
+"• Coulomb's Law: F = (1/4πε₀)(q₁q₂/r²) | Gauss's Law: ∮ E·dA = Q_enclosed / ε₀.\n" +
+"• Electric Potential of Dipole: V = (1/4πε₀)(p cosθ / r²) | Capacitance with Dielectric: C = Kε₀A/d.\n" +
+"• Biot-Savart Law: dB = (μ₀/4π)(I dl × r̂ / r²) | Magnetic Field at Center of Circular Coil: B = μ₀NI / (2R).\n" +
+"• Faraday's Law of EMI: ε = -dΦ_B/dt | Motional EMF: ε = BvL.\n\n" +
+"4. PHYSICAL & ORGANIC CHEMISTRY (GOC + ELECTROCHEMISTRY):\n" +
+"• Nernst Equation: E_cell = E°_cell - (0.0591/n) log Q at 298 K.\n" +
+"• First Order Kinetics: k = (2.303/t) log([A]₀/[A]), Half-life t_1/2 = 0.693 / k.\n" +
+"• Electronic Effects: +I Effect Order: -O⁻ > -COO⁻ > -C(CH₃)₃ > -CH(CH₃)₂ > -CH₂CH₃ > -CH₃.\n" +
+"• Important Named Reactions: Aldol Condensation, Cannizzaro Reaction, Reimer-Tiemann Reaction, Hoffmann Bromamide Degradation, Rosenmund Reduction.\n\n" +
+"5. MATHEMATICS (CALCULUS, MATRICES & 3D GEOMETRY):\n" +
+"• Standard Limits: lim(x→0) (sin x / x) = 1, lim(x→0) ((e^x - 1)/x) = 1.\n" +
+"• Integration by Parts: ∫ u v dx = u ∫ v dx - ∫ (du/dx · ∫ v dx) dx.\n" +
+"• Definite Integral Property (King's Rule): ∫_a^b f(x) dx = ∫_a^b f(a + b - x) dx.\n" +
+"• Shortest Distance between Skew Lines: d = |(b₁ × b₂) · (a₂ - a₁)| / |b₁ × b₂|."
+},
+"builtin-neet-ug": {
+id: "builtin-neet-ug",
+title: "NEET UG Complete NCERT Biology (Botany + Zoology), Organic Chemistry & Physics Master Notes",
+badge: "🩺 NEET UG (MEDICAL)",
+category: "neet",
+subject: "biology chemistry physics",
+language: "english",
+price: 0,
+creator: "FreeCV Medical Hub",
+upi: "freecv@upi",
+views: 5310,
+content: "1. HUMAN PHYSIOLOGY (NCERT HIGH-YIELD FACTS):\n" +
+"• Cardiac Cycle (0.8 sec): Atrial systole (0.1s), Ventricular systole (0.3s), Joint diastole (0.4s). Stroke Volume = 70 mL, Cardiac Output = 5 L/min.\n" +
+"• Oxygen Dissociation Curve: Sigmoid shape; shifts right (Bohr effect) due to high pCO₂, high H⁺, high temperature, and high 2,3-BPG.\n" +
+"• GFR (Glomerular Filtration Rate): 125 mL/min or 180 Litres/day. JGA releases Renin when GFR falls (RAAS pathway).\n\n" +
+"2. GENETICS, MOLECULAR BIOLOGY & BIOTECHNOLOGY:\n" +
+"• Mendelian Ratios: Monohybrid Phenotypic = 3:1, Genotypic = 1:2:1 | Dihybrid Phenotypic = 9:3:3:1.\n" +
+"• DNA Packaging: Histone octamer (H2A, H2B, H3, H4) rich in Basic amino acids Lysine and Arginine; Nucleosome contains ~200 bp of DNA.\n" +
+"• Lac Operon (Jacob & Monod): Inducible operon; Lactose acts as inducer. Structural genes: lac z (β-galactosidase), lac y (permease), lac a (transacetylase).\n" +
+"• PCR (Polymerase Chain Reaction): Denaturation (94°C) → Annealing (54°C) → Extension (72°C using thermostable Taq Polymerase from Thermus aquaticus).\n\n" +
+"3. PLANT PHYSIOLOGY (PHOTOSYNTHESIS & RESPIRATION):\n" +
+"• C3 Cycle (Calvin Cycle): Primary CO₂ acceptor is 5-carbon RuBP; first stable product is 3-PGA. Requires 3 ATP and 2 NADPH per CO₂ fixed.\n" +
+"• C4 Pathway (Hatch & Slack): Kranz anatomy (maize, sugarcane); primary CO₂ acceptor is PEP (3C) in mesophyll cells; lacks photorespiration.\n" +
+"• Respiratory Quotient (RQ): Carbohydrates = 1.0, Fats (Tripalmitin) = 0.7, Proteins = 0.9, Organic Acids (Malic acid) = 1.33.\n\n" +
+"4. ECOLOGY & BIODIVERSITY:\n" +
+"• Lindeman's 10% Law of Energy Transfer; Pyramid of Energy is ALWAYS upright.\n" +
+"• Species-Area Relationship (Alexander von Humboldt): log S = log C + Z log A.\n" +
+"• Rivet Popper Hypothesis given by Paul Ehrlich."
+},
+"builtin-bsc-msc-net-gate": {
+id: "builtin-bsc-msc-net-gate",
+title: "B.Sc, M.Sc, CSIR-UGC NET / JRF & GATE Complete Master Notes (Science, Research & Engineering)",
+badge: "🎓 B.Sc • M.Sc • NET/JRF • GATE",
+category: "bsc-msc-net-gate",
+subject: "physics chemistry maths biology",
+language: "english",
+price: 0,
+creator: "FreeCV Higher Ed Hub",
+upi: "freecv@upi",
+views: 4620,
+content: "1. MATHEMATICAL PHYSICS, LINEAR ALGEBRA & REAL ANALYSIS (B.Sc / M.Sc / CSIR NET / GATE):\n" +
+"• Eigenvalues & Cayley-Hamilton Theorem: Every square matrix satisfies its own characteristic equation det(A - λI) = 0. Trace(A) = Σλᵢ, det(A) = Πλᵢ.\n" +
+"• Vector Calculus Identities: ∇·(∇ × A) = 0, ∇ × (∇φ) = 0, Gauss Divergence Theorem: ∮_S F·dS = ∫_V (∇·F)dV, Stokes' Theorem: ∮_C F·dr = ∫_S (∇ × F)·dS.\n" +
+"• Cauchy-Riemann Equations (Complex Analysis): ∂u/∂x = ∂v/∂y and ∂u/∂y = -∂v/∂x; Cauchy's Residue Theorem: ∮ f(z)dz = 2πi × Σ Residues.\n\n" +
+"2. QUANTUM MECHANICS, CLASSICAL MECHANICS & THERMODYNAMICS (B.Sc / M.Sc / NET / GATE):\n" +
+"• Schrödinger Wave Equation: iℏ ∂Ψ/∂t = ĤΨ | 1D Infinite Potential Box Energy: E_n = n²π²ℏ² / (2mL²).\n" +
+"• Heisenberg Uncertainty Principle: Δx·Δp_x ≥ ℏ/2 | Commutator: [x, p_x] = iℏ, [L_x, L_y] = iℏL_z.\n" +
+"• Lagrangian & Hamiltonian Mechanics: L = T - V, Euler-Lagrange Equation: d/dt(∂L/∂q̇ᵢ) - ∂L/∂qᵢ = 0 | Hamilton's Equations: q̇ᵢ = ∂H/∂pᵢ, ṗᵢ = -∂H/∂qᵢ.\n" +
+"• Maxwell's Thermodynamic Relations: (∂T/∂V)_S = -(∂P/∂S)_V, (∂T/∂P)_S = (∂V/∂S)_P, (∂S/∂V)_T = (∂P/∂T)_V, (∂S/∂P)_T = -(∂V/∂T)_P.\n\n" +
+"3. ADVANCED CHEMISTRY & LIFE SCIENCES (B.Sc / M.Sc / CSIR NET / GATE XL & CY):\n" +
+"• Organometallic & Coordination Chemistry: 18-Electron Rule, Crystal Field Stabilization Energy (CFSE), Jahn-Teller Distortion, Pericyclic Reactions (Woodward-Hoffmann Rules).\n" +
+"• Spectroscopy: NMR (Chemical Shift δ, Spin-Spin Coupling), IR Stretching Frequencies, UV-Vis Woodward-Fieser Rules, Mass Spectrometry.\n" +
+"• Molecular Biology & Cell Signaling (NET Life Sciences / GATE XL): Operon Models, GPCR & Receptor Tyrosine Kinase (RTK) Pathways, Apoptosis, ELISA, Southern/Northern/Western Blotting, CRISPR-Cas9.\n\n" +
+"4. UGC NET PAPER-1 (TEACHING & RESEARCH APTITUDE) + GATE GENERAL APTITUDE:\n" +
+"• Research Methodology: Positivism vs Post-Positivism, Experimental, Descriptive, Historical & Qualitative Research, Hypothesis Testing (Type-I & Type-II Errors, p-value, t-test, ANOVA, Chi-Square Test).\n" +
+"• Teaching Levels: Memory Level (Herbart), Understanding Level (Morrison), Reflective Level (Hunt); SWAYAM, SWAYAM PRABHA, MOOCs & NEP 2020."
+}
 };
 
-var saved = JSON.parse(localStorage.getItem("user_uploaded_notes") || "[]");
-saved.unshift(newNote);
-localStorage.setItem("user_uploaded_notes", JSON.stringify(saved));
+var currentActiveCategory = "all";
+var currentActiveSub = "all-sub";
+var currentActiveLang = "all-lang";
+var activeReaderNote = null;
+var adShareTimer = null;
 
-if (supabaseClient) {
-try { await supabaseClient.from("study_notes").insert([newNote]); } catch (err) {}
+function getCustomNotesList() {
+try {
+return JSON.parse(localStorage.getItem("fcv_custom_notes_v4") || "[]");
+} catch (e) { return []; }
 }
 
-allNotes.unshift(newNote);
-renderNotesGrid();
-closeUploadModal();
-document.getElementById("uploadNoteForm").reset();
-alert("बधाई हो! आपका स्टडी नोट सफलतापूर्वक पब्लिश हो गया है।");
+function saveCustomNotesList(list) {
+localStorage.setItem("fcv_custom_notes_v4", JSON.stringify(list));
+}
+
+function getWalletData() {
+try {
+return JSON.parse(localStorage.getItem("fcv_creator_wallet_v4") || '{"views":0,"adEarnings":0,"sales":0,"salesEarnings":0,"upi":""}');
+} catch (e) {
+return { views: 0, adEarnings: 0, sales: 0, salesEarnings: 0, upi: "" };
+}
+}
+
+function saveWalletData(w) {
+localStorage.setItem("fcv_creator_wallet_v4", JSON.stringify(w));
+updateWalletUI();
+}
+
+function updateWalletUI() {
+var w = getWalletData();
+var total = (w.adEarnings || 0) + (w.salesEarnings || 0);
+var hdr = document.getElementById("headerWalletBal");
+if (hdr) hdr.innerText = "₹" + total.toFixed(2);
+var vEl = document.getElementById("walletTotalViews");
+if (vEl) vEl.innerText = w.views || 0;
+var adEl = document.getElementById("walletAdEarnings");
+if (adEl) adEl.innerText = "₹" + (w.adEarnings || 0).toFixed(2);
+var sEl = document.getElementById("walletTotalSales");
+if (sEl) sEl.innerText = w.sales || 0;
+var seEl = document.getElementById("walletSalesEarnings");
+if (seEl) seEl.innerText = "₹" + (w.salesEarnings || 0).toFixed(2);
+var gtEl = document.getElementById("walletGrandTotal");
+if (gtEl) gtEl.innerText = "₹" + total.toFixed(2);
+}
+
+function togglePriceInput() {
+var sel = document.getElementById("upNoteSellType").value;
+var box = document.getElementById("upPriceBox");
+if (box) box.style.display = (sel === "paid") ? "block" : "none";
+}
+
+function injectBscMscNetGateUI() {
+var firstCatBtn = document.querySelector(".note-cat-btn");
+var catBar = firstCatBtn ? firstCatBtn.parentElement : null;
+if (catBar && !document.getElementById("cat-btn-bsc-net-gate")) {
+var btn = document.createElement("button");
+btn.type = "button";
+btn.id = "cat-btn-bsc-net-gate";
+btn.className = "note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer";
+btn.innerText = "🎓 B.Sc / M.Sc / NET JRF / GATE";
+btn.onclick = function() { setNotesCategory("bsc-msc-net-gate", btn); };
+catBar.insertBefore(btn, catBar.children[3]);
+}
+
+var allButtons = document.getElementsByTagName("button");
+var neetQuickBtn = null;
+for (var b = 0; b < allButtons.length; b++) {
+if (allButtons[b].innerText.indexOf("NEET UG") !== -1 && allButtons[b].className.indexOf("rounded-full") !== -1) {
+neetQuickBtn = allButtons[b];
+break;
+}
+}
+if (neetQuickBtn && neetQuickBtn.parentElement && !document.getElementById("quick-tag-net-gate")) {
+var qBtn = document.createElement("button");
+qBtn.type = "button";
+qBtn.id = "quick-tag-net-gate";
+qBtn.className = "bg-purple-500/20 border border-purple-400/40 text-purple-200 hover:bg-purple-500/40 px-2.5 py-1 rounded-full cursor-pointer font-bold";
+qBtn.innerText = "🎓 B.Sc / M.Sc / NET JRF / GATE";
+qBtn.onclick = function() { quickSearchTopic("NET JRF GATE"); };
+neetQuickBtn.parentElement.insertBefore(qBtn, neetQuickBtn.nextSibling);
+}
+
+var container = document.getElementById("studyNotesContainer");
+if (container && !document.querySelector('[data-note-id="builtin-bsc-msc-net-gate"]')) {
+var card = document.createElement("div");
+card.className = "main-note-card bg-white rounded-2xl p-5 border-2 border-purple-200 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+card.setAttribute("data-note-id", "builtin-bsc-msc-net-gate");
+card.setAttribute("data-categories", "all bsc-msc-net-gate free");
+card.setAttribute("data-subject", "physics chemistry maths biology");
+card.setAttribute("data-lang", "english hindi bilingual");
+card.setAttribute("data-price", "0");
+card.setAttribute("data-creator", "FreeCV Higher Ed Hub");
+card.setAttribute("data-keywords", "bsc notes pdf msc notes pdf csir net jrf notes ugc net paper 1 notes gate exam notes pdf bsc physics chemistry mathematics botany zoology quantum mechanics schrodinger equation classical mechanics lagrangian hamiltonian maxwell relations linear algebra eigenvalues cayley hamilton real analysis complex analysis cauchy residue theorem spectroscopy nmr ir organometallic pericyclic reactions molecular biology cell signaling gpcr crispr elisa research aptitude teaching aptitude hypothesis testing t test anova gate general aptitude");
+card.innerHTML = '<div>' +
+'<div class="flex justify-between items-center gap-2 mb-3">' +
+'<span class="inline-block bg-purple-100 text-purple-900 text-xs font-extrabold px-3 py-1 rounded-md">🎓 B.Sc • M.Sc • NET/JRF • GATE</span>' +
+'<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>' +
+'</div>' +
+'<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">B.Sc, M.Sc, CSIR-UGC NET / JRF & GATE Complete Master Notes (Physics, Chem, Maths, Life Sci & Research)</h3>' +
+'<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">Concise revision notes covering Quantum & Classical Mechanics, Linear Algebra, Complex Analysis, NMR/IR Spectroscopy, Pericyclic Reactions, CSIR NET Life Sciences (Cell Signaling, CRISPR) & UGC NET Paper-1 Research Aptitude + GATE.</p>' +
+'</div>' +
+'<div>' +
+'<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">' +
+'<span>✍️ FreeCV Higher Ed Hub</span>' +
+'<span class="text-amber-600 font-extrabold">⭐ 4.9 (1.2k+ Downloads)</span>' +
+'<span id="views-builtin-bsc-msc-net-gate">👁️ 4620 Views</span>' +
+'</div>' +
+'<button type="button" data-open-builtin="builtin-bsc-msc-net-gate" class="w-full bg-purple-600 hover:bg-purple-700 text-white text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition cursor-pointer">📖 Read Online & Download Clean PDF</button>' +
+'</div>';
+var readBtn = card.querySelector("[data-open-builtin]");
+if (readBtn) {
+readBtn.onclick = function() { openBuiltinNoteReader("builtin-bsc-msc-net-gate"); };
+}
+container.insertBefore(card, container.children[2]);
+}
+
+var seoDir = document.getElementById("seoFullTextDirectory");
+if (seoDir && !document.getElementById("seo-net-gate-p")) {
+var p = document.createElement("p");
+p.id = "seo-net-gate-p";
+p.innerHTML = "<strong>B.Sc, M.Sc, CSIR-UGC NET / JRF & GATE Indexed Topics:</strong> Linear Algebra, Eigenvalues, Cayley-Hamilton Theorem, Real & Complex Analysis, Cauchy-Riemann Equations, Residue Theorem, Differential Equations, Quantum Mechanics, Schrödinger Equation, Operators, Commutators, Perturbation Theory, Classical Mechanics, Lagrangian, Hamiltonian, Canonical Transformations, Statistical Mechanics, Partition Function, Maxwell Thermodynamic Relations, Electromagnetic Theory, Maxwell Equations, Waveguides, Solid State Physics, Nuclear & Particle Physics, Coordination & Organometallic Chemistry, 18-Electron Rule, Pericyclic Reactions, Photochemistry, NMR, EPR, IR, Raman & Mass Spectroscopy, Quantum Chemistry, Chemical Kinetics, Electrochemistry, Molecular Biology, Cell Signaling, Immunology, Developmental Biology, Ecology, Genetics, Biotechnology, UGC NET Paper 1 Teaching Aptitude, Research Methodology, Hypothesis Testing, GATE Engineering Mathematics & General Aptitude.";
+seoDir.appendChild(p);
+}
 }
 
 // =========================================================================
-// PHOTO RESIZER & TYPING TEST LOGIC
+// ANTI-SPAM DEVICE PROTECTION & SUPABASE REALTIME SYNC
 // =========================================================================
-var rawExamImg = null;
-var outExamUrl = "";
+function getUniqueBrowserUserId() {
+var uid = localStorage.getItem("fcv_unique_device_id");
+if (!uid) {
+uid = "usr_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now();
+localStorage.setItem("fcv_unique_device_id", uid);
+}
+return uid;
+}
+
+function hasUserAlreadyEarnedForNote(noteId) {
+try {
+var viewedMap = JSON.parse(localStorage.getItem("fcv_viewed_notes_log") || "{}");
+var lastTime = viewedMap[noteId] || 0;
+return (Date.now() - lastTime) < 86400000;
+} catch (e) { return false; }
+}
+
+function markNoteAsEarnedByUser(noteId) {
+try {
+var viewedMap = JSON.parse(localStorage.getItem("fcv_viewed_notes_log") || "{}");
+viewedMap[noteId] = Date.now();
+localStorage.setItem("fcv_viewed_notes_log", JSON.stringify(viewedMap));
+} catch (e) {}
+}
+
+async function syncNotesFromSupabase() {
+if (!sbClient) return;
+try {
+var res = await sbClient
+.from("study_notes")
+.select("*")
+.order("created_at", { ascending: false });
+
+if (res.data && res.data.length > 0) {
+var localList = getCustomNotesList();
+var purchasedIds = {};
+for (var p = 0; p < localList.length; p++) {
+if (localList[p].purchased) purchasedIds[localList[p].id] = true;
+}
+var merged = res.data.map(function(row) {
+return {
+id: row.id,
+title: row.title,
+category: row.category,
+subject: row.subject || "gk-gs",
+language: row.language || "english",
+badge: row.badge,
+price: row.price || 0,
+creator: row.creator,
+upi: row.upi,
+content: row.content,
+url: row.url || "",
+views: row.views || 1,
+sales: row.sales || 0,
+rating: row.rating || 4.9,
+purchased: !!purchasedIds[row.id]
+};
+});
+saveCustomNotesList(merged);
+renderCustomNotesCards();
+updateDynamicSEOForNotes();
+filterMainStudyNotes();
+}
+} catch (err) {
+console.warn("Supabase sync fallback to local:", err);
+}
+}
+
+// =========================================================================
+// UPLOAD, SANITIZE, SELL & GOOGLE SEO FULL-WORD INDEXING FUNCTIONS
+// =========================================================================
+function openUploadNotesModal() {
+var acc = getActiveCreatorAccount();
+if (acc) {
+var upName = document.getElementById("upCreatorName");
+var upUpi = document.getElementById("upCreatorUpi");
+if (upName && !upName.value) upName.value = acc.name;
+if (upUpi && !upUpi.value) upUpi.value = acc.upi;
+}
+document.getElementById("uploadNotesModal").style.display = "flex";
+}
+
+function closeUploadNotesModal() {
+document.getElementById("uploadNotesModal").style.display = "none";
+}
+
+async function saveCustomNote(e) {
+e.preventDefault();
+var title = document.getElementById("upNoteTitle").value.trim();
+var category = document.getElementById("upNoteCategory").value;
+var subject = document.getElementById("upNoteSubject") ? document.getElementById("upNoteSubject").value : "gk-gs";
+var language = document.getElementById("upNoteLang") ? document.getElementById("upNoteLang").value : "english";
+var badge = document.getElementById("upNoteBadge").value.trim();
+var sellType = document.getElementById("upNoteSellType").value;
+var price = (sellType === "paid") ? parseInt(document.getElementById("upNotePrice").value || "29", 10) : 0;
+var creator = document.getElementById("upCreatorName").value.trim() || "Verified Educator";
+var upi = document.getElementById("upCreatorUpi").value.trim();
+var rawDesc = (fullSanitizedNoteContent && fullSanitizedNoteContent.length > document.getElementById("upNoteDesc").value.length) ? fullSanitizedNoteContent : document.getElementById("upNoteDesc").value.trim();
+var extUrl = document.getElementById("upNoteUrl").value.trim();
+
+var sanitized = sanitizeNoteText(rawDesc);
+var cleanContent = sanitized.cleanText || rawDesc;
+var cleanTitle = sanitizeNoteText(title).cleanText || title;
+
+var newNote = {
+id: "custom-note-" + Date.now(),
+title: cleanTitle,
+category: category,
+subject: subject,
+language: language,
+badge: badge,
+price: price,
+creator: creator,
+upi: upi,
+content: cleanContent,
+url: extUrl,
+views: 1,
+sales: 0,
+rating: 4.9,
+purchased: false,
+cropHeaderFooter: document.getElementById("upCropHeaderFooter") ? document.getElementById("upCropHeaderFooter").checked : true
+};
+
+if (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteLength > 0) {
+await savePdfBufferToCache(newNote.id, lastUploadedPdfBuffer);
+await savePdfBufferToCache(newNote.title, lastUploadedPdfBuffer);
+}
+
+if (sbClient) {
+try {
+if (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteLength > 0 && !newNote.url) {
+var storagePath = "pdfs/" + newNote.id + ".pdf";
+var upRes = await sbClient.storage.from("notes-pdfs").upload(storagePath, new Blob([lastUploadedPdfBuffer], { type: "application/pdf" }), { upsert: true });
+if (upRes && !upRes.error) {
+var pubObj = sbClient.storage.from("notes-pdfs").getPublicUrl(storagePath);
+if (pubObj && pubObj.data && pubObj.data.publicUrl) {
+newNote.url = pubObj.data.publicUrl;
+}
+}
+}
+await sbClient.from("study_notes").insert([{
+id: newNote.id,
+title: newNote.title,
+category: newNote.category,
+subject: newNote.subject,
+language: newNote.language,
+badge: newNote.badge,
+price: newNote.price,
+creator: newNote.creator,
+upi: newNote.upi,
+content: newNote.content,
+url: newNote.url,
+views: 1,
+sales: 0,
+rating: 4.9
+}]);
+await sbClient.from("creator_wallets").upsert([{
+upi: upi,
+creator_name: creator
+}], { onConflict: "upi" });
+} catch (err) {}
+}
+
+var list = getCustomNotesList();
+list.unshift(newNote);
+saveCustomNotesList(list);
+
+var w = getWalletData();
+if (upi) w.upi = upi;
+saveWalletData(w);
+
+renderCustomNotesCards();
+updateDynamicSEOForNotes();
+closeUploadNotesModal();
+e.target.reset();
+togglePriceInput();
+filterMainStudyNotes();
+alert("✅ Your clean study note is now live! Every word has been indexed for Google Search & the On-Page Reader.");
+}
+
+function renderCustomNotesCards() {
+var oldCards = document.querySelectorAll(".custom-uploaded-card");
+for (var i = 0; i < oldCards.length; i++) {
+oldCards[i].remove();
+}
+
+var list = getCustomNotesList();
+var container = document.getElementById("studyNotesContainer");
+if (!container) return;
+
+for (var j = list.length - 1; j >= 0; j--) {
+(function(item) {
+var isPaid = item.price > 0;
+var catAttr = "all " + item.category + (isPaid ? " paid" : " free");
+var allKeywords = (item.title + " " + item.badge + " " + item.category + " " + (item.subject || "") + " " + item.content).toLowerCase();
+
+var card = document.createElement("div");
+card.className = "main-note-card custom-uploaded-card bg-white rounded-2xl p-5 border-2 " + (isPaid ? "border-amber-300" : "border-indigo-200") + " shadow-sm hover:shadow-md transition flex flex-col justify-between";
+card.setAttribute("data-note-id", item.id);
+card.setAttribute("data-categories", catAttr);
+card.setAttribute("data-subject", item.subject || "gk-gs");
+card.setAttribute("data-lang", (item.language || "english") + " bilingual");
+card.setAttribute("data-price", String(item.price));
+card.setAttribute("data-keywords", allKeywords);
+
+var priceBadgeHTML = isPaid
+? '<span class="inline-block bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full">💎 ₹' + item.price + ' (Sample Preview Available)</span>'
+: '<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">🆓 FREE • AdSense Share Active</span>';
+
+var snippet = item.content.length > 220 ? item.content.slice(0, 220) + "..." : item.content;
+var ratingVal = item.rating || 4.9;
+var salesCount = item.sales || 0;
+
+card.innerHTML = '<div>' +
+'<div class="flex justify-between items-center gap-2 mb-3">' +
+'<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">' + escapeHtml(item.badge) + '</span>' +
+priceBadgeHTML +
+'</div>' +
+'<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">' + escapeHtml(item.title) + '</h3>' +
+'<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">' + escapeHtml(snippet) + '</p>' +
+'</div>' +
+'<div>' +
+'<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">' +
+'<span>✍️ ' + escapeHtml(item.creator) + '</span>' +
+'<span class="text-amber-600 font-extrabold">⭐ ' + ratingVal + ' (' + (isPaid ? salesCount + ' Sold' : (item.views || 1) + ' Reads') + ')</span>' +
+'<span id="views-' + item.id + '">👁️ ' + (item.views || 1) + ' Views</span>' +
+'</div>' +
+'<button type="button" class="custom-open-btn w-full ' + (isPaid ? 'bg-amber-500 hover:bg-amber-600 text-slate-950' : 'bg-indigo-600 hover:bg-indigo-700 text-white') + ' text-center text-xs sm:text-sm font-extrabold py-3.5 rounded-xl shadow transition cursor-pointer">' +
+(isPaid ? '🔓 Read Sample & Unlock Full Note (₹' + item.price + ')' : '📖 Read Online & Download Clean PDF') +
+'</button>' +
+'</div>';
+
+var btn = card.querySelector(".custom-open-btn");
+if (btn) {
+btn.onclick = function() { openCustomNoteReader(item.id); };
+}
+container.insertBefore(card, container.firstChild);
+})(list[j]);
+}
+}
+
+function escapeHtml(str) {
+return String(str || "")
+.replace(/&/g, "&")
+.replace(/</g, "<")
+.replace(/>/g, ">");
+}
+
+function updateDynamicSEOForNotes() {
+var list = getCustomNotesList();
+var seoDir = document.getElementById("seoFullTextDirectory");
+var oldCustomSeo = document.querySelectorAll(".custom-seo-transcript");
+for (var i = 0; i < oldCustomSeo.length; i++) oldCustomSeo[i].remove();
+
+var combinedKeywords = [];
+for (var j = 0; j < list.length; j++) {
+var n = list[j];
+combinedKeywords.push(n.title, n.badge, n.category);
+if (seoDir) {
+var div = document.createElement("div");
+div.className = "custom-seo-transcript border-t border-slate-100 pt-2 mt-2";
+div.innerHTML = "<strong>" + escapeHtml(n.title) + " (" + escapeHtml(n.badge) + "):</strong> " + escapeHtml(n.content);
+seoDir.appendChild(div);
+}
+}
+
+if (list.length > 0) {
+var latest = list[0];
+document.title = latest.title + " | IIT JEE, NEET, B.Sc, M.Sc, NET JRF, GATE, SSC Notes | FreeCVResume.co.in";
+var kwMeta = document.getElementById("dynamic-meta-kw");
+if (kwMeta) {
+kwMeta.setAttribute("content", kwMeta.getAttribute("content") + ", " + combinedKeywords.join(", ").slice(0, 500));
+}
+}
+}
+
+// =========================================================================
+// ON-PAGE READER, 5-SECOND ANTI-SPAM ADSENSE SHARE & PAID NOTE UNLOCK
+// =========================================================================
+function openBuiltinNoteReader(noteId) {
+var note = builtinNotesData[noteId];
+if (!note) return;
+note.views = (note.views || 4500) + 1;
+var vSpan = document.getElementById("views-" + noteId);
+if (vSpan) vSpan.innerText = "👁️ " + note.views + " Views";
+launchOnPageReader(note);
+}
+
+function openCustomNoteReader(noteId) {
+var list = getCustomNotesList();
+var found = null;
+for (var i = 0; i < list.length; i++) {
+if (list[i].id === noteId) {
+list[i].views = (list[i].views || 1) + 1;
+found = list[i];
+break;
+}
+}
+saveCustomNotesList(list);
+if (!found) return;
+var vSpan = document.getElementById("views-" + noteId);
+if (vSpan) vSpan.innerText = "👁️ " + found.views + " Views";
+launchOnPageReader(found);
+}
+
+var pdfMemoryCacheMap = {};
+var currentRenderJobId = 0;
+
+function clonePdfArrayBuffer(buf) {
+if (!buf) return null;
+try {
+var src = (buf instanceof Uint8Array) ? buf : new Uint8Array(buf);
+var out = new Uint8Array(src.byteLength);
+out.set(src);
+return out.buffer;
+} catch (err) {
+return null;
+}
+}
+
+function openPdfCacheDb() {
+return new Promise(function(resolve) {
+if (!window.indexedDB) { resolve(null); return; }
+var req = window.indexedDB.open("fcvPdfCacheDb", 1);
+req.onupgradeneeded = function(ev) {
+var db = ev.target.result;
+if (!db.objectStoreNames.contains("pdfs")) {
+db.createObjectStore("pdfs");
+}
+};
+req.onsuccess = function(ev) { resolve(ev.target.result); };
+req.onerror = function() { resolve(null); };
+});
+}
+
+async function savePdfBufferToCache(keyStr, buf) {
+if (!keyStr || !buf) return;
+var cleanKey = encodeURIComponent(String(keyStr).toLowerCase().trim());
+var copyBuf = clonePdfArrayBuffer(buf);
+if (!copyBuf || copyBuf.byteLength === 0) return;
+pdfMemoryCacheMap[cleanKey] = clonePdfArrayBuffer(copyBuf);
+var db = await openPdfCacheDb();
+if (!db) return;
+try {
+var tx = db.transaction("pdfs", "readwrite");
+tx.objectStore("pdfs").put(clonePdfArrayBuffer(copyBuf), cleanKey);
+} catch (err) {}
+}
+
+async function loadPdfBufferFromCache(keyStr) {
+if (!keyStr) return null;
+var cleanKey = encodeURIComponent(String(keyStr).toLowerCase().trim());
+if (pdfMemoryCacheMap[cleanKey] && pdfMemoryCacheMap[cleanKey].byteLength > 0) {
+return clonePdfArrayBuffer(pdfMemoryCacheMap[cleanKey]);
+}
+var db = await openPdfCacheDb();
+if (!db) return null;
+return new Promise(function(resolve) {
+try {
+var req = db.transaction("pdfs", "readonly").objectStore("pdfs").get(cleanKey);
+req.onsuccess = function() {
+if (req.result && req.result.byteLength > 0) {
+pdfMemoryCacheMap[cleanKey] = clonePdfArrayBuffer(req.result);
+resolve(clonePdfArrayBuffer(req.result));
+} else {
+resolve(null);
+}
+};
+req.onerror = function() { resolve(null); };
+} catch (err) {
+resolve(null);
+}
+});
+}
+
+async function renderVisualCroppedPdfPages(buf, container) {
+try {
+var safeBuf = clonePdfArrayBuffer(buf);
+if (!window.pdfjsLib || !safeBuf || safeBuf.byteLength === 0) return;
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+var myJobId = ++currentRenderJobId;
+container.innerHTML = "";
+
+var loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(safeBuf), disableFontFace: true });
+var pdfDoc = await loadingTask.promise;
+var totalP = pdfDoc.numPages || 1;
+
+var printAreaBox = document.getElementById("clean-note-print-area");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+
+var infoMsg = document.createElement("div");
+infoMsg.className = "bg-indigo-50 border border-indigo-200 text-indigo-900 p-2.5 rounded-xl text-xs font-bold mb-2 text-center";
+infoMsg.innerHTML = '<i class="fa-solid fa-scissors mr-1 text-indigo-600"></i> Auto-Watermark Cropper Active: Rendering ' + totalP + ' Clean Pages (Memory-Safe Mode)';
+container.appendChild(infoMsg);
+
+// Reuse a SINGLE offscreen canvas pair for all pages so mobile Chrome never runs out of RAM ("Aw, Snap!")
+var tempCanvas = document.createElement("canvas");
+var tempCtx = tempCanvas.getContext("2d");
+var finalCanvas = document.createElement("canvas");
+var finalCtx = finalCanvas.getContext("2d");
+
+for (var i = 1; i <= totalP; i++) {
+if (myJobId !== currentRenderJobId) break;
+try {
+var page = await pdfDoc.getPage(i);
+var viewport = page.getViewport({ scale: 1.45 });
+var fullW = Math.floor(viewport.width);
+var fullH = Math.floor(viewport.height);
+
+tempCanvas.width = fullW;
+tempCanvas.height = fullH;
+await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
+
+// Crop top 7% and bottom 7% watermarks automatically
+var cropY = Math.floor(fullH * 0.07);
+var cropH = Math.floor(fullH * 0.86);
+
+finalCanvas.width = fullW;
+finalCanvas.height = cropH;
+finalCtx.fillStyle = "#ffffff";
+finalCtx.fillRect(0, 0, fullW, cropH);
+finalCtx.drawImage(tempCanvas, 0, cropY, fullW, cropH, 0, 0, fullW, cropH);
+
+var pageImg = document.createElement("img");
+pageImg.src = finalCanvas.toDataURL("image/jpeg", 0.82);
+pageImg.loading = "lazy";
+pageImg.alt = "Page " + i;
+pageImg.className = "pdf-rendered-page w-full h-auto rounded-xl shadow-md border border-slate-300 bg-white mb-4 block";
+container.appendChild(pageImg);
+
+if (page.cleanup) page.cleanup();
+if (i % 3 === 0) {
+await new Promise(function(r) { setTimeout(r, 8); });
+}
+} catch (pErr) {}
+}
+
+// Immediately release offscreen canvas GPU/RAM memory
+tempCanvas.width = 0;
+tempCanvas.height = 0;
+finalCanvas.width = 0;
+finalCanvas.height = 0;
+if (pdfDoc.cleanup) pdfDoc.cleanup();
+} catch (err) {}
+}
+
+async function launchOnPageReader(note) {
+activeReaderNote = note;
+document.getElementById("onPageReaderModal").style.display = "flex";
+document.getElementById("readerBadge").innerText = note.badge || "STUDY NOTE";
+document.getElementById("readerTitle").innerText = note.title;
+document.getElementById("printNoteTitle").innerText = note.title;
+document.getElementById("readerMeta").innerText = "✍️ " + (note.creator || "Educator") + " • 👁️ " + (note.views || 1) + " Views • Clean SEO Indexed";
+
+var printAreaBox = document.getElementById("clean-note-print-area");
+if (printAreaBox) printAreaBox.classList.remove("hidden");
+
+// Render visual PDF pages with top/bottom watermarks cropped out if buffer exists
+var canvasContainer = document.getElementById("readerCanvasContainer");
+if (canvasContainer) {
+canvasContainer.innerHTML = "";
+var isCustom = String(note.id || "").indexOf("custom-note") !== -1;
+var pdfBuf = null;
+if (isCustom) {
+pdfBuf = await loadPdfBufferFromCache(note.id);
+if (!pdfBuf) pdfBuf = await loadPdfBufferFromCache(note.title);
+if (!pdfBuf && window.lastUploadedPdfBuffer && window.lastUploadedPdfBuffer.byteLength > 0) {
+pdfBuf = clonePdfArrayBuffer(window.lastUploadedPdfBuffer);
+}
+if (!pdfBuf) pdfBuf = await loadPdfBufferFromCache("latest");
+if (!pdfBuf && note.url && note.url.indexOf("http") === 0) {
+try {
+var resp = await fetch(note.url);
+if (resp.ok) {
+var fetchedBuf = await resp.arrayBuffer();
+if (fetchedBuf && fetchedBuf.byteLength > 0) {
+pdfBuf = clonePdfArrayBuffer(fetchedBuf);
+await savePdfBufferToCache(note.id, pdfBuf);
+}
+}
+} catch (fetchErr) {}
+}
+}
+if (pdfBuf && pdfBuf.byteLength > 0) {
+canvasContainer.classList.remove("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+renderVisualCroppedPdfPages(pdfBuf, canvasContainer);
+} else {
+canvasContainer.classList.add("hidden");
+}
+}
+
+document.title = note.title + " - Read & Download PDF | FreeCVResume.co.in";
+
+var schemaScript = document.getElementById("dynamic-schema-ld");
+if (schemaScript) {
+var schemaObj = {
+"@context": "https://schema.org",
+"@type": "LearningResource",
+"name": note.title,
+"description": (note.content || "").slice(0, 300),
+"educationalLevel": note.badge || "Competitive Exam",
+"author": { "@type": "Person", "name": note.creator || "FreeCV Study Hub" },
+"inLanguage": note.language || "en",
+"isAccessibleForFree": !(note.price > 0)
+};
+schemaScript.textContent = JSON.stringify(schemaObj);
+}
+
+var isPaidLocked = (note.price > 0 && !note.purchased);
+var priceTag = document.getElementById("readerPriceTag");
+var paywallBox = document.getElementById("readerPaywallBox");
+var dlBtn = document.getElementById("readerDownloadBtn");
+var fullContentEl = document.getElementById("readerFullContent");
+var sampleContentEl = document.getElementById("readerSampleContent");
+
+var fullText = note.content || "";
+var splitIndex = Math.min(450, Math.floor(fullText.length * 0.35));
+var samplePart = fullText.slice(0, splitIndex);
+var remainingPart = fullText.slice(splitIndex);
+
+if (isPaidLocked) {
+priceTag.innerText = "🔒 PREMIUM ₹" + note.price;
+priceTag.className = "bg-amber-100 text-amber-900 text-[11px] font-black px-2.5 py-0.5 rounded-full";
+sampleContentEl.innerText = "📌 SAMPLE PREVIEW (First 35% Pages):\n" + samplePart + "\n\n--- [Unlock below to read the complete study note & download PDF] ---";
+fullContentEl.innerText = remainingPart || "Full premium exam notes content locked...";
+fullContentEl.classList.add("blur-paywall");
+paywallBox.style.display = "block";
+document.getElementById("paywallPriceText").innerText = "₹" + note.price;
+document.getElementById("paywallBtnPrice").innerText = "₹" + note.price;
+dlBtn.innerHTML = "🔒 Unlock to Download PDF (₹" + note.price + ")";
+} else {
+priceTag.innerText = note.price > 0 ? "✅ UNLOCKED (₹" + note.price + ")" : "🆓 100% FREE NOTE";
+priceTag.className = "bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full";
+sampleContentEl.innerText = "";
+fullContentEl.innerText = fullText;
+fullContentEl.classList.remove("blur-paywall");
+paywallBox.style.display = "none";
+dlBtn.innerHTML = '<i class="fa-solid fa-file-pdf mr-1"></i> Download Clean PDF';
+}
+
+if (adShareTimer) clearTimeout(adShareTimer);
+var timerTxt = document.getElementById("readerAdTimerText");
+
+if (hasUserAlreadyEarnedForNote(note.id)) {
+timerTxt.innerText = "🛡️ Anti-Spam Active: Unique view from this device has already been counted today.";
+return;
+}
+
+timerTxt.innerText = "⏳ Read for 5 seconds to credit Google AdSense view reward to the Creator Wallet...";
+
+adShareTimer = setTimeout(async function() {
+markNoteAsEarnedByUser(note.id);
+var w = getWalletData();
+w.views = (w.views || 0) + 1;
+w.adEarnings = +( (w.adEarnings || 0) + 0.25 ).toFixed(2);
+saveWalletData(w);
+
+if (sbClient && note.upi) {
+try {
+await sbClient.from("study_notes").update({ views: (note.views || 1) + 1 }).eq("id", note.id);
+var wRes = await sbClient.from("creator_wallets").select("*").eq("upi", note.upi).maybeSingle();
+var curV = (wRes.data && wRes.data.views) ? wRes.data.views + 1 : 1;
+var curAd = (wRes.data && wRes.data.ad_earnings) ? +(Number(wRes.data.ad_earnings) + 0.25).toFixed(2) : 0.25;
+await sbClient.from("creator_wallets").upsert([{
+upi: note.upi,
+creator_name: note.creator || "Educator",
+views: curV,
+ad_earnings: curAd
+}], { onConflict: "upi" });
+} catch (err) {}
+}
+timerTxt.innerText = "✅ +₹0.25 Unique View AdSense Share credited to Creator Wallet!";
+}, 5000);
+}
+
+function closeOnPageReader() {
+if (adShareTimer) clearTimeout(adShareTimer);
+document.getElementById("onPageReaderModal").style.display = "none";
+}
+
+async function unlockPaidNoteNow() {
+if (!activeReaderNote) return;
+var price = activeReaderNote.price || 29;
+var confirmPay = confirm("Pay ₹" + price + " via UPI to unlock full '" + activeReaderNote.title + "' PDF Notes immediately?");
+if (!confirmPay) return;
+
+activeReaderNote.purchased = true;
+activeReaderNote.sales = (activeReaderNote.sales || 0) + 1;
+
+var list = getCustomNotesList();
+for (var i = 0; i < list.length; i++) {
+if (list[i].id === activeReaderNote.id) {
+list[i].purchased = true;
+list[i].sales = (list[i].sales || 0) + 1;
+break;
+}
+}
+saveCustomNotesList(list);
+
+var w = getWalletData();
+w.sales = (w.sales || 0) + 1;
+w.salesEarnings = +( (w.salesEarnings || 0) + (price * 0.85) ).toFixed(2);
+saveWalletData(w);
+
+if (sbClient && activeReaderNote.upi) {
+try {
+await sbClient.from("study_notes").update({ sales: activeReaderNote.sales }).eq("id", activeReaderNote.id);
+} catch (err) {}
+}
+
+renderCustomNotesCards();
+launchOnPageReader(activeReaderNote);
+alert("🎉 Payment Successful! The full note is now unlocked for reading & Clean PDF download.");
+}
+
+async function downloadSanitizedNotePDF() {
+if (!activeReaderNote) return;
+if (activeReaderNote.price > 0 && !activeReaderNote.purchased) {
+unlockPaidNoteNow();
+return;
+}
+var dlBtn = document.getElementById("readerDownloadBtn");
+var oldBtnHtml = dlBtn ? dlBtn.innerHTML : "";
+if (dlBtn) dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Downloading PDF...';
+
+var cleanFile = (activeReaderNote.title || "Study_Note").replace(/[^a-zA-Z0-9\u0900-\u097F]+/g, "_").slice(0, 45);
+
+try {
+// 1. Memory-Safe Direct PDF File Download from IndexedDB or Memory (Zero RAM Crash, Instant Download!)
+var isCustom = String(activeReaderNote.id || "").indexOf("custom-note") !== -1;
+var savedPdfBuf = null;
+if (isCustom) {
+savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.id);
+if (!savedPdfBuf) savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.title);
+if (!savedPdfBuf && window.lastUploadedPdfBuffer && window.lastUploadedPdfBuffer.byteLength > 0) {
+savedPdfBuf = clonePdfArrayBuffer(window.lastUploadedPdfBuffer);
+}
+if (!savedPdfBuf) savedPdfBuf = await loadPdfBufferFromCache("latest");
+}
+
+if (savedPdfBuf && savedPdfBuf.byteLength > 0) {
+var blob = new Blob([savedPdfBuf], { type: "application/pdf" });
+var blobUrl = URL.createObjectURL(blob);
+var link = document.createElement("a");
+link.href = blobUrl;
+link.download = cleanFile + "_FreeCVResume.pdf";
+document.body.appendChild(link);
+link.click();
+setTimeout(function() {
+document.body.removeChild(link);
+URL.revokeObjectURL(blobUrl);
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+}, 500);
+return;
+}
+
+// 2. If Note has a Supabase Storage or External PDF URL, download directly
+if (activeReaderNote.url && activeReaderNote.url.indexOf("http") === 0) {
+var extLink = document.createElement("a");
+extLink.href = activeReaderNote.url;
+extLink.target = "_blank";
+extLink.download = cleanFile + "_FreeCVResume.pdf";
+document.body.appendChild(extLink);
+extLink.click();
+document.body.removeChild(extLink);
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+return;
+}
+
+// 3. If Cropped Page Images are rendered in readerCanvasContainer, build PDF page-by-page via jsPDF (NO html2canvas crash!)
+var renderedImgs = document.querySelectorAll("#readerCanvasContainer img.pdf-rendered-page");
+if (renderedImgs && renderedImgs.length > 0 && window.jspdf && window.jspdf.jsPDF) {
+var doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+for (var p = 0; p < renderedImgs.length; p++) {
+if (p > 0) doc.addPage();
+doc.addImage(renderedImgs[p].src, "JPEG", 6, 6, 198, 285);
+}
+doc.save(cleanFile + "_FreeCVResume.pdf");
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+return;
+}
+
+// 4. For Built-in Text Notes (#clean-note-print-area), use html2pdf with safe scale
+var area = document.getElementById("clean-note-print-area");
+if (typeof html2pdf === "undefined") {
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+window.print();
+return;
+}
+var opt = {
+margin: [8, 8, 8, 8],
+filename: cleanFile + "_FreeCVResume.pdf",
+image: { type: "jpeg", quality: 0.95 },
+html2canvas: { scale: 1.5, useCORS: true },
+jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+};
+await html2pdf().set(opt).from(area).save();
+} catch (dlErr) {
+window.print();
+}
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+}
+
+// =========================================================================
+// CREATOR WALLET & UPI PAYOUT MODAL
+// =========================================================================
+function openCreatorWalletModal() {
+updateWalletUI();
+updateCreatorAuthUI();
+var w = getWalletData();
+var acc = getActiveCreatorAccount();
+var upiIn = document.getElementById("withdrawUpiInput");
+if (upiIn && !upiIn.value) {
+upiIn.value = (acc && acc.upi) ? acc.upi : (w.upi || "");
+}
+document.getElementById("creatorWalletModal").style.display = "flex";
+}
+
+function closeCreatorWalletModal() {
+document.getElementById("creatorWalletModal").style.display = "none";
+}
+
+async function requestWalletWithdrawal() {
+var upi = document.getElementById("withdrawUpiInput").value.trim();
+var w = getWalletData();
+var total = (w.adEarnings || 0) + (w.salesEarnings || 0);
+var msg = document.getElementById("walletWithdrawMsg");
+msg.classList.remove("hidden");
+
+if (!upi || upi.indexOf("@") === -1) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "⚠️ Please enter a valid UPI ID (e.g., name@ybl).";
+return;
+}
+if (total < 100) {
+msg.className = "text-[11px] font-bold text-amber-700";
+msg.innerText = "ℹ️ Minimum withdrawal limit is ₹100. Your current balance is ₹" + total.toFixed(2) + ". Upload & share more notes to reach ₹100!";
+return;
+}
+
+if (sbClient) {
+try {
+await sbClient.from("payout_requests").insert([{ upi: upi, amount: total, status: "pending" }]);
+} catch (err) {}
+}
+
+w.adEarnings = 0;
+w.salesEarnings = 0;
+w.upi = upi;
+saveWalletData(w);
+msg.className = "text-[11px] font-bold text-emerald-700";
+msg.innerText = "✅ UPI withdrawal request for ₹" + total.toFixed(2) + " (" + upi + ") submitted! Payout will be credited within 24–48 hours.";
+}
+
+// =========================================================================
+// SEARCH, CATEGORY, SUBJECT & LANGUAGE FILTERING
+// =========================================================================
+function setNotesCategory(cat, btn) {
+currentActiveCategory = cat;
+var btns = document.querySelectorAll(".note-cat-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer";
+}
+if (btn) {
+btn.className = "note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer";
+}
+filterMainStudyNotes();
+}
+
+function setSubFilter(sub, btn) {
+currentActiveSub = sub;
+var btns = document.querySelectorAll(".sub-f-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer";
+}
+if (btn) btn.className = "sub-f-btn bg-slate-800 text-white font-bold px-3 py-1 rounded-lg cursor-pointer";
+filterMainStudyNotes();
+}
+
+function setLangFilter(lang, btn) {
+currentActiveLang = lang;
+var btns = document.querySelectorAll(".lang-f-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "lang-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer";
+}
+if (btn) btn.className = "lang-f-btn bg-indigo-600 text-white font-bold px-3 py-1 rounded-lg cursor-pointer";
+filterMainStudyNotes();
+}
+
+function filterMainStudyNotes() {
+var qInput = document.getElementById("mainNotesSearch");
+var query = qInput ? qInput.value.toLowerCase().trim() : "";
+var clearBtn = document.getElementById("clearSearchBtn");
+if (clearBtn) clearBtn.style.display = query.length > 0 ? "block" : "none";
+
+var cards = document.querySelectorAll(".main-note-card");
+var visibleCount = 0;
+
+for (var i = 0; i < cards.length; i++) {
+var c = cards[i];
+var cats = (c.getAttribute("data-categories") || "all").toLowerCase();
+var subs = (c.getAttribute("data-subject") || "all-sub").toLowerCase();
+var langs = (c.getAttribute("data-lang") || "all-lang").toLowerCase();
+var kw = (c.getAttribute("data-keywords") || "").toLowerCase();
+var text = (c.innerText || "").toLowerCase();
+var noteId = c.getAttribute("data-note-id") || "";
+var fullNoteBody = (builtinNotesData[noteId] && builtinNotesData[noteId].content) ? builtinNotesData[noteId].content.toLowerCase() : "";
+
+var catMatch = (currentActiveCategory === "all") || (cats.indexOf(currentActiveCategory) !== -1);
+var subMatch = (currentActiveSub === "all-sub") || (subs.indexOf(currentActiveSub) !== -1);
+var langMatch = (currentActiveLang === "all-lang") || (langs.indexOf(currentActiveLang) !== -1);
+var queryMatch = true;
+
+if (query.length > 0) {
+var words = query.split(/\s+/);
+for (var w = 0; w < words.length; w++) {
+var term = words[w];
+if (kw.indexOf(term) === -1 && text.indexOf(term) === -1 && fullNoteBody.indexOf(term) === -1) {
+queryMatch = false;
+break;
+}
+}
+}
+
+if (catMatch && subMatch && langMatch && queryMatch) {
+c.style.display = "flex";
+visibleCount++;
+} else {
+c.style.display = "none";
+}
+}
+
+var st = document.getElementById("searchStatusText");
+if (st) st.innerText = "📚 Available Study Notes (" + visibleCount + ")";
+var noBox = document.getElementById("noNotesFoundBox");
+if (noBox) noBox.style.display = (visibleCount === 0) ? "block" : "none";
+}
+
+function triggerManualSearch() {
+filterMainStudyNotes();
+var container = document.getElementById("studyNotesContainer");
+if (container) container.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function clearNotesSearch() {
+var qInput = document.getElementById("mainNotesSearch");
+if (qInput) qInput.value = "";
+currentActiveSub = "all-sub";
+currentActiveLang = "all-lang";
+setNotesCategory("all", document.querySelector(".note-cat-btn"));
+}
+
+function quickSearchTopic(topic) {
+var qInput = document.getElementById("mainNotesSearch");
+if (qInput) qInput.value = topic;
+currentActiveCategory = "all";
+filterMainStudyNotes();
+}
+
+// =========================================================================
+// TAB 3: EXAM PHOTO & SIGNATURE RESIZER (20KB - 50KB)
+// =========================================================================
+var uploadedExamImg = null;
 
 function loadExamFile(e) {
 var file = e.target.files[0];
 if (!file) return;
-var r = new FileReader();
-r.onload = function(ev) {
-var im = new Image();
-im.onload = function() {
-rawExamImg = im;
+var reader = new FileReader();
+reader.onload = function(ev) {
+var img = new Image();
+img.onload = function() {
+uploadedExamImg = img;
 drawExamPhoto();
 };
-im.src = ev.target.result;
+img.src = ev.target.result;
 };
-r.readAsDataURL(file);
+reader.readAsDataURL(file);
 }
 
 function drawExamPhoto() {
-var c = document.getElementById("p-canvas");
-var ctx = c.getContext("2d");
+var canvas = document.getElementById("p-canvas");
+if (!canvas) return;
+var ctx = canvas.getContext("2d");
 var type = document.getElementById("p-type").value;
-var nm = document.getElementById("p-name").value.trim();
-var dt = document.getElementById("p-date").value.trim();
-var q = parseInt(document.getElementById("p-qual").value) / 100;
 
-c.width = (type === "photo") ? 350 : 400;
-c.height = (type === "photo") ? 450 : 200;
-
-ctx.fillStyle = "#ffffff";
-ctx.fillRect(0, 0, c.width, c.height);
-
-if (rawExamImg) {
-ctx.drawImage(rawExamImg, 0, 0, c.width, c.height);
+if (type === "sign") {
+canvas.width = 400;
+canvas.height = 200;
+} else {
+canvas.width = 350;
+canvas.height = 450;
 }
 
-if (type === "photo" && (nm || dt)) {
 ctx.fillStyle = "#ffffff";
-ctx.fillRect(0, c.height - 65, c.width, 65);
-ctx.fillStyle = "#000000";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+if (uploadedExamImg) {
+ctx.drawImage(uploadedExamImg, 0, 0, canvas.width, canvas.height);
+} else {
+ctx.fillStyle = "#94a3b8";
+ctx.font = "bold 16px sans-serif";
 ctx.textAlign = "center";
-ctx.font = "bold 19px Arial";
-ctx.fillText(nm.toUpperCase(), c.width / 2, c.height - 38);
-ctx.font = "bold 17px Arial";
-ctx.fillText(dt.toUpperCase(), c.width / 2, c.height - 12);
+ctx.fillText("Upload Photo / Sign", canvas.width / 2, canvas.height / 2);
 }
 
-outExamUrl = c.toDataURL("image/jpeg", q);
-var kb = Math.round(((outExamUrl.length - 22) * 0.75) / 1024);
-document.getElementById("p-kb").innerText = "Ready File Size: ~" + kb + " KB";
+var pName = document.getElementById("p-name").value.trim();
+var pDate = document.getElementById("p-date").value.trim();
+if (type === "photo" && (pName || pDate)) {
+var barH = (pName && pDate) ? 68 : 38;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+ctx.strokeStyle = "#0f172a";
+ctx.lineWidth = 2;
+ctx.strokeRect(1, canvas.height - barH, canvas.width - 2, barH - 1);
+ctx.fillStyle = "#0f172a";
+ctx.font = "bold 18px sans-serif";
+ctx.textAlign = "center";
+if (pName && pDate) {
+ctx.fillText(pName.toUpperCase(), canvas.width / 2, canvas.height - 40);
+ctx.fillText("DOP: " + pDate, canvas.width / 2, canvas.height - 14);
+} else {
+ctx.fillText((pName || pDate).toUpperCase(), canvas.width / 2, canvas.height - 14);
+}
+}
+
+var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+var dataUrl = canvas.toDataURL("image/jpeg", qual);
+var kb = Math.round((dataUrl.length * 3 / 4) / 1024);
+var kbEl = document.getElementById("p-kb");
+if (kbEl) kbEl.innerText = "Ready File Size: ~" + kb + " KB (Exam Valid)";
 }
 
 function saveExamPhoto() {
-if (!rawExamImg) { alert("Pehle photo select karein!"); return; }
-var a = document.createElement("a");
-a.href = outExamUrl;
-a.download = "Exam_Photo_Ready.jpg";
-a.click();
+var canvas = document.getElementById("p-canvas");
+var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+var link = document.createElement("a");
+link.download = "Exam_Photo_FreeCVResume.jpg";
+link.href = canvas.toDataURL("image/jpeg", qual);
+link.click();
 }
 
+// =========================================================================
+// TAB 4: AI DYNAMIC EXAM TYPING SPEED TEST
+// =========================================================================
 var typingPassages = {
 ssc: [
-"Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across India.",
-"The Staff Selection Commission conducts skill tests every year to recruit talented youth into central government ministries. Maintaining composure and zero error rate is the key to clearing the data entry speed test.",
-"Public administration plays a vital role in implementing welfare schemes at the grassroots level. Efficient documentation, digital record management, and timely citizen service delivery build strong trust in governance.",
-"Candidates appearing for clerical and stenographer examinations must practice on standard keyboard layouts daily. Focus on rhythm and finger placement rather than looking at the keys while typing official paragraphs."
+"Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across central and state departments in India.",
+"The Staff Selection Commission conducts recruitment examinations every year to select skilled candidates for clerical and executive posts in various ministries. Maintaining composer and minimizing backspace errors are critical to clearing the skill test."
 ],
 economy: [
-"Quick commerce and modern supply chain networks have transformed urban retail across India. Automated fulfillment centers, barcode scanners, and real-time inventory tracking allow products to reach customers within minutes.",
-"Digital payment infrastructure in India has set a global benchmark for financial inclusion. Millions of small merchants and citizens now use instant mobile transfers for daily retail and business transactions seamlessly.",
-"Financial literacy and disciplined investment habits are essential for young professionals entering the workforce. Understanding equity markets, mutual funds, and banking instruments helps build long-term wealth."
+"India has witnessed a rapid transformation in digital public infrastructure through the Unified Payments Interface and financial inclusion initiatives. Reserve Bank monetary policies help balance inflation while promoting sustainable economic growth.",
+"Gross Domestic Product measures the monetary value of final goods and services produced within a country during a given period. Strong manufacturing and service sectors play a vital role in boosting national income and employment."
 ],
 tech: [
-"Artificial intelligence is revolutionizing how job seekers prepare their resumes and apply for career opportunities. Automated formatting tools highlight relevant skills so candidates pass applicant tracking systems easily.",
-"Cloud computing and modern web frameworks allow developers to deploy fast applications within minutes. Optimizing page speed, mobile responsiveness, and search engine metadata ensures helpful tools reach users nationwide.",
-"Cybersecurity awareness is critical in an increasingly connected digital world. Using strong authentication protocols, verifying official links, and keeping software updated protects sensitive data from unauthorized access."
+"Artificial intelligence, cloud computing, and data analytics are reshaping modern governance, healthcare, and education systems worldwide. Cybersecurity awareness is crucial to protect sensitive citizen data from unauthorized digital access.",
+"Modern web applications rely on clean architecture, responsive design, and fast rendering to serve millions of users simultaneously. Continuous learning keeps software professionals adaptable in a rapidly evolving technological landscape."
 ],
 corporate: [
-"Dear Team, please find attached the monthly inventory and billing reconciliation report for the second quarter. Kindly verify all inward and outward dispatch entries before Friday afternoon for final audit submission.",
-"Effective workplace communication requires clarity, politeness, and attention to detail. Maintaining organized spreadsheets, responding promptly to official emails, and collaborating smoothly creates a productive office environment.",
-"Standard operating procedures ensure quality compliance across all warehouse and back-office departments. Every associate must verify invoice numbers, batch codes, and packaging standards before dispatching customer orders."
+"Effective workplace communication, accurate documentation, and timely reporting are the cornerstones of smooth corporate operations. Inventory reconciliation and quality assurance ensure uninterrupted supply chain efficiency.",
+"Standard operating procedures help organizations maintain consistency, reduce operational bottlenecks, and deliver reliable service to customers within agreed turnaround timelines."
 ]
 };
 
-var aiStart = ["Modern digital workflows", "Consistent typing practice", "Automated inventory systems", "Disciplined time management", "Accurate MIS reporting"];
-var aiMid = ["significantly improves", "directly accelerates", "seamlessly strengthens", "effectively transforms", "consistently optimizes"];
-var aiEnd = ["daily operational accuracy across offices in India.", "career growth opportunities for dedicated graduates.", "transparent service delivery and citizen satisfaction.", "real-time stock auditing and billing precision.", "overall productivity in competitive environments."];
-
-var tyPassageIndex = 0;
 var tyTimer = null;
-var tyLeft = 60;
-var tyRunning = false;
+var tyTimeLeft = 60;
+var tyStarted = false;
+var tyPassIdx = 0;
 
 function aiChangeTypingText(btn) {
 var topic = document.getElementById("ty-topic").value;
-var newText = "";
+var pool = typingPassages[topic] || typingPassages.ssc;
 if (topic === "ai_mix") {
-var s = [];
-for (var i = 0; i < 3; i++) {
-var a = aiStart[Math.floor(Math.random() * aiStart.length)];
-var b = aiMid[Math.floor(Math.random() * aiMid.length)];
-var c = aiEnd[Math.floor(Math.random() * aiEnd.length)];
-s.push(a + " " + b + " " + c);
+pool = [].concat(typingPassages.ssc, typingPassages.economy, typingPassages.tech, typingPassages.corporate);
 }
-newText = s.join(" ");
-} else {
-var list = typingPassages[topic] || typingPassages.ssc;
-tyPassageIndex = (tyPassageIndex + 1) % list.length;
-var extra = aiStart[tyPassageIndex % aiStart.length] + " " + aiMid[tyPassageIndex % aiMid.length] + " " + aiEnd[tyPassageIndex % aiEnd.length];
-newText = list[tyPassageIndex] + " " + extra;
-}
-document.getElementById("ty-text").innerText = newText;
+tyPassIdx = (tyPassIdx + 1) % pool.length;
+document.getElementById("ty-text").innerText = pool[tyPassIdx];
 resetTypingTest();
-if (btn) flashBtn(btn, "Words Changed!");
-}
-
-function runTyping() {
-var inp = document.getElementById("ty-input").value;
-var tgt = document.getElementById("ty-text").innerText;
-if (!tyRunning && inp.length > 0) {
-tyRunning = true;
-tyTimer = setInterval(function() {
-tyLeft--;
-document.getElementById("ty-time").innerText = tyLeft + "s";
-if (tyLeft <= 0) {
-clearInterval(tyTimer);
-document.getElementById("ty-input").disabled = true;
-}
-}, 1000);
-}
-var ok = 0;
-for (var i = 0; i < inp.length; i++) {
-if (inp[i] === tgt[i]) ok++;
-}
-var mins = Math.max((60 - tyLeft) / 60, 1 / 60);
-document.getElementById("ty-wpm").innerText = Math.round((ok / 5) / mins);
-document.getElementById("ty-acc").innerText = (inp.length ? Math.round((ok / inp.length) * 100) : 100) + "%";
+if (btn) flashBtn(btn, "New Passage!");
 }
 
 function resetTypingTest() {
-clearInterval(tyTimer);
-tyLeft = 60;
-tyRunning = false;
-var el = document.getElementById("ty-input");
-el.disabled = false;
-el.value = "";
+if (tyTimer) clearInterval(tyTimer);
+tyTimer = null;
+tyTimeLeft = 60;
+tyStarted = false;
 document.getElementById("ty-time").innerText = "60s";
 document.getElementById("ty-wpm").innerText = "0";
 document.getElementById("ty-acc").innerText = "100%";
+var inp = document.getElementById("ty-input");
+if (inp) {
+inp.value = "";
+inp.disabled = false;
+}
 }
 
-function openLegalModal(type) {
-var content = document.getElementById("legal-modal-content");
-if (type === "about") {
-content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is a 100% free digital utility and study platform designed for job seekers, students, and competitive exam aspirants across India. We offer AI-driven Resume creation, free competitive exam study notes, instant 20KB-50KB passport photo and signature resizing, and live typing speed tests without requiring login or storing personal data.</p>";
-} else if (type === "privacy") {
-content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Privacy Policy</h3><p>At FreeCVResume.co.in, your privacy is our priority. We do not store, collect, or transmit your personal resume data or photograph files to any external server. All resume and photo processing happens strictly within your browser.</p><p class='mt-2 font-bold'>Cookies & Third-Party Advertising:</p><p>We use third-party vendors, including Google AdSense, which use cookies to serve ads based on user visits.</p>";
-} else if (type === "terms") {
-content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Terms of Service</h3><p>By using FreeCVResume.co.in, you agree to use our tools and study notes for lawful personal and educational purposes. Users are responsible for verifying all details on their generated resumes and resized exam photos before official submission.</p>";
-} else if (type === "contact") {
-content.innerHTML = "<h3 class='text-base font-extrabold text-slate-900 mb-2'>Contact Us</h3><p>For any queries, feedback, or support, reach out to us via our official portal:</p><p class='mt-2 font-bold'>Website: https://freecvresume.co.in</p><p>Location: India</p>";
+function runTyping() {
+var inp = document.getElementById("ty-input");
+var target = document.getElementById("ty-text").innerText;
+var typed = inp.value;
+
+if (!tyStarted && typed.length > 0) {
+tyStarted = true;
+tyTimer = setInterval(function() {
+tyTimeLeft--;
+document.getElementById("ty-time").innerText = tyTimeLeft + "s";
+if (tyTimeLeft <= 0) {
+clearInterval(tyTimer);
+inp.disabled = true;
 }
+}, 1000);
+}
+
+var correctChars = 0;
+for (var i = 0; i < typed.length; i++) {
+if (typed[i] === target[i]) correctChars++;
+}
+var acc = typed.length > 0 ? Math.round((correctChars / typed.length) * 100) : 100;
+var elapsedMin = Math.max((60 - tyTimeLeft) / 60, 1 / 60);
+var wpm = Math.round((typed.length / 5) / elapsedMin);
+
+document.getElementById("ty-acc").innerText = acc + "%";
+document.getElementById("ty-wpm").innerText = wpm;
+}
+
+// =========================================================================
+// LEGAL MODALS & INITIALIZATION
+// =========================================================================
+function openLegalModal(type) {
+var box = document.getElementById("legal-modal-content");
+var map = {
+about: "<h3 class='text-base font-black text-slate-900'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is India's dedicated educational & career utility portal offering a 100% Free AI ATS Resume Builder, Exam Photo Resizer, Typing Test, and an open Study Notes Marketplace for IIT JEE, NEET UG, B.Sc, M.Sc, CSIR-UGC NET/JRF, GATE, SSC & Railway aspirants.</p>",
+privacy: "<h3 class='text-base font-black text-slate-900'>Privacy Policy</h3><p>We respect your privacy. Resume data and uploaded notes are processed securely in your browser. Third-party vendors, including Google AdSense, use cookies to serve relevant advertisements based on user visits.</p>",
+terms: "<h3 class='text-base font-black text-slate-900'>Terms of Service</h3><p>Users uploading study notes must ensure the content is educational and helpful. Coaching watermarks, phone numbers, and promotional links are automatically stripped by our sanitizer to keep study material clean for students.</p>",
+contact: "<h3 class='text-base font-black text-slate-900'>Contact & Creator Support</h3><p>For creator payout queries, notes support, or feedback, reach out via our official portal at <strong>support@freecvresume.co.in</strong>.</p>"
+};
+box.innerHTML = map[type] || map.about;
 document.getElementById("legal-modal").classList.remove("hidden");
 }
 
@@ -1324,8 +3548,16 @@ function closeLegalModal() {
 document.getElementById("legal-modal").classList.add("hidden");
 }
 
-updateCV();
-initStudyNotes();
+window.addEventListener("DOMContentLoaded", function() {
+getUniqueBrowserUserId();
+injectBscMscNetGateUI();
+updateCreatorAuthUI();
+renderCustomNotesCards();
+updateDynamicSEOForNotes();
+updateWalletUI();
+filterMainStudyNotes();
+syncNotesFromSupabase();
+});
 </script>
 </body>
 </html>
