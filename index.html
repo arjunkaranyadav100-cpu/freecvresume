@@ -1963,10 +1963,10 @@ listHtml += '<div class="bg-slate-50 hover:bg-indigo-50/40 border border-slate-2
 '</div>' +
 '</div>' +
 '<div class="flex items-center gap-2 shrink-0">' +
-'<button type="button" onclick="openCustomNoteReader('' + item.id + '')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
+'<button type="button" data-open-note="' + item.id + '" onclick="openCustomNoteReader(this.getAttribute(&quot;data-open-note&quot;))" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-book-open"></i> Open PDF' +
 '</button>' +
-'<button type="button" onclick="deleteCreatorNote('' + item.id + '')" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
+'<button type="button" data-del-note="' + item.id + '" onclick="deleteCreatorNote(this.getAttribute(&quot;data-del-note&quot;))" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-trash-can"></i> Delete PDF' +
 '</button>' +
 '</div>' +
