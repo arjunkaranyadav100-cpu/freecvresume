@@ -2041,6 +2041,11 @@ filterMainStudyNotes();
 if (sbClient) {
 try {
 sbClient.from("study_notes").delete().eq("id", noteId).then(function() {}).catch(function() {});
+if (targetTitleKey) {
+var delSlug = getNoteCloudSlug(targetTitleKey);
+sbClient.from("study_notes").delete().like("id", "pdfchunk_" + delSlug + "_%").then(function() {}).catch(function() {});
+}
+sbClient.from("study_notes").delete().like("id", "pdfchunk_" + noteId + "_%").then(function() {}).catch(function() {});
 } catch (err) {}
 }
 }
@@ -2055,7 +2060,7 @@ var lastUploadedPdfBuffer = null;
 function isGarbledLegacyFontText(str) {
 if (!str) return false;
 var s = String(str);
-if (/(vuqØekf|bdkbZ|Hkkjrh;|yksdra=k|vè;k;|D;ksafd|cSBuk|VkViV|lekurk|ljdkj|Hkwfedk|LokLF;|mUgksaus|gSa|ugha|fd;k|tkrk)/.test(s)) {
+if (/(vuqØekf|bdkbZ|Hkkjrh;|yksdra=k|vè;k;|D;ksafd|cSBuk|VkViV|lekurk|ljdkj|Hkwfedk|LokLF;|mUgksaus|gSa|ugha|fd;k|tkrk|\[Page \d+ OCR\]:|Gonstition of|EceReiol|Bueen Elizabeth)/.test(s)) {
 return true;
 }
 var weirdMatches = s.match(/[a-zA-Z][;%=~ØÈÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ][a-zA-Z]/g);
@@ -2510,28 +2515,18 @@ var extractedWords = combinedText ? combinedText.split(/\s+/).filter(Boolean).le
 // IF SCANNED / IMAGE PDF OR GARBLED KRUTIDEV HINDI FONT DETECTED
 var isGarbledFont = isGarbledLegacyFontText(combinedText);
 if (ext === "pdf" && (extractedWords < 80 || isGarbledFont)) {
-if (isGarbledFont) combinedText = "";
-updateNoteUploadProgressUI(95, '<i class="fa-solid fa-camera-rotate fa-spin mr-1 text-indigo-600"></i> Scanned Image PDF Detected! Running OCR & Auto-Topic Indexer (95%)...');
-st.innerText = "📸 Scanned Image PDF Detected (" + totalPages + " Pages)! Running AI OCR & Auto-Topic SEO Generator...";
-
-var ocrSample = "";
-if (lastLoadedPdfDoc && window.Tesseract) {
-var cropChk2 = document.getElementById("upCropHeaderFooter");
-ocrSample = await extractTextViaTesseractOCR(lastLoadedPdfDoc, 2, cropChk2 ? cropChk2.checked : true, null);
-}
+combinedText = "";
+updateNoteUploadProgressUI(95, '<i class="fa-solid fa-wand-magic-sparkles fa-spin mr-1 text-indigo-600"></i> Scanned PDF Detected! Generating Clean Topic Summary (95%)...');
+st.innerText = "📸 Scanned Handwritten PDF (" + totalPages + " Pages) Detected! Building Clean Topic Index...";
 
 var catEl = document.getElementById("upNoteCategory");
 var subEl = document.getElementById("upNoteSubject");
-var autoSeoTranscript = generateSmartTopicSEOLines(
+combinedText = generateSmartTopicSEOLines(
 titleIn ? titleIn.value : quickTitle,
 catEl ? catEl.value : "upsc",
 subEl ? subEl.value : "gk-gs",
 totalPages
 );
-
-combinedText = (combinedText ? combinedText + "\n\n" : "") +
-(ocrSample ? ocrSample + "\n\n" : "") +
-autoSeoTranscript;
 }
 
 rawUploadedNoteText = combinedText;
@@ -2701,7 +2696,7 @@ var modified = false;
 
 for (var i = 0; i < rawList.length; i++) {
 var item = rawList[i];
-if (!item || !item.id || deletedMap[item.id]) {
+if (!item || !item.id || deletedMap[item.id] || String(item.id).indexOf("pdfchunk_") === 0 || item.category === "_chunk") {
 modified = true;
 continue;
 }
@@ -2960,30 +2955,279 @@ localStorage.setItem("fcv_viewed_notes_log", JSON.stringify(viewedMap));
 } catch (e) {}
 }
 
+function getNoteCloudSlug(titleStr) {
+return String(titleStr || "note")
+.toLowerCase()
+.replace(/[^a-z0-9\u0900-\u097F]+/g, "_")
+.replace(/^_+|_+$/g, "")
+.slice(0, 40) || "note";
+}
+
+function showCloudSyncToast(msgText, isDone) {
+var toast = document.getElementById("fcvCloudSyncToast");
+if (!toast) {
+toast = document.createElement("div");
+toast.id = "fcvCloudSyncToast";
+toast.className = "fixed bottom-4 right-4 z-50 bg-indigo-950 text-white text-xs font-extrabold px-4 py-3 rounded-2xl shadow-2xl border border-indigo-500/40 flex items-center gap-2 max-w-xs sm:max-w-sm";
+document.body.appendChild(toast);
+}
+toast.style.display = "flex";
+toast.innerHTML = isDone
+? '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span>' + msgText + '</span>'
+: '<i class="fa-solid fa-cloud-arrow-up fa-bounce text-amber-400 text-sm"></i> <span>' + msgText + '</span>';
+if (isDone) {
+setTimeout(function() {
+if (toast) toast.style.display = "none";
+}, 4000);
+}
+}
+
+function arrayBufferToBase64Async(buf) {
+return new Promise(function(resolve) {
+try {
+var blob = new Blob([new Uint8Array(buf)], { type: "application/pdf" });
+var reader = new FileReader();
+reader.onload = function(ev) {
+var dataUrl = String(ev.target.result || "");
+var commaIdx = dataUrl.indexOf(",");
+resolve(commaIdx !== -1 ? dataUrl.slice(commaIdx + 1) : "");
+};
+reader.onerror = function() { resolve(""); };
+reader.readAsDataURL(blob);
+} catch (e) {
+resolve("");
+}
+});
+}
+
+async function base64ToArrayBufferAsync(b64) {
+if (!b64) return null;
+try {
+var cleanB64 = String(b64).replace(/\s+/g, "");
+var resp = await fetch("data:application/pdf;base64," + cleanB64);
+if (resp.ok) {
+var ab = await resp.arrayBuffer();
+if (ab && ab.byteLength > 0) return ab;
+}
+} catch (e) {}
+try {
+var binStr = atob(String(b64).replace(/\s+/g, ""));
+var len = binStr.length;
+var bytes = new Uint8Array(len);
+for (var i = 0; i < len; i++) {
+bytes[i] = binStr.charCodeAt(i);
+}
+return bytes.buffer;
+} catch (err) {
+return null;
+}
+}
+
+var activeCloudUploadsMap = {};
+
+async function uploadPdfBufferToCloud(noteObj, pdfBuffer, showToastFlag) {
+if (!sbClient || !noteObj || !noteObj.id || !pdfBuffer || pdfBuffer.byteLength === 0) return "";
+var slug = getNoteCloudSlug(noteObj.title);
+if (activeCloudUploadsMap[slug]) return "";
+activeCloudUploadsMap[slug] = true;
+
+try {
+if (showToastFlag) {
+showCloudSyncToast("☁️ Uploading PDF '" + (noteObj.title || "").slice(0, 22) + "...' to Cloud for all devices...", false);
+}
+
+// 1. Try Supabase Storage bucket 'notes-pdfs' first (with 90s timeout for large 100+ page PDFs)
+var storagePath = "pdfs/" + slug + "_" + noteObj.id + ".pdf";
+var upRes = await Promise.race([
+sbClient.storage.from("notes-pdfs").upload(storagePath, new Blob([pdfBuffer], { type: "application/pdf" }), { upsert: true }),
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "timeout" } }); }, 90000); })
+]);
+
+if (upRes && !upRes.error) {
+var pubObj = sbClient.storage.from("notes-pdfs").getPublicUrl(storagePath);
+if (pubObj && pubObj.data && pubObj.data.publicUrl) {
+var finalUrl = pubObj.data.publicUrl;
+await sbClient.from("study_notes").update({ url: finalUrl }).eq("id", noteObj.id);
+var list1 = getCustomNotesList();
+for (var m = 0; m < list1.length; m++) {
+if (list1[m].id === noteObj.id || getNoteCloudSlug(list1[m].title) === slug) {
+list1[m].url = finalUrl;
+}
+}
+saveCustomNotesList(list1);
+if (showToastFlag) {
+showCloudSyncToast("✅ PDF Synced to Cloud! Ab ye PDF har mobile/device par dikhega.", true);
+}
+delete activeCloudUploadsMap[slug];
+return finalUrl;
+}
+}
+
+// 2. Fallback: If 'notes-pdfs' bucket does not exist or has RLS limits, save PDF in cloud chunks inside 'study_notes' table!
+var b64Full = await arrayBufferToBase64Async(pdfBuffer);
+if (!b64Full || b64Full.length < 50) {
+delete activeCloudUploadsMap[slug];
+return "";
+}
+
+var chunkSize = 650000; // ~480 KB per chunk row
+var totalChunks = Math.ceil(b64Full.length / chunkSize);
+
+// Clean any old chunks for this slug first
+try {
+await sbClient.from("study_notes").delete().like("id", "pdfchunk_" + slug + "_%");
+} catch (delErr) {}
+
+for (var c = 0; c < totalChunks; c++) {
+var part = b64Full.slice(c * chunkSize, (c + 1) * chunkSize);
+var pct = Math.round(((c + 1) / totalChunks) * 100);
+if (showToastFlag) {
+showCloudSyncToast("☁️ Syncing PDF to Cloud (" + pct + "%) — Page data uploading for all devices...", false);
+}
+var chunkRow = {
+id: "pdfchunk_" + slug + "_" + c,
+title: "_PDF_CHUNK_",
+category: "_chunk",
+subject: "chunk",
+language: "en",
+badge: "CHUNK",
+price: 0,
+creator: noteObj.id,
+upi: "",
+content: part,
+url: String(totalChunks),
+views: c,
+sales: 0,
+rating: 5
+};
+await sbClient.from("study_notes").upsert([chunkRow], { onConflict: "id" });
+}
+
+var chunkMarkerUrl = "sb-chunks:" + slug + ":" + totalChunks;
+await sbClient.from("study_notes").update({ url: chunkMarkerUrl }).eq("id", noteObj.id);
+
+var list2 = getCustomNotesList();
+for (var k = 0; k < list2.length; k++) {
+if (list2[k].id === noteObj.id || getNoteCloudSlug(list2[k].title) === slug) {
+list2[k].url = chunkMarkerUrl;
+}
+}
+saveCustomNotesList(list2);
+
+if (showToastFlag) {
+showCloudSyncToast("✅ 100% Cloud Synced! Ab ye PDF sabhi mobile/devices par khulega.", true);
+}
+delete activeCloudUploadsMap[slug];
+return chunkMarkerUrl;
+} catch (err) {
+delete activeCloudUploadsMap[slug];
+return "";
+}
+}
+
+async function fetchPdfBufferFromCloud(noteObj, onProgressText) {
+if (!noteObj) return null;
+var slug = getNoteCloudSlug(noteObj.title);
+
+// 1. If noteObj.url is an HTTP/HTTPS URL, try fetching directly
+if (noteObj.url && noteObj.url.indexOf("http") === 0) {
+try {
+if (onProgressText) onProgressText("⏳ Downloading PDF from Cloud Storage...");
+var resp = await fetch(noteObj.url);
+if (resp.ok) {
+var fetchedBuf = await resp.arrayBuffer();
+if (fetchedBuf && fetchedBuf.byteLength > 200) {
+return clonePdfArrayBuffer(fetchedBuf);
+}
+}
+} catch (e) {}
+}
+
+// 2. Check Supabase 'study_notes' table for cloud PDF chunks (by title slug OR note id)
+if (!sbClient) return null;
+try {
+if (onProgressText) onProgressText("⏳ Loading PDF Pages from Cloud Database...");
+var qRes = await sbClient
+.from("study_notes")
+.select("id,content,views")
+.like("id", "pdfchunk_" + slug + "_%");
+
+var rows = (qRes && qRes.data) ? qRes.data : [];
+if (rows.length === 0 && noteObj.id) {
+var qRes2 = await sbClient
+.from("study_notes")
+.select("id,content,views")
+.like("id", "pdfchunk_" + noteObj.id + "_%");
+if (qRes2 && qRes2.data) rows = qRes2.data;
+}
+
+if (rows.length > 0) {
+rows.sort(function(a, b) {
+var idxA = parseInt(String(a.id).split("_").pop() || "0", 10);
+var idxB = parseInt(String(b.id).split("_").pop() || "0", 10);
+return idxA - idxB;
+});
+var combinedB64 = [];
+for (var r = 0; r < rows.length; r++) {
+if (rows[r] && rows[r].content) combinedB64.push(rows[r].content);
+}
+var fullB64 = combinedB64.join("");
+var decodedBuf = await base64ToArrayBufferAsync(fullB64);
+if (decodedBuf && decodedBuf.byteLength > 200) {
+return clonePdfArrayBuffer(decodedBuf);
+}
+}
+} catch (err) {}
+return null;
+}
+
+async function autoSyncLocalPdfsToCloud() {
+if (!sbClient) return;
+var list = getCustomNotesList();
+for (var i = 0; i < list.length; i++) {
+var item = list[i];
+if (!item || !item.id || String(item.id).indexOf("custom-note") !== 0) continue;
+// Check if this device has the PDF binary in local IndexedDB
+var localBuf = await loadPdfBufferFromCache(item.id);
+if (!localBuf && item.title) {
+localBuf = await loadPdfBufferFromCache(item.title);
+}
+if (localBuf && localBuf.byteLength > 200) {
+// Check if cloud already has this note's PDF synced
+var hasCloudUrl = item.url && (item.url.indexOf("http") === 0 || item.url.indexOf("sb-chunks:") === 0);
+if (!hasCloudUrl) {
+await uploadPdfBufferToCloud(item, localBuf, true);
+}
+}
+}
+}
+
 async function syncNotesFromSupabase() {
 if (!sbClient) return;
 try {
 var deletedMap = getDeletedNoteIdsMap();
 var res = await Promise.race([
-sbClient.from("study_notes").select("*").order("created_at", { ascending: false }),
-new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 4000); })
+sbClient.from("study_notes").select("*").neq("category", "_chunk").order("created_at", { ascending: false }),
+new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 5000); })
 ]);
 
 if (res && res.data && res.data.length > 0) {
 var localList = getCustomNotesList();
 var localById = {};
+var localByTitle = {};
 var purchasedIds = {};
 for (var p = 0; p < localList.length; p++) {
 if (localList[p].purchased) purchasedIds[localList[p].id] = true;
 localById[localList[p].id] = localList[p];
+localByTitle[normalizeNoteTitleKey(localList[p].title)] = localList[p];
 }
 var seenIds = {};
 var merged = [];
 for (var r = 0; r < res.data.length; r++) {
 var row = res.data[r];
-if (!row || !row.id || deletedMap[row.id]) continue;
+if (!row || !row.id || deletedMap[row.id] || String(row.id).indexOf("pdfchunk_") === 0 || row.category === "_chunk") continue;
 seenIds[row.id] = true;
-var existingLocal = localById[row.id];
+var existingLocal = localById[row.id] || localByTitle[normalizeNoteTitleKey(row.title)];
 merged.push({
 id: row.id,
 title: row.title,
@@ -3005,7 +3249,7 @@ purchased: !!purchasedIds[row.id]
 }
 for (var k = 0; k < localList.length; k++) {
 var loc = localList[k];
-if (loc && loc.id && !seenIds[loc.id] && !deletedMap[loc.id]) {
+if (loc && loc.id && !seenIds[loc.id] && !deletedMap[loc.id] && String(loc.id).indexOf("pdfchunk_") !== 0) {
 merged.unshift(loc);
 }
 }
@@ -3014,6 +3258,11 @@ renderCustomNotesCards();
 renderCreatorDashboard();
 updateDynamicSEOForNotes();
 filterMainStudyNotes();
+
+// Automatically upload any local PDFs on this phone that haven't been synced to Cloud yet!
+setTimeout(function() {
+autoSyncLocalPdfsToCloud();
+}, 1200);
 }
 } catch (err) {
 console.warn("Supabase sync fallback to local:", err);
@@ -3159,29 +3408,8 @@ alert("✅ Aapka PDF Note turant Publish ho gaya hai! Ab har note mein sirf uska
 if (sbClient) {
 (async function() {
 try {
-if (pdfBufferForThisNote && !newNote.url) {
-var storagePath = "pdfs/" + newNote.id + ".pdf";
-var upRes = await Promise.race([
-sbClient.storage.from("notes-pdfs").upload(storagePath, new Blob([pdfBufferForThisNote], { type: "application/pdf" }), { upsert: true }),
-new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 6000); })
-]);
-if (upRes && !upRes.error) {
-var pubObj = sbClient.storage.from("notes-pdfs").getPublicUrl(storagePath);
-if (pubObj && pubObj.data && pubObj.data.publicUrl) {
-newNote.url = pubObj.data.publicUrl;
-var curList = getCustomNotesList();
-for (var m = 0; m < curList.length; m++) {
-if (curList[m].id === newNote.id) {
-curList[m].url = newNote.url;
-break;
-}
-}
-saveCustomNotesList(curList);
-}
-}
-}
 await Promise.race([
-sbClient.from("study_notes").insert([{
+sbClient.from("study_notes").upsert([{
 id: newNote.id,
 title: newNote.title,
 category: newNote.category,
@@ -3192,12 +3420,12 @@ price: newNote.price,
 creator: newNote.creator,
 upi: newNote.upi,
 content: newNote.content,
-url: newNote.url,
-views: 1,
-sales: 0,
+url: newNote.url || "",
+views: newNote.views || 1,
+sales: newNote.sales || 0,
 rating: 4.9
-}]),
-new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 4000); })
+}], { onConflict: "id" }),
+new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 5000); })
 ]);
 if (upi) {
 await Promise.race([
@@ -3207,6 +3435,9 @@ creator_name: creator
 }], { onConflict: "upi" }),
 new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3500); })
 ]);
+}
+if (pdfBufferForThisNote) {
+await uploadPdfBufferToCloud(newNote, pdfBufferForThisNote, true);
 }
 } catch (bgErr) {}
 })();
@@ -3480,9 +3711,9 @@ tempCanvas.width = fullW;
 tempCanvas.height = fullH;
 await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
 
-// Crop top 7% and bottom 7% watermarks automatically
-var cropY = Math.floor(fullH * 0.07);
-var cropH = Math.floor(fullH * 0.86);
+// Crop top 9.6% (removes coaching/teacher header bars) and bottom 7.4% watermarks automatically
+var cropY = Math.floor(fullH * 0.096);
+var cropH = Math.floor(fullH * 0.83);
 
 finalCanvas.width = fullW;
 finalCanvas.height = cropH;
@@ -3538,25 +3769,31 @@ pdfBuf = await loadPdfBufferFromCache(note.id);
 if (!pdfBuf && note.title) {
 pdfBuf = await loadPdfBufferFromCache(note.title);
 }
-if (!pdfBuf && note.url && note.url.indexOf("http") === 0) {
-try {
-var resp = await fetch(note.url);
-if (resp.ok) {
-var fetchedBuf = await resp.arrayBuffer();
-if (fetchedBuf && fetchedBuf.byteLength > 0) {
-pdfBuf = clonePdfArrayBuffer(fetchedBuf);
+if (!pdfBuf) {
+canvasContainer.classList.remove("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+canvasContainer.innerHTML = '<div id="cloudPdfLoadingBox" class="bg-indigo-50 border border-indigo-200 text-indigo-900 p-5 rounded-2xl text-xs sm:text-sm font-extrabold text-center shadow-xs">' +
+'<i class="fa-solid fa-cloud-arrow-down fa-bounce mr-1.5 text-indigo-600 text-base"></i> ' +
+'<span id="cloudPdfLoadingText">Loading Original PDF Pages from Cloud Server...</span>' +
+'</div>';
+pdfBuf = await fetchPdfBufferFromCloud(note, function(statusMsg) {
+var stEl = document.getElementById("cloudPdfLoadingText");
+if (stEl) stEl.innerText = statusMsg;
+});
+if (pdfBuf && pdfBuf.byteLength > 200) {
 await savePdfBufferToCache(note.id, pdfBuf);
+if (note.title) await savePdfBufferToCache(note.title, pdfBuf);
 }
 }
-} catch (fetchErr) {}
 }
-}
-if (pdfBuf && pdfBuf.byteLength > 0) {
+if (pdfBuf && pdfBuf.byteLength > 200) {
 canvasContainer.classList.remove("hidden");
 if (printAreaBox) printAreaBox.classList.add("hidden");
 renderVisualCroppedPdfPages(pdfBuf, canvasContainer);
 } else {
+canvasContainer.innerHTML = "";
 canvasContainer.classList.add("hidden");
+if (printAreaBox) printAreaBox.classList.remove("hidden");
 }
 }
 
@@ -3704,6 +3941,13 @@ if (isCustom) {
 savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.id);
 if (!savedPdfBuf && activeReaderNote.title) {
 savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.title);
+}
+if (!savedPdfBuf) {
+savedPdfBuf = await fetchPdfBufferFromCloud(activeReaderNote, null);
+if (savedPdfBuf && savedPdfBuf.byteLength > 200) {
+await savePdfBufferToCache(activeReaderNote.id, savedPdfBuf);
+if (activeReaderNote.title) await savePdfBufferToCache(activeReaderNote.title, savedPdfBuf);
+}
 }
 }
 
