@@ -1837,7 +1837,8 @@ var aUpi = String(acc.upi || "").toLowerCase().trim();
 if (nUpi && aUpi && nUpi === aUpi) return true;
 var nCreator = String(note.creator || "").toLowerCase().trim();
 var aName = String(acc.name || "").toLowerCase().trim();
-if (nCreator && aName && nCreator === aName) return true;
+if (nCreator && aName && (nCreator === aName || aName.indexOf(nCreator) !== -1 || nCreator.indexOf(aName.split(" ")[0]) !== -1)) return true;
+if (!nEmail && String(note.id || "").indexOf("custom-note") === 0) return true;
 return false;
 }
 
@@ -2002,10 +2003,24 @@ if (!ok) return;
 markNoteIdDeleted(noteId);
 
 var list = getCustomNotesList();
+var targetTitleKey = "";
+for (var t = 0; t < list.length; t++) {
+if (list[t].id === noteId) {
+targetTitleKey = normalizeNoteTitleKey(list[t].title);
+try { await deletePdfBufferFromCache(list[t].title); } catch (e) {}
+break;
+}
+}
+
 var filtered = [];
 for (var i = 0; i < list.length; i++) {
-if (list[i].id !== noteId) {
+if (list[i].id !== noteId && (!targetTitleKey || normalizeNoteTitleKey(list[i].title) !== targetTitleKey)) {
 filtered.push(list[i]);
+} else {
+markNoteIdDeleted(list[i].id);
+if (sbClient) {
+try { sbClient.from("study_notes").delete().eq("id", list[i].id).then(function() {}).catch(function() {}); } catch (err) {}
+}
 }
 }
 saveCustomNotesList(filtered);
@@ -2037,6 +2052,19 @@ var rawUploadedNoteText = "";
 var fullSanitizedNoteContent = "";
 var lastUploadedPdfBuffer = null;
 
+function isGarbledLegacyFontText(str) {
+if (!str) return false;
+var s = String(str);
+if (/(vuqØekf|bdkbZ|Hkkjrh;|yksdra=k|vè;k;|D;ksafd|cSBuk|VkViV|lekurk|ljdkj|Hkwfedk|LokLF;|mUgksaus|gSa|ugha|fd;k|tkrk)/.test(s)) {
+return true;
+}
+var weirdMatches = s.match(/[a-zA-Z][;%=~ØÈÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ][a-zA-Z]/g);
+if (weirdMatches && weirdMatches.length >= 4) {
+return true;
+}
+return false;
+}
+
 function sanitizeNoteText(rawText) {
 if (!rawText) return { cleanText: "", removedCount: 0 };
 var text = String(rawText);
@@ -2054,7 +2082,8 @@ new RegExp("t.me/[^ \n\r\t]+", "gi"),
 new RegExp("@[a-zA-Z0-9_]{3,}", "g"),
 new RegExp("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}", "g"),
 new RegExp("[6-9][0-9]{9}", "g"),
-new RegExp("(Physics Wallah|PW Vidyapeeth|Alakh Pandey|Allen|Aakash|Byju|Unacademy|Resonance|FIITJEE|Motion|Narayana|Chaitanya|Careerwill|crwill|Rojgar With Ankit|RWA|Adda247|Exampur|Utkarsh|WiFiStudy|KD Campus|Paramount|Drishti IAS|Vision IAS|Vajiram|Next IAS|ForumIAS|Khan Sir|KGS|Gagan Pratap|Rakesh Yadav|Competishun|Vedantu|Doubtnut|Testbook|Oliveboard|Abhinay Maths|Neetu Singh|Pathfinder|Sankalp Bharat)", "gi"),
+new RegExp("(Physics Wallah|PW Vidyapeeth|Alakh Pandey|Allen|Aakash|Byju|Unacademy|Resonance|FIITJEE|Motion|Narayana|Chaitanya|Careerwill|crwill|Rojgar With Ankit|RWA|Adda247|Exampur|Utkarsh|WiFiStudy|KD Campus|Paramount|Drishti IAS|Vision IAS|Vajiram|Next IAS|ForumIAS|Khan Sir|Shivant Sir|KGS|Gagan Pratap|Rakesh Yadav|Competishun|Vedantu|Doubtnut|Testbook|Oliveboard|Abhinay Maths|Neetu Singh|Pathfinder|Sankalp Bharat)", "gi"),
+new RegExp("\\b[A-Za-z]+\\s+(Sir|Madam)\\b", "gi"),
 new RegExp("(Notes by|Prepared by|Compiled by|Taught by|Guided by|Faculty:|Teacher:|Join Telegram|Subscribe YouTube|Download App|WhatsApp Us)", "gi")
 ];
 
@@ -2158,6 +2187,28 @@ var pages = pageCount || 1;
 
 var headerLine = "📘 " + (titleText || "Complete Exam Study Notes") + " (" + pages + " Pages Comprehensive Master PDF Notes)\n\n";
 var blocks = [];
+
+if (t.indexOf("civics") !== -1 || t.indexOf("नागरिक") !== -1 || t.indexOf("7th") !== -1 || t.indexOf("loktantra") !== -1 || t.indexOf("samanta") !== -1) {
+blocks.push(
+"📚 अनुक्रमणिका एवं मुख्य अध्याय (NCERT Class 7th Civics / सामाजिक एवं राजनीतिक जीवन - हिंदी माध्यम नोट्स):\n" +
+"• इकाई एक: भारतीय लोकतंत्र में समानता — अध्याय 1: समानता (मताधिकार की समानता, मानवीय गरिमा का मूल्य, भारतीय संविधान में अनुच्छेद 15 व मध्याह्न भोजन योजना)।\n" +
+"• इकाई दो: राज्य सरकार — अध्याय 2: स्वास्थ्य में सरकार की भूमिका (सार्वजनिक और निजी स्वास्थ्य सेवाएँ); अध्याय 3: राज्य शासन कैसे काम करता है (विधायक MLA, विधानसभा, मुख्यमंत्री एवं मंत्रिमंडल की कार्यप्रणाली)।\n" +
+"• इकाई तीन: लिंग बोध-जेंडर — अध्याय 4: लड़के और लड़कियों के रूप में बड़ा होना (घरेलू काम का मूल्य व सामाजिक भूमिकाएँ); अध्याय 5: औरतों ने बदली दुनिया (शिक्षा, महिला सशक्तिकरण और महिला आंदोलन)।\n" +
+"• इकाई चार: संचार माध्यम और विज्ञापन — अध्याय 6: संचार माध्यमों को समझना (लोकतंत्र में मीडिया की भूमिका और एजेंडा तय करना); अध्याय 7: विज्ञापनों को समझना (ब्रांड निर्माण और उपभोक्ता जागरूकता)।\n" +
+"• इकाई पाँच: बाज़ार — अध्याय 8: हमारे आस-पास के बाज़ार (साप्ताहिक बाज़ार, मोहल्ले की दुकानें और शॉपिंग कॉम्प्लेक्स); अध्याय 9: बाज़ार में एक कमीज़ (उत्पादक, बुनकर सहकारी संस्थाएँ और बाज़ार में लाभ का वितरण); अध्याय 10: समानता के लिए संघर्ष (तवा मत्स्य संघ और भारतीय संविधान—एक जीता-जागता दस्तावेज़)।"
+);
+}
+
+if (t.indexOf("static gk") !== -1 || t.indexOf("स्टैटिक") !== -1 || t.indexOf("gk") !== -1) {
+blocks.push(
+"🏆 COMPLETE STATIC GK & GS REVISION NOTES (HINDI & ENGLISH MEDIUM):\n" +
+"• भारत के प्रमुख शास्त्रीय एवं लोक नृत्य (Classical & Folk Dances of India), प्रमुख वाद्ययंत्र और उनसे संबंधित कलाकार।\n" +
+"• भारत के प्रमुख त्यौहार, मेले, मंदिर, यूनेस्को विश्व धरोहर स्थल (UNESCO World Heritage Sites) एवं प्रसिद्ध ऐतिहासिक स्मारक।\n" +
+"• राष्ट्रीय उद्यान (National Parks), टाइगर रिजर्व, बायोस्फीयर रिजर्व, रामसर आर्द्रभूमि स्थल (Ramsar Wetlands) एवं प्रमुख नदियाँ व बाँध।\n" +
+"• महत्वपूर्ण राष्ट्रीय एवं अंतर्राष्ट्रीय दिवस, प्रमुख पुस्तकें एवं लेखक (Books & Authors), राष्ट्रीय व अंतर्राष्ट्रीय पुरस्कार (Bharat Ratna, Padma Awards, Nobel Prize, Grammy, Oscar, Sports Awards)।\n" +
+"• अंतर्राष्ट्रीय संगठन, उनके मुख्यालय व स्थापना वर्ष (UN, WHO, WTO, IMF, World Bank, ASEAN, BRICS, SCO, NATO) एवं खेल शब्दावली व ट्रॉफियाँ।"
+);
+}
 
 if (t.indexOf("ancient") !== -1 || t.indexOf("prachin") !== -1 || t.indexOf("प्राचीन") !== -1 || t.indexOf("harappa") !== -1 || t.indexOf("vedic") !== -1) {
 blocks.push(
@@ -2456,8 +2507,10 @@ await new Promise(function(r) { setTimeout(r, 15); });
 var combinedText = pageChunks.join("\n\n").trim();
 var extractedWords = combinedText ? combinedText.split(/\s+/).filter(Boolean).length : 0;
 
-// IF SCANNED / IMAGE PDF DETECTED (e.g., only "Ancient HISTORY" on page 1 and rest 82 pages are images!)
-if (ext === "pdf" && extractedWords < 80) {
+// IF SCANNED / IMAGE PDF OR GARBLED KRUTIDEV HINDI FONT DETECTED
+var isGarbledFont = isGarbledLegacyFontText(combinedText);
+if (ext === "pdf" && (extractedWords < 80 || isGarbledFont)) {
+if (isGarbledFont) combinedText = "";
 updateNoteUploadProgressUI(95, '<i class="fa-solid fa-camera-rotate fa-spin mr-1 text-indigo-600"></i> Scanned Image PDF Detected! Running OCR & Auto-Topic Indexer (95%)...');
 st.innerText = "📸 Scanned Image PDF Detected (" + totalPages + " Pages)! Running AI OCR & Auto-Topic SEO Generator...";
 
@@ -2629,14 +2682,102 @@ var currentActiveLang = "all-lang";
 var activeReaderNote = null;
 var adShareTimer = null;
 
+function normalizeNoteTitleKey(title) {
+return String(title || "")
+.toLowerCase()
+.replace(/\b[a-z]+\s+sir\b/gi, "")
+.replace(/\s+/g, " ")
+.trim();
+}
+
+function deduplicateAndCleanNotesList(rawList) {
+if (!Array.isArray(rawList)) return [];
+var deletedMap = getDeletedNoteIdsMap();
+var seenByTitle = {};
+var seenById = {};
+var result = [];
+var duplicateIdsToRemove = [];
+var modified = false;
+
+for (var i = 0; i < rawList.length; i++) {
+var item = rawList[i];
+if (!item || !item.id || deletedMap[item.id]) {
+modified = true;
+continue;
+}
+if (seenById[item.id]) {
+modified = true;
+continue;
+}
+seenById[item.id] = true;
+
+// Clean garbled KrutiDev text in any already-saved note (like "vuqØekf.kdk..." or "Hkh i+ Q'kZ ij]...")
+if (isGarbledLegacyFontText(item.content)) {
+item.content = generateSmartTopicSEOLines(item.title, item.category || "upsc", item.subject || "gk-gs", 80);
+modified = true;
+}
+
+var tKey = normalizeNoteTitleKey(item.title);
+if (!tKey) tKey = item.id;
+
+if (!seenByTitle[tKey]) {
+seenByTitle[tKey] = item;
+result.push(item);
+} else {
+// Duplicate title found! Merge max views/sales into the kept note and schedule duplicate ID for removal
+var kept = seenByTitle[tKey];
+kept.views = Math.max(parseInt(kept.views || 1, 10), parseInt(item.views || 1, 10));
+kept.sales = Math.max(parseInt(kept.sales || 0, 10), parseInt(item.sales || 0, 10));
+if (!kept.url && item.url) kept.url = item.url;
+if (!kept.purchased && item.purchased) kept.purchased = true;
+duplicateIdsToRemove.push({ dupId: item.id, keptId: kept.id, title: kept.title });
+modified = true;
+}
+}
+
+if (duplicateIdsToRemove.length > 0) {
+try {
+var delMap = getDeletedNoteIdsMap();
+for (var d = 0; d < duplicateIdsToRemove.length; d++) {
+var dupEntry = duplicateIdsToRemove[d];
+delMap[dupEntry.dupId] = true;
+// If the duplicate ID had a cached PDF buffer in IndexedDB, migrate it to keptId and title
+(function(dId, kId, kTitle) {
+loadPdfBufferFromCache(dId).then(function(buf) {
+if (buf && buf.byteLength > 0) {
+savePdfBufferToCache(kId, buf);
+savePdfBufferToCache(kTitle, buf);
+}
+}).catch(function() {});
+if (sbClient) {
+try {
+sbClient.from("study_notes").delete().eq("id", dId).then(function() {}).catch(function() {});
+} catch (e) {}
+}
+})(dupEntry.dupId, dupEntry.keptId, dupEntry.title);
+}
+localStorage.setItem("fcv_deleted_note_ids_v5", JSON.stringify(delMap));
+} catch (e) {}
+}
+
+if (modified) {
+try {
+localStorage.setItem("fcv_custom_notes_v4", JSON.stringify(result));
+} catch (e) {}
+}
+return result;
+}
+
 function getCustomNotesList() {
 try {
-return JSON.parse(localStorage.getItem("fcv_custom_notes_v4") || "[]");
+var raw = JSON.parse(localStorage.getItem("fcv_custom_notes_v4") || "[]");
+return deduplicateAndCleanNotesList(raw);
 } catch (e) { return []; }
 }
 
 function saveCustomNotesList(list) {
-localStorage.setItem("fcv_custom_notes_v4", JSON.stringify(list));
+var clean = deduplicateAndCleanNotesList(list);
+localStorage.setItem("fcv_custom_notes_v4", JSON.stringify(clean));
 }
 
 function getWalletKeyForActiveCreator() {
@@ -2960,16 +3101,36 @@ hasLocalPdf: !!pdfBufferForThisNote,
 cropHeaderFooter: document.getElementById("upCropHeaderFooter") ? document.getElementById("upCropHeaderFooter").checked : true
 };
 
+var list = getCustomNotesList();
+var normNewTitle = normalizeNoteTitleKey(newNote.title);
+var filteredList = [];
+for (var idxL = 0; idxL < list.length; idxL++) {
+if (normalizeNoteTitleKey(list[idxL].title) === normNewTitle) {
+newNote.views = Math.max(1, parseInt(list[idxL].views || 1, 10));
+newNote.sales = Math.max(0, parseInt(list[idxL].sales || 0, 10));
+if (list[idxL].id !== newNote.id) {
+markNoteIdDeleted(list[idxL].id);
+if (sbClient) {
+try { sbClient.from("study_notes").delete().eq("id", list[idxL].id).then(function(){}).catch(function(){}); } catch (e) {}
+}
+}
+} else {
+filteredList.push(list[idxL]);
+}
+}
+
 if (pdfBufferForThisNote) {
 await Promise.race([
+Promise.all([
 savePdfBufferToCache(newNote.id, pdfBufferForThisNote),
+savePdfBufferToCache(newNote.title, pdfBufferForThisNote)
+]),
 new Promise(function(r) { setTimeout(r, 1500); })
 ]);
 }
 
-var list = getCustomNotesList();
-list.unshift(newNote);
-saveCustomNotesList(list);
+filteredList.unshift(newNote);
+saveCustomNotesList(filteredList);
 
 var w = getWalletData();
 if (upi) w.upi = upi;
@@ -3367,10 +3528,16 @@ if (printAreaBox) printAreaBox.classList.remove("hidden");
 var canvasContainer = document.getElementById("readerCanvasContainer");
 if (canvasContainer) {
 canvasContainer.innerHTML = "";
+if (isGarbledLegacyFontText(note.content)) {
+note.content = generateSmartTopicSEOLines(note.title, note.category || "upsc", note.subject || "gk-gs", 80);
+}
 var isCustom = String(note.id || "").indexOf("custom-note") !== -1;
 var pdfBuf = null;
 if (isCustom) {
 pdfBuf = await loadPdfBufferFromCache(note.id);
+if (!pdfBuf && note.title) {
+pdfBuf = await loadPdfBufferFromCache(note.title);
+}
 if (!pdfBuf && note.url && note.url.indexOf("http") === 0) {
 try {
 var resp = await fetch(note.url);
@@ -3535,6 +3702,9 @@ var isCustom = String(activeReaderNote.id || "").indexOf("custom-note") !== -1;
 var savedPdfBuf = null;
 if (isCustom) {
 savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.id);
+if (!savedPdfBuf && activeReaderNote.title) {
+savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.title);
+}
 }
 
 if (savedPdfBuf && savedPdfBuf.byteLength > 0) {
