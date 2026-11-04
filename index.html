@@ -1964,10 +1964,10 @@ listHtml += '<div class="bg-slate-50 hover:bg-indigo-50/40 border border-slate-2
 '</div>' +
 '</div>' +
 '<div class="flex items-center gap-2 shrink-0">' +
-'<button type="button" data-open-note="' + item.id + '" onclick="openCustomNoteReader(this.getAttribute(&quot;data-open-note&quot;))" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
+'<button type="button" data-open-note="' + item.id + '" onclick="openCustomNoteReader(this.getAttribute("data-open-note"))" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-book-open"></i> Open PDF' +
 '</button>' +
-'<button type="button" data-del-note="' + item.id + '" onclick="deleteCreatorNote(this.getAttribute(&quot;data-del-note&quot;))" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
+'<button type="button" data-del-note="' + item.id + '" onclick="deleteCreatorNote(this.getAttribute("data-del-note"))" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-trash-can"></i> Delete PDF' +
 '</button>' +
 '</div>' +
@@ -2043,9 +2043,9 @@ try {
 sbClient.from("study_notes").delete().eq("id", noteId).then(function() {}).catch(function() {});
 if (targetTitleKey) {
 var delSlug = getNoteCloudSlug(targetTitleKey);
-sbClient.from("study_notes").delete().like("id", "pdfchunk_" + delSlug + "_%").then(function() {}).catch(function() {});
+sbClient.from("study_notes").delete().like("id", "pdfchunk_" + delSlug + "%").then(function() {}).catch(function() {});
 }
-sbClient.from("study_notes").delete().like("id", "pdfchunk_" + noteId + "_%").then(function() {}).catch(function() {});
+sbClient.from("study_notes").delete().like("id", "pdfchunk" + noteId + "_%").then(function() {}).catch(function() {});
 } catch (err) {}
 }
 }
@@ -2060,7 +2060,7 @@ var lastUploadedPdfBuffer = null;
 function isGarbledLegacyFontText(str) {
 if (!str) return false;
 var s = String(str);
-if (/(vuqØekf|bdkbZ|Hkkjrh;|yksdra=k|vè;k;|D;ksafd|cSBuk|VkViV|lekurk|ljdkj|Hkwfedk|LokLF;|mUgksaus|gSa|ugha|fd;k|tkrk|\[Page \d+ OCR\]:|Gonstition of|EceReiol|Bueen Elizabeth)/.test(s)) {
+if (/(vuqØekf|bdkbZ|Hkkjrh;|yksdra=k|vè;k;|D;ksafd|cSBuk|VkViV|lekurk|ljdkj|Hkwfedk|LokLF;|mUgksaus|gSa|ugha|fd;k|tkrk|[Page \d+ OCR]:|Gonstition of|EceReiol|Bueen Elizabeth)/.test(s)) {
 return true;
 }
 var weirdMatches = s.match(/[a-zA-Z][;%=~ØÈÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ][a-zA-Z]/g);
@@ -2088,7 +2088,7 @@ new RegExp("@[a-zA-Z0-9_]{3,}", "g"),
 new RegExp("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}", "g"),
 new RegExp("[6-9][0-9]{9}", "g"),
 new RegExp("(Physics Wallah|PW Vidyapeeth|Alakh Pandey|Allen|Aakash|Byju|Unacademy|Resonance|FIITJEE|Motion|Narayana|Chaitanya|Careerwill|crwill|Rojgar With Ankit|RWA|Adda247|Exampur|Utkarsh|WiFiStudy|KD Campus|Paramount|Drishti IAS|Vision IAS|Vajiram|Next IAS|ForumIAS|Khan Sir|Shivant Sir|KGS|Gagan Pratap|Rakesh Yadav|Competishun|Vedantu|Doubtnut|Testbook|Oliveboard|Abhinay Maths|Neetu Singh|Pathfinder|Sankalp Bharat)", "gi"),
-new RegExp("\\b[A-Za-z]+\\s+(Sir|Madam)\\b", "gi"),
+new RegExp("\b[A-Za-z]+\s+(Sir|Madam)\b", "gi"),
 new RegExp("(Notes by|Prepared by|Compiled by|Taught by|Guided by|Faculty:|Teacher:|Join Telegram|Subscribe YouTube|Download App|WhatsApp Us)", "gi")
 ];
 
@@ -2958,8 +2958,8 @@ localStorage.setItem("fcv_viewed_notes_log", JSON.stringify(viewedMap));
 function getNoteCloudSlug(titleStr) {
 return String(titleStr || "note")
 .toLowerCase()
-.replace(/[^a-z0-9\u0900-\u097F]+/g, "_")
-.replace(/^_+|_+$/g, "")
+.replace(/[^a-z0-9\u0900-\u097F]+/g, "")
+.replace(/^+|_+$/g, "")
 .slice(0, 40) || "note";
 }
 
@@ -3086,7 +3086,7 @@ showCloudSyncToast("☁️ Syncing PDF to Cloud (" + pct + "%) — Page data upl
 }
 var chunkRow = {
 id: "pdfchunk_" + slug + "_" + c,
-title: "_PDF_CHUNK_",
+title: "PDF_CHUNK",
 category: "_chunk",
 subject: "chunk",
 language: "en",
@@ -3163,8 +3163,8 @@ if (qRes2 && qRes2.data) rows = qRes2.data;
 
 if (rows.length > 0) {
 rows.sort(function(a, b) {
-var idxA = parseInt(String(a.id).split("_").pop() || "0", 10);
-var idxB = parseInt(String(b.id).split("_").pop() || "0", 10);
+var idxA = parseInt(String(a.id).split("").pop() || "0", 10);
+var idxB = parseInt(String(b.id).split("").pop() || "0", 10);
 return idxA - idxB;
 });
 var combinedB64 = [];
@@ -3225,7 +3225,7 @@ var seenIds = {};
 var merged = [];
 for (var r = 0; r < res.data.length; r++) {
 var row = res.data[r];
-if (!row || !row.id || deletedMap[row.id] || String(row.id).indexOf("pdfchunk_") === 0 || row.category === "_chunk") continue;
+if (!row || !row.id || deletedMap[row.id] || String(row.id).indexOf("pdfchunk_") === 0 || row.category === "chunk") continue;
 seenIds[row.id] = true;
 var existingLocal = localById[row.id] || localByTitle[normalizeNoteTitleKey(row.title)];
 merged.push({
@@ -3249,7 +3249,7 @@ purchased: !!purchasedIds[row.id]
 }
 for (var k = 0; k < localList.length; k++) {
 var loc = localList[k];
-if (loc && loc.id && !seenIds[loc.id] && !deletedMap[loc.id] && String(loc.id).indexOf("pdfchunk_") !== 0) {
+if (loc && loc.id && !seenIds[loc.id] && !deletedMap[loc.id] && String(loc.id).indexOf("pdfchunk") !== 0) {
 merged.unshift(loc);
 }
 }
