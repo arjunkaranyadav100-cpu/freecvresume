@@ -123,6 +123,32 @@ body * { visibility: hidden; }
 <i class="fa-solid fa-keyboard mr-1"></i> AI Typing Test
 </button>
 </nav>
+<script>
+/* Independent navigation fallback: keeps the four main tabs usable even if a later script fails. */
+(function () {
+  function activateSiteTab(id) {
+    var allowed = ["resume", "notes", "resizer", "typing"];
+    if (allowed.indexOf(id) === -1) return;
+    allowed.forEach(function (tab) {
+      var panel = document.getElementById("tab-" + tab);
+      var button = document.getElementById("btn-" + tab);
+      if (panel) panel.classList.add("hidden");
+      if (button) button.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap";
+    });
+    var activePanel = document.getElementById("tab-" + id);
+    var activeButton = document.getElementById("btn-" + id);
+    if (activePanel) activePanel.classList.remove("hidden");
+    if (activeButton) activeButton.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
+  }
+  window.switchTab = activateSiteTab;
+  document.addEventListener("click", function (event) {
+    var button = event.target && event.target.closest ? event.target.closest("#btn-resume, #btn-notes, #btn-resizer, #btn-typing") : null;
+    if (!button) return;
+    var id = button.id.replace("btn-", "");
+    activateSiteTab(id);
+  }, true);
+})();
+</script>
 </div>
 </header>
 
@@ -3070,4 +3096,1307 @@ delete activeCloudUploadsMap[slug];
 return "";
 }
 
-var 
+var chunkSize = 650000; // ~480 KB per chunk row
+var totalChunks = Math.ceil(b64Full.length / chunkSize);
+
+// Clean any old chunks for this slug first
+try {
+await sbClient.from("study_notes").delete().like("id", "pdfchunk_" + slug + "_%");
+} catch (delErr) {}
+
+for (var c = 0; c < totalChunks; c++) {
+var part = b64Full.slice(c * chunkSize, (c + 1) * chunkSize);
+var pct = Math.round(((c + 1) / totalChunks) * 100);
+if (showToastFlag) {
+showCloudSyncToast("☁️ Syncing PDF to Cloud (" + pct + "%) — Page data uploading for all devices...", false);
+}
+var chunkRow = {
+id: "pdfchunk_" + slug + "_" + c,
+title: "PDF_CHUNK",
+category: "_chunk",
+subject: "chunk",
+language: "en",
+badge: "CHUNK",
+price: 0,
+creator: noteObj.id,
+upi: "",
+content: part,
+url: String(totalChunks),
+views: c,
+sales: 0,
+rating: 5
+};
+await sbClient.from("study_notes").upsert([chunkRow], { onConflict: "id" });
+}
+
+var chunkMarkerUrl = "sb-chunks:" + slug + ":" + totalChunks;
+await sbClient.from("study_notes").update({ url: chunkMarkerUrl }).eq("id", noteObj.id);
+
+var list2 = getCustomNotesList();
+for (var k = 0; k < list2.length; k++) {
+if (list2[k].id === noteObj.id || getNoteCloudSlug(list2[k].title) === slug) {
+list2[k].url = chunkMarkerUrl;
+}
+}
+saveCustomNotesList(list2);
+
+if (showToastFlag) {
+showCloudSyncToast("✅ 100% Cloud Synced! Ab ye PDF sabhi mobile/devices par khulega.", true);
+}
+delete activeCloudUploadsMap[slug];
+return chunkMarkerUrl;
+} catch (err) {
+delete activeCloudUploadsMap[slug];
+return "";
+}
+}
+
+async function fetchPdfBufferFromCloud(noteObj, onProgressText) {
+if (!noteObj) return null;
+var slug = getNoteCloudSlug(noteObj.title);
+
+// 1. If noteObj.url is an HTTP/HTTPS URL, try fetching directly
+if (noteObj.url && noteObj.url.indexOf("http") === 0) {
+try {
+if (onProgressText) onProgressText("⏳ Downloading PDF from Cloud Storage...");
+var resp = await fetch(noteObj.url);
+if (resp.ok) {
+var fetchedBuf = await resp.arrayBuffer();
+if (fetchedBuf && fetchedBuf.byteLength > 200) {
+return clonePdfArrayBuffer(fetchedBuf);
+}
+}
+} catch (e) {}
+}
+
+// 2. Check Supabase 'study_notes' table for cloud PDF chunks (by title slug OR note id)
+if (!sbClient) return null;
+try {
+if (onProgressText) onProgressText("⏳ Loading PDF Pages from Cloud Database...");
+var qRes = await sbClient
+.from("study_notes")
+.select("id,content,views")
+.like("id", "pdfchunk_" + slug + "_%");
+
+var rows = (qRes && qRes.data) ? qRes.data : [];
+if (rows.length === 0 && noteObj.id) {
+var qRes2 = await sbClient
+.from("study_notes")
+.select("id,content,views")
+.like("id", "pdfchunk_" + noteObj.id + "_%");
+if (qRes2 && qRes2.data) rows = qRes2.data;
+}
+
+if (rows.length > 0) {
+rows.sort(function(a, b) {
+var idxA = parseInt(String(a.id).split("").pop() || "0", 10);
+var idxB = parseInt(String(b.id).split("").pop() || "0", 10);
+return idxA - idxB;
+});
+var combinedB64 = [];
+for (var r = 0; r < rows.length; r++) {
+if (rows[r] && rows[r].content) combinedB64.push(rows[r].content);
+}
+var fullB64 = combinedB64.join("");
+var decodedBuf = await base64ToArrayBufferAsync(fullB64);
+if (decodedBuf && decodedBuf.byteLength > 200) {
+return clonePdfArrayBuffer(decodedBuf);
+}
+}
+} catch (err) {}
+return null;
+}
+
+async function autoSyncLocalPdfsToCloud() {
+if (!sbClient) return;
+var list = getCustomNotesList();
+for (var i = 0; i < list.length; i++) {
+var item = list[i];
+if (!item || !item.id || String(item.id).indexOf("custom-note") !== 0) continue;
+// Check if this device has the PDF binary in local IndexedDB
+var localBuf = await loadPdfBufferFromCache(item.id);
+if (!localBuf && item.title) {
+localBuf = await loadPdfBufferFromCache(item.title);
+}
+if (localBuf && localBuf.byteLength > 200) {
+// Check if cloud already has this note's PDF synced
+var hasCloudUrl = item.url && (item.url.indexOf("http") === 0 || item.url.indexOf("sb-chunks:") === 0);
+if (!hasCloudUrl) {
+await uploadPdfBufferToCloud(item, localBuf, true);
+}
+}
+}
+}
+
+async function syncNotesFromSupabase() {
+if (!sbClient) return;
+try {
+var deletedMap = getDeletedNoteIdsMap();
+var res = await Promise.race([
+sbClient.from("study_notes").select("*").neq("category", "_chunk").order("created_at", { ascending: false }),
+new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 5000); })
+]);
+
+if (res && res.data && res.data.length > 0) {
+var localList = getCustomNotesList();
+var localById = {};
+var localByTitle = {};
+var purchasedIds = {};
+for (var p = 0; p < localList.length; p++) {
+if (localList[p].purchased) purchasedIds[localList[p].id] = true;
+localById[localList[p].id] = localList[p];
+localByTitle[normalizeNoteTitleKey(localList[p].title)] = localList[p];
+}
+var seenIds = {};
+var merged = [];
+for (var r = 0; r < res.data.length; r++) {
+var row = res.data[r];
+if (!row || !row.id || deletedMap[row.id] || String(row.id).indexOf("pdfchunk_") === 0 || row.category === "chunk") continue;
+seenIds[row.id] = true;
+var existingLocal = localById[row.id] || localByTitle[normalizeNoteTitleKey(row.title)];
+merged.push({
+id: row.id,
+title: row.title,
+category: row.category,
+subject: row.subject || "gk-gs",
+language: row.language || "english",
+badge: row.badge,
+price: row.price || 0,
+creator: row.creator,
+creatorEmail: (existingLocal && existingLocal.creatorEmail) ? existingLocal.creatorEmail : "",
+upi: row.upi,
+content: row.content,
+url: row.url || (existingLocal ? existingLocal.url : ""),
+views: Math.max(row.views || 1, existingLocal ? (existingLocal.views || 1) : 1),
+sales: Math.max(row.sales || 0, existingLocal ? (existingLocal.sales || 0) : 0),
+rating: row.rating || 4.9,
+purchased: !!purchasedIds[row.id]
+});
+}
+for (var k = 0; k < localList.length; k++) {
+var loc = localList[k];
+if (loc && loc.id && !seenIds[loc.id] && !deletedMap[loc.id] && String(loc.id).indexOf("pdfchunk") !== 0) {
+merged.unshift(loc);
+}
+}
+saveCustomNotesList(merged);
+renderCustomNotesCards();
+renderCreatorDashboard();
+updateDynamicSEOForNotes();
+filterMainStudyNotes();
+
+// Automatically upload any local PDFs on this phone that haven't been synced to Cloud yet!
+setTimeout(function() {
+autoSyncLocalPdfsToCloud();
+}, 1200);
+}
+} catch (err) {
+console.warn("Supabase sync fallback to local:", err);
+}
+}
+
+// =========================================================================
+// UPLOAD, SANITIZE, SELL & GOOGLE SEO FULL-WORD INDEXING FUNCTIONS
+// =========================================================================
+function openUploadNotesModal() {
+lastUploadedPdfBuffer = null;
+rawUploadedNoteText = "";
+fullSanitizedNoteContent = "";
+lastLoadedPdfDoc = null;
+var progWrap = document.getElementById("pdfUploadProgressWrap");
+if (progWrap) progWrap.classList.add("hidden");
+var st = document.getElementById("pdfSanitizeStatus");
+if (st) st.classList.add("hidden");
+
+var acc = getActiveCreatorAccount();
+if (acc) {
+var upName = document.getElementById("upCreatorName");
+var upUpi = document.getElementById("upCreatorUpi");
+if (upName) upName.value = acc.name || "";
+if (upUpi) upUpi.value = acc.upi || "";
+}
+document.getElementById("uploadNotesModal").style.display = "flex";
+}
+
+function closeUploadNotesModal() {
+document.getElementById("uploadNotesModal").style.display = "none";
+}
+
+async function saveCustomNote(e) {
+e.preventDefault();
+var submitBtn = e.target.querySelector('button[type="submit"]');
+var origBtnText = submitBtn ? submitBtn.innerHTML : "☁️ Publish Clean Note & Start Earning";
+if (submitBtn) {
+submitBtn.disabled = true;
+submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Publishing Note...';
+}
+
+try {
+var acc = getActiveCreatorAccount();
+var title = document.getElementById("upNoteTitle").value.trim() || "Study Note PDF";
+var category = document.getElementById("upNoteCategory").value;
+var subject = document.getElementById("upNoteSubject") ? document.getElementById("upNoteSubject").value : "gk-gs";
+var language = document.getElementById("upNoteLang") ? document.getElementById("upNoteLang").value : "english";
+var badge = document.getElementById("upNoteBadge").value.trim() || "STUDY NOTES";
+var sellType = document.getElementById("upNoteSellType").value;
+var price = (sellType === "paid") ? parseInt(document.getElementById("upNotePrice").value || "29", 10) : 0;
+var creator = document.getElementById("upCreatorName").value.trim() || (acc ? acc.name : "Verified Educator");
+var upi = document.getElementById("upCreatorUpi").value.trim() || (acc ? acc.upi : "");
+var descVal = document.getElementById("upNoteDesc").value.trim();
+var rawDesc = (fullSanitizedNoteContent && fullSanitizedNoteContent.length > descVal.length) ? fullSanitizedNoteContent : descVal;
+var extUrl = document.getElementById("upNoteUrl").value.trim();
+
+var sanitized = sanitizeNoteText(rawDesc);
+var cleanContent = sanitized.cleanText || rawDesc || title;
+var cleanTitle = sanitizeNoteText(title).cleanText || title;
+
+var uniqueNoteId = "custom-note-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6);
+var pdfBufferForThisNote = (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteLength > 0)
+? clonePdfArrayBuffer(lastUploadedPdfBuffer)
+: null;
+
+var newNote = {
+id: uniqueNoteId,
+title: cleanTitle,
+category: category,
+subject: subject,
+language: language,
+badge: badge,
+price: price,
+creator: creator,
+creatorEmail: acc && acc.email ? acc.email : "",
+upi: upi,
+content: cleanContent,
+url: extUrl,
+views: 1,
+sales: 0,
+rating: 4.9,
+purchased: false,
+hasLocalPdf: !!pdfBufferForThisNote,
+cropHeaderFooter: document.getElementById("upCropHeaderFooter") ? document.getElementById("upCropHeaderFooter").checked : true
+};
+
+var list = getCustomNotesList();
+var normNewTitle = normalizeNoteTitleKey(newNote.title);
+var filteredList = [];
+for (var idxL = 0; idxL < list.length; idxL++) {
+if (normalizeNoteTitleKey(list[idxL].title) === normNewTitle) {
+newNote.views = Math.max(1, parseInt(list[idxL].views || 1, 10));
+newNote.sales = Math.max(0, parseInt(list[idxL].sales || 0, 10));
+if (list[idxL].id !== newNote.id) {
+markNoteIdDeleted(list[idxL].id);
+if (sbClient) {
+try { sbClient.from("study_notes").delete().eq("id", list[idxL].id).then(function(){}).catch(function(){}); } catch (e) {}
+}
+}
+} else {
+filteredList.push(list[idxL]);
+}
+}
+
+if (pdfBufferForThisNote) {
+await Promise.race([
+Promise.all([
+savePdfBufferToCache(newNote.id, pdfBufferForThisNote),
+savePdfBufferToCache(newNote.title, pdfBufferForThisNote)
+]),
+new Promise(function(r) { setTimeout(r, 1500); })
+]);
+}
+
+filteredList.unshift(newNote);
+saveCustomNotesList(filteredList);
+
+var w = getWalletData();
+if (upi) w.upi = upi;
+saveWalletData(w);
+
+lastUploadedPdfBuffer = null;
+rawUploadedNoteText = "";
+fullSanitizedNoteContent = "";
+lastLoadedPdfDoc = null;
+
+renderCustomNotesCards();
+renderCreatorDashboard();
+updateDynamicSEOForNotes();
+closeUploadNotesModal();
+e.target.reset();
+togglePriceInput();
+filterMainStudyNotes();
+
+if (submitBtn) {
+submitBtn.disabled = false;
+submitBtn.innerHTML = origBtnText;
+}
+
+alert("✅ Aapka PDF Note turant Publish ho gaya hai! Ab har note mein sirf uska apna PDF dikhega.");
+
+if (sbClient) {
+(async function() {
+try {
+await Promise.race([
+sbClient.from("study_notes").upsert([{
+id: newNote.id,
+title: newNote.title,
+category: newNote.category,
+subject: newNote.subject,
+language: newNote.language,
+badge: newNote.badge,
+price: newNote.price,
+creator: newNote.creator,
+upi: newNote.upi,
+content: newNote.content,
+url: newNote.url || "",
+views: newNote.views || 1,
+sales: newNote.sales || 0,
+rating: 4.9
+}], { onConflict: "id" }),
+new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 5000); })
+]);
+if (upi) {
+await Promise.race([
+sbClient.from("creator_wallets").upsert([{
+upi: upi,
+creator_name: creator
+}], { onConflict: "upi" }),
+new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3500); })
+]);
+}
+if (pdfBufferForThisNote) {
+await uploadPdfBufferToCloud(newNote, pdfBufferForThisNote, true);
+}
+} catch (bgErr) {}
+})();
+}
+} catch (err) {
+if (submitBtn) {
+submitBtn.disabled = false;
+submitBtn.innerHTML = origBtnText;
+}
+alert("⚠️ Note publish karne mein error aaya: " + (err.message || "Please try again."));
+}
+}
+
+function renderCustomNotesCards() {
+var oldCards = document.querySelectorAll(".custom-uploaded-card");
+for (var i = 0; i < oldCards.length; i++) {
+oldCards[i].remove();
+}
+
+var list = getCustomNotesList();
+var container = document.getElementById("studyNotesContainer");
+if (!container) return;
+var acc = getActiveCreatorAccount();
+
+for (var j = list.length - 1; j >= 0; j--) {
+(function(item) {
+var isPaid = item.price > 0;
+var isOwner = isNoteOwnedByCreator(item, acc);
+var catAttr = "all " + item.category + (isPaid ? " paid" : " free");
+var allKeywords = (item.title + " " + item.badge + " " + item.category + " " + (item.subject || "") + " " + item.content).toLowerCase();
+
+var card = document.createElement("div");
+card.className = "main-note-card custom-uploaded-card bg-white rounded-2xl p-5 border-2 " + (isPaid ? "border-amber-300" : "border-indigo-200") + " shadow-sm hover:shadow-md transition flex flex-col justify-between";
+card.setAttribute("data-note-id", item.id);
+card.setAttribute("data-categories", catAttr);
+card.setAttribute("data-subject", item.subject || "gk-gs");
+card.setAttribute("data-lang", (item.language || "english") + " bilingual");
+card.setAttribute("data-price", String(item.price));
+card.setAttribute("data-keywords", allKeywords);
+
+var priceBadgeHTML = isPaid
+? '<span class="inline-block bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full">💎 ₹' + item.price + ' (Sample Preview Available)</span>'
+: '<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">🆓 FREE • AdSense Share Active</span>';
+
+var snippet = item.content.length > 220 ? item.content.slice(0, 220) + "..." : item.content;
+var ratingVal = item.rating || 4.9;
+var salesCount = item.sales || 0;
+
+var ownerDeleteBtnHTML = isOwner
+? '<button type="button" class="custom-del-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 text-xs font-extrabold px-3 py-3.5 rounded-xl transition cursor-pointer shrink-0" title="Delete Your PDF Note"><i class="fa-solid fa-trash-can"></i></button>'
+: '';
+
+card.innerHTML = '<div>' +
+'<div class="flex justify-between items-center gap-2 mb-3">' +
+'<span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-md">' + escapeHtml(item.badge) + '</span>' +
+priceBadgeHTML +
+'</div>' +
+'<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">' + escapeHtml(item.title) + '</h3>' +
+'<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">' + escapeHtml(snippet) + '</p>' +
+'</div>' +
+'<div>' +
+'<div class="flex flex-wrap justify-between items-center text-xs text-slate-500 font-semibold mb-4 gap-2">' +
+'<span>✍️ ' + escapeHtml(item.creator) + '</span>' +
+'<span class="text-amber-600 font-extrabold">⭐ ' + ratingVal + ' (' + (isPaid ? salesCount + ' Sold' : (item.views || 1) + ' Reads') + ')</span>' +
+'<span id="views-' + item.id + '">👁️ ' + (item.views || 1) + ' Views</span>' +
+'</div>' +
+'<div class="flex items-center gap-2">' +
+'<button type="button" class="custom-open-btn flex-1 ' + (isPaid ? 'bg-amber-500 hover:bg-amber-600 text-slate-950' : 'bg-indigo-600 hover:bg-indigo-700 text-white') + ' text-center text-xs sm:text-sm font-extrabold py-3.5 px-3 rounded-xl shadow transition cursor-pointer">' +
+(isPaid ? '🔓 Read Sample & Unlock Full Note (₹' + item.price + ')' : '📖 Read Online & Download Clean PDF') +
+'</button>' +
+ownerDeleteBtnHTML +
+'</div>' +
+'</div>';
+
+var btn = card.querySelector(".custom-open-btn");
+if (btn) {
+btn.onclick = function() { openCustomNoteReader(item.id); };
+}
+var delBtn = card.querySelector(".custom-del-btn");
+if (delBtn) {
+delBtn.onclick = function() { deleteCreatorNote(item.id); };
+}
+container.insertBefore(card, container.firstChild);
+})(list[j]);
+}
+}
+
+function escapeHtml(str) {
+return String(str || "")
+.replace(/&/g, "&")
+.replace(/</g, "<")
+.replace(/>/g, ">");
+}
+
+function updateDynamicSEOForNotes() {
+var list = getCustomNotesList();
+var seoDir = document.getElementById("seoFullTextDirectory");
+var oldCustomSeo = document.querySelectorAll(".custom-seo-transcript");
+for (var i = 0; i < oldCustomSeo.length; i++) oldCustomSeo[i].remove();
+
+var combinedKeywords = [];
+for (var j = 0; j < list.length; j++) {
+var n = list[j];
+combinedKeywords.push(n.title, n.badge, n.category);
+if (seoDir) {
+var div = document.createElement("div");
+div.className = "custom-seo-transcript border-t border-slate-100 pt-2 mt-2";
+div.innerHTML = "<strong>" + escapeHtml(n.title) + " (" + escapeHtml(n.badge) + "):</strong> " + escapeHtml(n.content);
+seoDir.appendChild(div);
+}
+}
+
+if (list.length > 0) {
+var latest = list[0];
+document.title = latest.title + " | IIT JEE, NEET, B.Sc, M.Sc, NET JRF, GATE, SSC Notes | FreeCVResume.co.in";
+var kwMeta = document.getElementById("dynamic-meta-kw");
+if (kwMeta) {
+kwMeta.setAttribute("content", kwMeta.getAttribute("content") + ", " + combinedKeywords.join(", ").slice(0, 500));
+}
+}
+}
+
+// =========================================================================
+// ON-PAGE READER, 5-SECOND ANTI-SPAM ADSENSE SHARE & PAID NOTE UNLOCK
+// =========================================================================
+function openBuiltinNoteReader(noteId) {
+var note = builtinNotesData[noteId];
+if (!note) return;
+note.views = (note.views || 4500) + 1;
+var vSpan = document.getElementById("views-" + noteId);
+if (vSpan) vSpan.innerText = "👁️ " + note.views + " Views";
+launchOnPageReader(note);
+}
+
+function openCustomNoteReader(noteId) {
+var list = getCustomNotesList();
+var found = null;
+for (var i = 0; i < list.length; i++) {
+if (list[i].id === noteId) {
+list[i].views = (list[i].views || 1) + 1;
+found = list[i];
+break;
+}
+}
+saveCustomNotesList(list);
+if (!found) return;
+var vSpan = document.getElementById("views-" + noteId);
+if (vSpan) vSpan.innerText = "👁️ " + found.views + " Views";
+renderCreatorDashboard();
+launchOnPageReader(found);
+}
+
+var pdfMemoryCacheMap = {};
+var currentRenderJobId = 0;
+
+function clonePdfArrayBuffer(buf) {
+if (!buf) return null;
+try {
+var src = (buf instanceof Uint8Array) ? buf : new Uint8Array(buf);
+var out = new Uint8Array(src.byteLength);
+out.set(src);
+return out.buffer;
+} catch (err) {
+return null;
+}
+}
+
+function openPdfCacheDb() {
+return new Promise(function(resolve) {
+if (!window.indexedDB) { resolve(null); return; }
+var req = window.indexedDB.open("fcvPdfCacheDb", 1);
+req.onupgradeneeded = function(ev) {
+var db = ev.target.result;
+if (!db.objectStoreNames.contains("pdfs")) {
+db.createObjectStore("pdfs");
+}
+};
+req.onsuccess = function(ev) { resolve(ev.target.result); };
+req.onerror = function() { resolve(null); };
+});
+}
+
+async function savePdfBufferToCache(keyStr, buf) {
+if (!keyStr || !buf) return;
+var cleanKey = encodeURIComponent(String(keyStr).toLowerCase().trim());
+var copyBuf = clonePdfArrayBuffer(buf);
+if (!copyBuf || copyBuf.byteLength === 0) return;
+pdfMemoryCacheMap[cleanKey] = clonePdfArrayBuffer(copyBuf);
+var db = await openPdfCacheDb();
+if (!db) return;
+try {
+var tx = db.transaction("pdfs", "readwrite");
+tx.objectStore("pdfs").put(clonePdfArrayBuffer(copyBuf), cleanKey);
+} catch (err) {}
+}
+
+async function loadPdfBufferFromCache(keyStr) {
+if (!keyStr) return null;
+var cleanKey = encodeURIComponent(String(keyStr).toLowerCase().trim());
+if (pdfMemoryCacheMap[cleanKey] && pdfMemoryCacheMap[cleanKey].byteLength > 0) {
+return clonePdfArrayBuffer(pdfMemoryCacheMap[cleanKey]);
+}
+var db = await openPdfCacheDb();
+if (!db) return null;
+return new Promise(function(resolve) {
+try {
+var req = db.transaction("pdfs", "readonly").objectStore("pdfs").get(cleanKey);
+req.onsuccess = function() {
+if (req.result && req.result.byteLength > 0) {
+pdfMemoryCacheMap[cleanKey] = clonePdfArrayBuffer(req.result);
+resolve(clonePdfArrayBuffer(req.result));
+} else {
+resolve(null);
+}
+};
+req.onerror = function() { resolve(null); };
+} catch (err) {
+resolve(null);
+}
+});
+}
+
+async function deletePdfBufferFromCache(keyStr) {
+if (!keyStr) return;
+var cleanKey = encodeURIComponent(String(keyStr).toLowerCase().trim());
+delete pdfMemoryCacheMap[cleanKey];
+var db = await openPdfCacheDb();
+if (!db) return;
+try {
+var tx = db.transaction("pdfs", "readwrite");
+tx.objectStore("pdfs").delete(cleanKey);
+} catch (err) {}
+}
+
+async function renderVisualCroppedPdfPages(buf, container) {
+try {
+var safeBuf = clonePdfArrayBuffer(buf);
+if (!window.pdfjsLib || !safeBuf || safeBuf.byteLength === 0) return;
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+var myJobId = ++currentRenderJobId;
+container.innerHTML = "";
+
+var loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(safeBuf), disableFontFace: true });
+var pdfDoc = await loadingTask.promise;
+var totalP = pdfDoc.numPages || 1;
+
+var printAreaBox = document.getElementById("clean-note-print-area");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+
+var infoMsg = document.createElement("div");
+infoMsg.className = "bg-indigo-50 border border-indigo-200 text-indigo-900 p-2.5 rounded-xl text-xs font-bold mb-2 text-center";
+infoMsg.innerHTML = '<i class="fa-solid fa-scissors mr-1 text-indigo-600"></i> Auto-Watermark Cropper Active: Rendering ' + totalP + ' Clean Pages (Memory-Safe Mode)';
+container.appendChild(infoMsg);
+
+// Reuse a SINGLE offscreen canvas pair for all pages so mobile Chrome never runs out of RAM ("Aw, Snap!")
+var tempCanvas = document.createElement("canvas");
+var tempCtx = tempCanvas.getContext("2d");
+var finalCanvas = document.createElement("canvas");
+var finalCtx = finalCanvas.getContext("2d");
+
+for (var i = 1; i <= totalP; i++) {
+if (myJobId !== currentRenderJobId) break;
+try {
+var page = await pdfDoc.getPage(i);
+var viewport = page.getViewport({ scale: 1.45 });
+var fullW = Math.floor(viewport.width);
+var fullH = Math.floor(viewport.height);
+
+tempCanvas.width = fullW;
+tempCanvas.height = fullH;
+await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
+
+// Crop top 9.6% (removes coaching/teacher header bars) and bottom 7.4% watermarks automatically
+var cropY = Math.floor(fullH * 0.096);
+var cropH = Math.floor(fullH * 0.83);
+
+finalCanvas.width = fullW;
+finalCanvas.height = cropH;
+finalCtx.fillStyle = "#ffffff";
+finalCtx.fillRect(0, 0, fullW, cropH);
+finalCtx.drawImage(tempCanvas, 0, cropY, fullW, cropH, 0, 0, fullW, cropH);
+
+var pageImg = document.createElement("img");
+pageImg.src = finalCanvas.toDataURL("image/jpeg", 0.82);
+pageImg.loading = "lazy";
+pageImg.alt = "Page " + i;
+pageImg.className = "pdf-rendered-page w-full h-auto rounded-xl shadow-md border border-slate-300 bg-white mb-4 block";
+container.appendChild(pageImg);
+
+if (page.cleanup) page.cleanup();
+if (i % 3 === 0) {
+await new Promise(function(r) { setTimeout(r, 8); });
+}
+} catch (pErr) {}
+}
+
+// Immediately release offscreen canvas GPU/RAM memory
+tempCanvas.width = 0;
+tempCanvas.height = 0;
+finalCanvas.width = 0;
+finalCanvas.height = 0;
+if (pdfDoc.cleanup) pdfDoc.cleanup();
+} catch (err) {}
+}
+
+async function launchOnPageReader(note) {
+activeReaderNote = note;
+document.getElementById("onPageReaderModal").style.display = "flex";
+document.getElementById("readerBadge").innerText = note.badge || "STUDY NOTE";
+document.getElementById("readerTitle").innerText = note.title;
+document.getElementById("printNoteTitle").innerText = note.title;
+document.getElementById("readerMeta").innerText = "✍️ " + (note.creator || "Educator") + " • 👁️ " + (note.views || 1) + " Views • Clean SEO Indexed";
+
+var printAreaBox = document.getElementById("clean-note-print-area");
+if (printAreaBox) printAreaBox.classList.remove("hidden");
+
+// Render visual PDF pages with top/bottom watermarks cropped out if buffer exists
+var canvasContainer = document.getElementById("readerCanvasContainer");
+if (canvasContainer) {
+canvasContainer.innerHTML = "";
+if (isGarbledLegacyFontText(note.content)) {
+note.content = generateSmartTopicSEOLines(note.title, note.category || "upsc", note.subject || "gk-gs", 80);
+}
+var isCustom = String(note.id || "").indexOf("custom-note") !== -1;
+var pdfBuf = null;
+if (isCustom) {
+pdfBuf = await loadPdfBufferFromCache(note.id);
+if (!pdfBuf && note.title) {
+pdfBuf = await loadPdfBufferFromCache(note.title);
+}
+if (!pdfBuf) {
+canvasContainer.classList.remove("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+canvasContainer.innerHTML = '<div id="cloudPdfLoadingBox" class="bg-indigo-50 border border-indigo-200 text-indigo-900 p-5 rounded-2xl text-xs sm:text-sm font-extrabold text-center shadow-xs">' +
+'<i class="fa-solid fa-cloud-arrow-down fa-bounce mr-1.5 text-indigo-600 text-base"></i> ' +
+'<span id="cloudPdfLoadingText">Loading Original PDF Pages from Cloud Server...</span>' +
+'</div>';
+pdfBuf = await fetchPdfBufferFromCloud(note, function(statusMsg) {
+var stEl = document.getElementById("cloudPdfLoadingText");
+if (stEl) stEl.innerText = statusMsg;
+});
+if (pdfBuf && pdfBuf.byteLength > 200) {
+await savePdfBufferToCache(note.id, pdfBuf);
+if (note.title) await savePdfBufferToCache(note.title, pdfBuf);
+}
+}
+}
+if (pdfBuf && pdfBuf.byteLength > 200) {
+canvasContainer.classList.remove("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+renderVisualCroppedPdfPages(pdfBuf, canvasContainer);
+} else {
+canvasContainer.innerHTML = "";
+canvasContainer.classList.add("hidden");
+if (printAreaBox) printAreaBox.classList.remove("hidden");
+}
+}
+
+document.title = note.title + " - Read & Download PDF | FreeCVResume.co.in";
+
+var schemaScript = document.getElementById("dynamic-schema-ld");
+if (schemaScript) {
+var schemaObj = {
+"@context": "https://schema.org",
+"@type": "LearningResource",
+"name": note.title,
+"description": (note.content || "").slice(0, 300),
+"educationalLevel": note.badge || "Competitive Exam",
+"author": { "@type": "Person", "name": note.creator || "FreeCV Study Hub" },
+"inLanguage": note.language || "en",
+"isAccessibleForFree": !(note.price > 0)
+};
+schemaScript.textContent = JSON.stringify(schemaObj);
+}
+
+var isPaidLocked = (note.price > 0 && !note.purchased);
+var priceTag = document.getElementById("readerPriceTag");
+var paywallBox = document.getElementById("readerPaywallBox");
+var dlBtn = document.getElementById("readerDownloadBtn");
+var fullContentEl = document.getElementById("readerFullContent");
+var sampleContentEl = document.getElementById("readerSampleContent");
+
+var fullText = note.content || "";
+var splitIndex = Math.min(450, Math.floor(fullText.length * 0.35));
+var samplePart = fullText.slice(0, splitIndex);
+var remainingPart = fullText.slice(splitIndex);
+
+if (isPaidLocked) {
+priceTag.innerText = "🔒 PREMIUM ₹" + note.price;
+priceTag.className = "bg-amber-100 text-amber-900 text-[11px] font-black px-2.5 py-0.5 rounded-full";
+sampleContentEl.innerText = "📌 SAMPLE PREVIEW (First 35% Pages):\n" + samplePart + "\n\n--- [Unlock below to read the complete study note & download PDF] ---";
+fullContentEl.innerText = remainingPart || "Full premium exam notes content locked...";
+fullContentEl.classList.add("blur-paywall");
+paywallBox.style.display = "block";
+document.getElementById("paywallPriceText").innerText = "₹" + note.price;
+document.getElementById("paywallBtnPrice").innerText = "₹" + note.price;
+dlBtn.innerHTML = "🔒 Unlock to Download PDF (₹" + note.price + ")";
+} else {
+priceTag.innerText = note.price > 0 ? "✅ UNLOCKED (₹" + note.price + ")" : "🆓 100% FREE NOTE";
+priceTag.className = "bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full";
+sampleContentEl.innerText = "";
+fullContentEl.innerText = fullText;
+fullContentEl.classList.remove("blur-paywall");
+paywallBox.style.display = "none";
+dlBtn.innerHTML = '<i class="fa-solid fa-file-pdf mr-1"></i> Download Clean PDF';
+}
+
+if (adShareTimer) clearTimeout(adShareTimer);
+var timerTxt = document.getElementById("readerAdTimerText");
+
+if (hasUserAlreadyEarnedForNote(note.id)) {
+timerTxt.innerText = "🛡️ Anti-Spam Active: Unique view from this device has already been counted today.";
+return;
+}
+
+timerTxt.innerText = "⏳ Read for 5 seconds to credit Google AdSense view reward to the Creator Wallet...";
+
+adShareTimer = setTimeout(async function() {
+markNoteAsEarnedByUser(note.id);
+var w = getWalletData();
+w.views = (w.views || 0) + 1;
+w.adEarnings = +( (w.adEarnings || 0) + 0.25 ).toFixed(2);
+saveWalletData(w);
+
+if (sbClient && note.upi) {
+try {
+await sbClient.from("study_notes").update({ views: (note.views || 1) + 1 }).eq("id", note.id);
+var wRes = await sbClient.from("creator_wallets").select("*").eq("upi", note.upi).maybeSingle();
+var curV = (wRes.data && wRes.data.views) ? wRes.data.views + 1 : 1;
+var curAd = (wRes.data && wRes.data.ad_earnings) ? +(Number(wRes.data.ad_earnings) + 0.25).toFixed(2) : 0.25;
+await sbClient.from("creator_wallets").upsert([{
+upi: note.upi,
+creator_name: note.creator || "Educator",
+views: curV,
+ad_earnings: curAd
+}], { onConflict: "upi" });
+} catch (err) {}
+}
+timerTxt.innerText = "✅ +₹0.25 Unique View AdSense Share credited to Creator Wallet!";
+}, 5000);
+}
+
+function closeOnPageReader() {
+if (adShareTimer) clearTimeout(adShareTimer);
+document.getElementById("onPageReaderModal").style.display = "none";
+}
+
+async function unlockPaidNoteNow() {
+if (!activeReaderNote) return;
+var price = activeReaderNote.price || 29;
+var confirmPay = confirm("Pay ₹" + price + " via UPI to unlock full '" + activeReaderNote.title + "' PDF Notes immediately?");
+if (!confirmPay) return;
+
+activeReaderNote.purchased = true;
+activeReaderNote.sales = (activeReaderNote.sales || 0) + 1;
+
+var list = getCustomNotesList();
+for (var i = 0; i < list.length; i++) {
+if (list[i].id === activeReaderNote.id) {
+list[i].purchased = true;
+list[i].sales = (list[i].sales || 0) + 1;
+break;
+}
+}
+saveCustomNotesList(list);
+
+var w = getWalletData();
+w.sales = (w.sales || 0) + 1;
+w.salesEarnings = +( (w.salesEarnings || 0) + (price * 0.85) ).toFixed(2);
+saveWalletData(w);
+
+if (sbClient && activeReaderNote.upi) {
+try {
+await sbClient.from("study_notes").update({ sales: activeReaderNote.sales }).eq("id", activeReaderNote.id);
+} catch (err) {}
+}
+
+renderCustomNotesCards();
+launchOnPageReader(activeReaderNote);
+alert("🎉 Payment Successful! The full note is now unlocked for reading & Clean PDF download.");
+}
+
+async function downloadSanitizedNotePDF() {
+if (!activeReaderNote) return;
+if (activeReaderNote.price > 0 && !activeReaderNote.purchased) {
+unlockPaidNoteNow();
+return;
+}
+var dlBtn = document.getElementById("readerDownloadBtn");
+var oldBtnHtml = dlBtn ? dlBtn.innerHTML : "";
+if (dlBtn) dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Downloading PDF...';
+
+var cleanFile = (activeReaderNote.title || "Study_Note").replace(/[^a-zA-Z0-9\u0900-\u097F]+/g, "_").slice(0, 45);
+
+try {
+// 1. Memory-Safe Direct PDF File Download from IndexedDB or Memory (Zero RAM Crash, Instant Download!)
+var isCustom = String(activeReaderNote.id || "").indexOf("custom-note") !== -1;
+var savedPdfBuf = null;
+if (isCustom) {
+savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.id);
+if (!savedPdfBuf && activeReaderNote.title) {
+savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.title);
+}
+if (!savedPdfBuf) {
+savedPdfBuf = await fetchPdfBufferFromCloud(activeReaderNote, null);
+if (savedPdfBuf && savedPdfBuf.byteLength > 200) {
+await savePdfBufferToCache(activeReaderNote.id, savedPdfBuf);
+if (activeReaderNote.title) await savePdfBufferToCache(activeReaderNote.title, savedPdfBuf);
+}
+}
+}
+
+if (savedPdfBuf && savedPdfBuf.byteLength > 0) {
+var blob = new Blob([savedPdfBuf], { type: "application/pdf" });
+var blobUrl = URL.createObjectURL(blob);
+var link = document.createElement("a");
+link.href = blobUrl;
+link.download = cleanFile + "_FreeCVResume.pdf";
+document.body.appendChild(link);
+link.click();
+setTimeout(function() {
+document.body.removeChild(link);
+URL.revokeObjectURL(blobUrl);
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+}, 500);
+return;
+}
+
+// 2. If Note has a Supabase Storage or External PDF URL, download directly
+if (activeReaderNote.url && activeReaderNote.url.indexOf("http") === 0) {
+var extLink = document.createElement("a");
+extLink.href = activeReaderNote.url;
+extLink.target = "_blank";
+extLink.download = cleanFile + "_FreeCVResume.pdf";
+document.body.appendChild(extLink);
+extLink.click();
+document.body.removeChild(extLink);
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+return;
+}
+
+// 3. If Cropped Page Images are rendered in readerCanvasContainer, build PDF page-by-page via jsPDF (NO html2canvas crash!)
+var renderedImgs = document.querySelectorAll("#readerCanvasContainer img.pdf-rendered-page");
+if (renderedImgs && renderedImgs.length > 0 && window.jspdf && window.jspdf.jsPDF) {
+var doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+for (var p = 0; p < renderedImgs.length; p++) {
+if (p > 0) doc.addPage();
+doc.addImage(renderedImgs[p].src, "JPEG", 6, 6, 198, 285);
+}
+doc.save(cleanFile + "_FreeCVResume.pdf");
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+return;
+}
+
+// 4. For Built-in Text Notes (#clean-note-print-area), use html2pdf with safe scale
+var area = document.getElementById("clean-note-print-area");
+if (typeof html2pdf === "undefined") {
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+window.print();
+return;
+}
+var opt = {
+margin: [8, 8, 8, 8],
+filename: cleanFile + "_FreeCVResume.pdf",
+image: { type: "jpeg", quality: 0.95 },
+html2canvas: { scale: 1.5, useCORS: true },
+jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+};
+await html2pdf().set(opt).from(area).save();
+} catch (dlErr) {
+window.print();
+}
+if (dlBtn) dlBtn.innerHTML = oldBtnHtml;
+}
+
+// =========================================================================
+// CREATOR WALLET & UPI PAYOUT MODAL
+// =========================================================================
+function openCreatorWalletModal() {
+var acc = getActiveCreatorAccount();
+if (!acc || !acc.name) {
+alert("🔒 Creator Wallet & Dashboard dekhne ke liye pehle Login ya Sign Up karein!");
+openCreatorAuthModal();
+return;
+}
+updateWalletUI();
+updateCreatorAuthUI();
+renderCreatorDashboard();
+var w = getWalletData();
+var upiIn = document.getElementById("withdrawUpiInput");
+if (upiIn) {
+upiIn.value = acc.upi || w.upi || "";
+}
+document.getElementById("creatorWalletModal").style.display = "flex";
+}
+
+function closeCreatorWalletModal() {
+document.getElementById("creatorWalletModal").style.display = "none";
+}
+
+async function requestWalletWithdrawal() {
+var upi = document.getElementById("withdrawUpiInput").value.trim();
+var w = getWalletData();
+var total = (w.adEarnings || 0) + (w.salesEarnings || 0);
+var msg = document.getElementById("walletWithdrawMsg");
+msg.classList.remove("hidden");
+
+if (!upi || upi.indexOf("@") === -1) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "⚠️ Please enter a valid UPI ID (e.g., name@ybl).";
+return;
+}
+if (total < 100) {
+msg.className = "text-[11px] font-bold text-amber-700";
+msg.innerText = "ℹ️ Minimum withdrawal limit is ₹100. Your current balance is ₹" + total.toFixed(2) + ". Upload & share more notes to reach ₹100!";
+return;
+}
+
+if (sbClient) {
+try {
+await sbClient.from("payout_requests").insert([{ upi: upi, amount: total, status: "pending" }]);
+} catch (err) {}
+}
+
+w.adEarnings = 0;
+w.salesEarnings = 0;
+w.upi = upi;
+saveWalletData(w);
+msg.className = "text-[11px] font-bold text-emerald-700";
+msg.innerText = "✅ UPI withdrawal request for ₹" + total.toFixed(2) + " (" + upi + ") submitted! Payout will be credited within 24–48 hours.";
+}
+
+// =========================================================================
+// SEARCH, CATEGORY, SUBJECT & LANGUAGE FILTERING
+// =========================================================================
+function setNotesCategory(cat, btn) {
+currentActiveCategory = cat;
+var btns = document.querySelectorAll(".note-cat-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer";
+}
+if (btn) {
+btn.className = "note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer";
+}
+filterMainStudyNotes();
+}
+
+function setSubFilter(sub, btn) {
+currentActiveSub = sub;
+var btns = document.querySelectorAll(".sub-f-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "sub-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer";
+}
+if (btn) btn.className = "sub-f-btn bg-slate-800 text-white font-bold px-3 py-1 rounded-lg cursor-pointer";
+filterMainStudyNotes();
+}
+
+function setLangFilter(lang, btn) {
+currentActiveLang = lang;
+var btns = document.querySelectorAll(".lang-f-btn");
+for (var i = 0; i < btns.length; i++) {
+btns[i].className = "lang-f-btn bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-lg cursor-pointer";
+}
+if (btn) btn.className = "lang-f-btn bg-indigo-600 text-white font-bold px-3 py-1 rounded-lg cursor-pointer";
+filterMainStudyNotes();
+}
+
+function filterMainStudyNotes() {
+var qInput = document.getElementById("mainNotesSearch");
+var query = qInput ? qInput.value.toLowerCase().trim() : "";
+var clearBtn = document.getElementById("clearSearchBtn");
+if (clearBtn) clearBtn.style.display = query.length > 0 ? "block" : "none";
+
+var cards = document.querySelectorAll(".main-note-card");
+var visibleCount = 0;
+
+for (var i = 0; i < cards.length; i++) {
+var c = cards[i];
+var cats = (c.getAttribute("data-categories") || "all").toLowerCase();
+var subs = (c.getAttribute("data-subject") || "all-sub").toLowerCase();
+var langs = (c.getAttribute("data-lang") || "all-lang").toLowerCase();
+var kw = (c.getAttribute("data-keywords") || "").toLowerCase();
+var text = (c.innerText || "").toLowerCase();
+var noteId = c.getAttribute("data-note-id") || "";
+var fullNoteBody = (builtinNotesData[noteId] && builtinNotesData[noteId].content) ? builtinNotesData[noteId].content.toLowerCase() : "";
+
+var catMatch = (currentActiveCategory === "all") || (cats.indexOf(currentActiveCategory) !== -1);
+var subMatch = (currentActiveSub === "all-sub") || (subs.indexOf(currentActiveSub) !== -1);
+var langMatch = (currentActiveLang === "all-lang") || (langs.indexOf(currentActiveLang) !== -1);
+var queryMatch = true;
+
+if (query.length > 0) {
+var words = query.split(/\s+/);
+for (var w = 0; w < words.length; w++) {
+var term = words[w];
+if (kw.indexOf(term) === -1 && text.indexOf(term) === -1 && fullNoteBody.indexOf(term) === -1) {
+queryMatch = false;
+break;
+}
+}
+}
+
+if (catMatch && subMatch && langMatch && queryMatch) {
+c.style.display = "flex";
+visibleCount++;
+} else {
+c.style.display = "none";
+}
+}
+
+var st = document.getElementById("searchStatusText");
+if (st) st.innerText = "📚 Available Study Notes (" + visibleCount + ")";
+var noBox = document.getElementById("noNotesFoundBox");
+if (noBox) noBox.style.display = (visibleCount === 0) ? "block" : "none";
+}
+
+function triggerManualSearch() {
+filterMainStudyNotes();
+var container = document.getElementById("studyNotesContainer");
+if (container) container.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function clearNotesSearch() {
+var qInput = document.getElementById("mainNotesSearch");
+if (qInput) qInput.value = "";
+currentActiveSub = "all-sub";
+currentActiveLang = "all-lang";
+setNotesCategory("all", document.querySelector(".note-cat-btn"));
+}
+
+function quickSearchTopic(topic) {
+var qInput = document.getElementById("mainNotesSearch");
+if (qInput) qInput.value = topic;
+currentActiveCategory = "all";
+filterMainStudyNotes();
+}
+
+// =========================================================================
+// TAB 3: EXAM PHOTO & SIGNATURE RESIZER (20KB - 50KB)
+// =========================================================================
+var uploadedExamImg = null;
+
+function loadExamFile(e) {
+var file = e.target.files[0];
+if (!file) return;
+var reader = new FileReader();
+reader.onload = function(ev) {
+var img = new Image();
+img.onload = function() {
+uploadedExamImg = img;
+drawExamPhoto();
+};
+img.src = ev.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+function drawExamPhoto() {
+var canvas = document.getElementById("p-canvas");
+if (!canvas) return;
+var ctx = canvas.getContext("2d");
+var type = document.getElementById("p-type").value;
+
+if (type === "sign") {
+canvas.width = 400;
+canvas.height = 200;
+} else {
+canvas.width = 350;
+canvas.height = 450;
+}
+
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+if (uploadedExamImg) {
+ctx.drawImage(uploadedExamImg, 0, 0, canvas.width, canvas.height);
+} else {
+ctx.fillStyle = "#94a3b8";
+ctx.font = "bold 16px sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("Upload Photo / Sign", canvas.width / 2, canvas.height / 2);
+}
+
+var pName = document.getElementById("p-name").value.trim();
+var pDate = document.getElementById("p-date").value.trim();
+if (type === "photo" && (pName || pDate)) {
+var barH = (pName && pDate) ? 68 : 38;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+ctx.strokeStyle = "#0f172a";
+ctx.lineWidth = 2;
+ctx.strokeRect(1, canvas.height - barH, canvas.width - 2, barH - 1);
+ctx.fillStyle = "#0f172a";
+ctx.font = "bold 18px sans-serif";
+ctx.textAlign = "center";
+if (pName && pDate) {
+ctx.fillText(pName.toUpperCase(), canvas.width / 2, canvas.height - 40);
+ctx.fillText("DOP: " + pDate, canvas.width / 2, canvas.height - 14);
+} else {
+ctx.fillText((pName || pDate).toUpperCase(), canvas.width / 2, canvas.height - 14);
+}
+}
+
+var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+var dataUrl = canvas.toDataURL("image/jpeg", qual);
+var kb = Math.round((dataUrl.length * 3 / 4) / 1024);
+var kbEl = document.getElementById("p-kb");
+if (kbEl) kbEl.innerText = "Ready File Size: ~" + kb + " KB (Exam Valid)";
+}
+
+function saveExamPhoto() {
+var canvas = document.getElementById("p-canvas");
+var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+var link = document.createElement("a");
+link.download = "Exam_Photo_FreeCVResume.jpg";
+link.href = canvas.toDataURL("image/jpeg", qual);
+link.click();
+}
+
+// =========================================================================
+// TAB 4: AI DYNAMIC EXAM TYPING SPEED TEST
+// =========================================================================
+var typingPassages = {
+ssc: [
+"Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across central and state departments in India.",
+"The Staff Selection Commission conducts recruitment examinations every year to select skilled candidates for clerical and executive posts in various ministries. Maintaining composer and minimizing backspace errors are critical to clearing the skill test."
+],
+economy: [
+"India has witnessed a rapid transformation in digital public infrastructure through the Unified Payments Interface and financial inclusion initiatives. Reserve Bank monetary policies help balance inflation while promoting sustainable economic growth.",
+"Gross Domestic Product measures the monetary value of final goods and services produced within a country during a given period. Strong manufacturing and service sectors play a vital role in boosting national income and employment."
+],
+tech: [
+"Artificial intelligence, cloud computing, and data analytics are reshaping modern governance, healthcare, and education systems worldwide. Cybersecurity awareness is crucial to protect sensitive citizen data from unauthorized digital access.",
+"Modern web applications rely on clean architecture, responsive design, and fast rendering to serve millions of users simultaneously. Continuous learning keeps software professionals adaptable in a rapidly evolving technological landscape."
+],
+corporate: [
+"Effective workplace communication, accurate documentation, and timely reporting are the cornerstones of smooth corporate operations. Inventory reconciliation and quality assurance ensure uninterrupted supply chain efficiency.",
+"Standard operating procedures help organizations maintain consistency, reduce operational bottlenecks, and deliver reliable service to customers within agreed turnaround timelines."
+]
+};
+
+var tyTimer = null;
+var tyTimeLeft = 60;
+var tyStarted = false;
+var tyPassIdx = 0;
+
+function aiChangeTypingText(btn) {
+var topic = document.getElementById("ty-topic").value;
+var pool = typingPassages[topic] || typingPassages.ssc;
+if (topic === "ai_mix") {
+pool = [].concat(typingPassages.ssc, typingPassages.economy, typingPassages.tech, typingPassages.corporate);
+}
+tyPassIdx = (tyPassIdx + 1) % pool.length;
+document.getElementById("ty-text").innerText = pool[tyPassIdx];
+resetTypingTest();
+if (btn) flashBtn(btn, "New Passage!");
+}
+
+function resetTypingTest() {
+if (tyTimer) clearInterval(tyTimer);
+tyTimer = null;
+tyTimeLeft = 60;
+tyStarted = false;
+document.getElementById("ty-time").innerText = "60s";
+document.getElementById("ty-wpm").innerText = "0";
+document.getElementById("ty-acc").innerText = "100%";
+var inp = document.getElementById("ty-input");
+if (inp) {
+inp.value = "";
+inp.disabled = false;
+}
+}
+
+function runTyping() {
+var inp = document.getElementById("ty-input");
+var target = document.getElementById("ty-text").innerText;
+var typed = inp.value;
+
+if (!tyStarted && typed.length > 0) {
+tyStarted = true;
+tyTimer = setInterval(function() {
+tyTimeLeft--;
+document.getElementById("ty-time").innerText = tyTimeLeft + "s";
+if (tyTimeLeft <= 0) {
+clearInterval(tyTimer);
+inp.disabled = true;
+}
+}, 1000);
+}
+
+var correctChars = 0;
+for (var i = 0; i < typed.length; i++) {
+if (typed[i] === target[i]) correctChars++;
+}
+var acc = typed.length > 0 ? Math.round((correctChars / typed.length) * 100) : 100;
+var elapsedMin = Math.max((60 - tyTimeLeft) / 60, 1 / 60);
+var wpm = Math.round((typed.length / 5) / elapsedMin);
+
+document.getElementById("ty-acc").innerText = acc + "%";
+document.getElementById("ty-wpm").innerText = wpm;
+}
+
+// =========================================================================
+// LEGAL MODALS & INITIALIZATION
+// =========================================================================
+function openLegalModal(type) {
+var box = document.getElementById("legal-modal-content");
+var map = {
+about: "<h3 class='text-base font-black text-slate-900'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is India's dedicated educational & career utility portal offering a 100% Free AI ATS Resume Builder, Exam Photo Resizer, Typing Test, and an open Study Notes Marketplace for IIT JEE, NEET UG, B.Sc, M.Sc, CSIR-UGC NET/JRF, GATE, SSC & Railway aspirants.</p>",
+privacy: "<h3 class='text-base font-black text-slate-900'>Privacy Policy</h3><p>We respect your privacy. Resume data and uploaded notes are processed securely in your browser. Third-party vendors, including Google AdSense, use cookies to serve relevant advertisements based on user visits.</p>",
+terms: "<h3 class='text-base font-black text-slate-900'>Terms of Service</h3><p>Users uploading study notes must ensure the content is educational and helpful. Coaching watermarks, phone numbers, and promotional links are automatically stripped by our sanitizer to keep study material clean for students.</p>",
+contact: "<h3 class='text-base font-black text-slate-900'>Contact & Creator Support</h3><p>For creator payout queries, notes support, or feedback, reach out via our official portal at <strong>support@freecvresume.co.in</strong>.</p>"
+};
+box.innerHTML = map[type] || map.about;
+document.getElementById("legal-modal").classList.remove("hidden");
+}
+
+function closeLegalModal() {
+document.getElementById("legal-modal").classList.add("hidden");
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+getUniqueBrowserUserId();
+deletePdfBufferFromCache("latest");
+injectBscMscNetGateUI();
+renderCustomNotesCards();
+updateCreatorAuthUI();
+updateDynamicSEOForNotes();
+updateWalletUI();
+filterMainStudyNotes();
+syncNotesFromSupabase();
+});
+</script>
+</body>
+</html>
