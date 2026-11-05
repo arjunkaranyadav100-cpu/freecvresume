@@ -123,32 +123,6 @@ body * { visibility: hidden; }
 <i class="fa-solid fa-keyboard mr-1"></i> AI Typing Test
 </button>
 </nav>
-<script>
-/* Independent navigation fallback: keeps the four main tabs usable even if a later script fails. */
-(function () {
-  function activateSiteTab(id) {
-    var allowed = ["resume", "notes", "resizer", "typing"];
-    if (allowed.indexOf(id) === -1) return;
-    allowed.forEach(function (tab) {
-      var panel = document.getElementById("tab-" + tab);
-      var button = document.getElementById("btn-" + tab);
-      if (panel) panel.classList.add("hidden");
-      if (button) button.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl text-slate-600 cursor-pointer whitespace-nowrap";
-    });
-    var activePanel = document.getElementById("tab-" + id);
-    var activeButton = document.getElementById("btn-" + id);
-    if (activePanel) activePanel.classList.remove("hidden");
-    if (activeButton) activeButton.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer whitespace-nowrap";
-  }
-  window.switchTab = activateSiteTab;
-  document.addEventListener("click", function (event) {
-    var button = event.target && event.target.closest ? event.target.closest("#btn-resume, #btn-notes, #btn-resizer, #btn-typing") : null;
-    if (!button) return;
-    var id = button.id.replace("btn-", "");
-    activateSiteTab(id);
-  }, true);
-})();
-</script>
 </div>
 </header>
 
@@ -1601,57 +1575,112 @@ if (badge) badge.innerText = safePct + "%";
 if (stepTxt && labelText) stepTxt.innerText = labelText;
 }
 
+function setResumeField(id, value, append) {
+var el = document.getElementById(id);
+if (!el || !value) return;
+var v = String(value).trim();
+if (!v) return;
+if (append && el.value && el.value.trim() && el.value.indexOf(v) === -1) el.value = el.value.trim() + "\n" + v;
+else el.value = v;
+}
+
+function extractResumeSection(raw, labels, stopLabels) {
+var lines = String(raw || "").split(/\r?\n/).map(function(x){ return x.trim(); }).filter(Boolean);
+var start = -1;
+for (var i=0;i<lines.length;i++) {
+ var norm = lines[i].toLowerCase().replace(/[^a-z0-9 &/]/g, "");
+ if (labels.some(function(label){ return norm === label || norm.indexOf(label) === 0; })) { start=i+1; break; }
+}
+if (start < 0) return "";
+var out=[];
+for (var j=start;j<lines.length;j++) {
+ var norm2=lines[j].toLowerCase().replace(/[^a-z0-9 &/]/g, "");
+ if (stopLabels.some(function(label){ return norm2 === label || norm2.indexOf(label) === 0; })) break;
+ out.push(lines[j]);
+}
+return out.join("\n").trim();
+}
+
 async function handleOldResume(e) {
-var file = e.target.files[0];
+var file = e.target.files && e.target.files[0];
 if (!file) return;
 var msg = document.getElementById("upload-msg");
-msg.classList.remove("hidden");
-updateResumeProgressUI(5, "⏳ Loading Resume File (5%)...");
-msg.innerText = "AI aapka purana resume padh raha hai (5%)...";
+if (msg) { msg.classList.remove("hidden"); msg.innerText = "Purana resume poora padha ja raha hai..."; }
+updateResumeProgressUI(3, "⏳ Resume file check ho rahi hai...");
 try {
-if (window.pdfjsLib) {
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-}
-var text = "";
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+var rawText = "";
 var ext = file.name.split(".").pop().toLowerCase();
 if (ext === "pdf") {
-var buf = await readFileBufferWithProgress(file, function(loadPct) {
-var mapped = Math.round(loadPct * 0.25);
-updateResumeProgressUI(mapped, "📂 Uploading PDF (" + mapped + "%)...");
-});
-var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-var totalP = pdf.numPages || 1;
-for (var i = 1; i <= totalP; i++) {
-var page = await pdf.getPage(i);
-var content = await page.getTextContent();
-for (var j = 0; j < content.items.length; j++) {
-text += content.items[j].str + " ";
-}
-var scanPct = 25 + Math.round((i / totalP) * 70);
-updateResumeProgressUI(scanPct, "🔍 Scanning Page " + i + " of " + totalP + " (" + scanPct + "%)...");
-await new Promise(function(r) { setTimeout(r, 10); });
-}
+ if (!window.pdfjsLib) throw new Error("PDF reader library load nahi hui. Internet check karein.");
+ var buf = await readFileBufferWithProgress(file, function(pct){ updateResumeProgressUI(Math.round(pct*0.15), "📂 PDF load ho rahi hai..."); });
+ var pdf = await pdfjsLib.getDocument({data:buf}).promise;
+ var total = pdf.numPages || 1;
+ for (var i=1;i<=total;i++) {
+  var page = await pdf.getPage(i);
+  var content = await page.getTextContent();
+  var pageText = (content.items || []).map(function(it){ return it.str || ""; }).join(" ");
+  // Scanned/image-only PDFs need OCR; render page and read it when embedded text is missing.
+  if (pageText.trim().length < 25 && window.Tesseract) {
+   try {
+    var viewport=page.getViewport({scale:1.35});
+    var canvas=document.createElement("canvas"); canvas.width=Math.ceil(viewport.width); canvas.height=Math.ceil(viewport.height);
+    var ctx=canvas.getContext("2d");
+    await page.render({canvasContext:ctx,viewport:viewport}).promise;
+    var ocr=await Tesseract.recognize(canvas,"eng");
+    pageText=(ocr && ocr.data && ocr.data.text) ? ocr.data.text : pageText;
+    canvas.width=0; canvas.height=0;
+   } catch(ocrErr) {}
+  }
+  rawText += "\n" + pageText;
+  updateResumeProgressUI(15+Math.round((i/total)*80), "🔍 Page "+i+" / "+total+" read ho gaya...");
+  if (page.cleanup) page.cleanup();
+  await new Promise(function(r){setTimeout(r,5);});
+ }
 } else if (ext === "docx") {
-updateResumeProgressUI(45, "📄 Extracting Word Document (45%)...");
-var buf2 = await file.arrayBuffer();
-var res = await mammoth.extractRawText({ arrayBuffer: buf2 });
-text = res.value;
-updateResumeProgressUI(90, "🔍 Formatting Data (90%)...");
-} else {
-updateResumeProgressUI(50, "📄 Reading Text File (50%)...");
-text = await file.text();
-}
-var clean = text.replace(/\s+/g, " ").trim();
-var emailMatch = clean.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}/);
-if (emailMatch) document.getElementById("f-email").value = emailMatch[0];
-var phoneMatch = clean.match(/[6-9]\d{9}/);
-if (phoneMatch) document.getElementById("f-phone").value = "+91 " + phoneMatch[0];
-document.getElementById("f-exp").value = clean.slice(0, 600);
+ if (!window.mammoth) throw new Error("Word reader library load nahi hui.");
+ updateResumeProgressUI(35,"📄 Word file read ho rahi hai...");
+ var docBuf=await file.arrayBuffer();
+ var docRes=await mammoth.extractRawText({arrayBuffer:docBuf});
+ rawText=docRes.value || "";
+} else if (ext === "txt") {
+ rawText=await file.text();
+} else { throw new Error("Sirf PDF, DOCX ya TXT file upload karein."); }
+
+var lines=rawText.split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean);
+var clean=rawText.replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();
+if (clean.length < 20) throw new Error("Is file se text nahi mil paya. PDF scanned ya password-protected ho sakti hai.");
+
+// Extract contact details without discarding the remaining resume text.
+var email=(clean.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0];
+var phones=clean.match(/(?:\+?91[\s-]?)?[6-9]\d{9}/g)||[];
+var phone=phones.length ? phones[0] : "";
+var firstLine=(lines.find(function(x){return x.length>2 && x.length<65 && !/@|https?:|resume|curriculum vitae/i.test(x);})||"");
+if (firstLine && !/^(mobile|phone|email|address|objective|summary|experience|education|skills)/i.test(firstLine)) setResumeField("f-name",firstLine);
+if (email) setResumeField("f-email",email);
+if (phone) setResumeField("f-phone",phone.replace(/^\+?91[\s-]?/,"+91 "));
+
+var summary=extractResumeSection(rawText,["professional summary","summary","career objective","objective","profile"],["work experience","experience","employment history","education","academic qualification","skills","technical skills","projects","certifications"]);
+var experience=extractResumeSection(rawText,["work experience","professional experience","experience","employment history","work history"],["education","academic qualification","academic details","skills","technical skills","projects","certifications","personal details","languages"]);
+var education=extractResumeSection(rawText,["education","educational qualification","academic qualification","academic details","qualification"],["work experience","experience","skills","technical skills","projects","certifications","personal details","languages"]);
+var skills=extractResumeSection(rawText,["technical skills","key skills","skills","core competencies","competencies"],["work experience","experience","education","projects","certifications","personal details","languages"]);
+var address=extractResumeSection(rawText,["address","current address","location"],["email","phone","mobile","objective","summary","work experience","experience","education"]);
+if (summary) setResumeField("f-summary",summary);
+if (experience) setResumeField("f-exp",experience);
+if (education) setResumeField("f-edu",education);
+if (skills) setResumeField("f-skills",skills);
+if (address && address.length<180) setResumeField("f-addr",address.replace(/\n/g,", "));
+
+// Keep every extracted line available in the experience box if headings were non-standard,
+// so details are not silently thrown away. User can then review and move text to fields.
+if (!experience && !education && !skills && !summary) setResumeField("f-exp",clean);
 updateCV();
-updateResumeProgressUI(100, "✅ Resume Uploaded & Extracted (100%)!");
-msg.innerText = "✓ 100% Complete: Purana Resume load ho gaya!";
-} catch (err) {
-msg.innerText = "File read karne mein dikkat aayi, neeche form mein edit karein.";
+updateResumeProgressUI(100,"✅ Resume ki poori available text reading complete!");
+if (msg) msg.innerText="✓ Resume read ho gaya. Form ke fields check karein—PDF scan wali file mein OCR ki wajah se kuch spelling galat ho sakti hai.";
+} catch(err) {
+updateResumeProgressUI(0,"❌ Resume read nahi ho paya");
+if (msg) msg.innerText="⚠️ "+(err.message||"File read karne mein dikkat aayi.");
+console.error("Old resume import error:",err);
 }
 }
 
@@ -3155,55 +3184,85 @@ async function fetchPdfBufferFromCloud(noteObj, onProgressText) {
 if (!noteObj) return null;
 var slug = getNoteCloudSlug(noteObj.title);
 
-// 1. If noteObj.url is an HTTP/HTTPS URL, try fetching directly
+// Validate the actual PDF signature before returning any cloud bytes.
+function isValidPdfBuffer(buf) {
+if (!buf || buf.byteLength < 200) return false;
+var head = new Uint8Array(buf, 0, Math.min(5, buf.byteLength));
+return head.length === 5 && head[0] === 37 && head[1] === 80 && head[2] === 68 && head[3] === 70 && head[4] === 45;
+}
+
+// 1. Direct Storage URL: accept only a real PDF, never an HTML/error response.
 if (noteObj.url && noteObj.url.indexOf("http") === 0) {
 try {
-if (onProgressText) onProgressText("⏳ Downloading PDF from Cloud Storage...");
-var resp = await fetch(noteObj.url);
+if (onProgressText) onProgressText("⏳ Downloading Original PDF from Cloud Storage...");
+var resp = await fetch(noteObj.url, { cache: "no-store" });
 if (resp.ok) {
 var fetchedBuf = await resp.arrayBuffer();
-if (fetchedBuf && fetchedBuf.byteLength > 200) {
-return clonePdfArrayBuffer(fetchedBuf);
-}
+if (isValidPdfBuffer(fetchedBuf)) return clonePdfArrayBuffer(fetchedBuf);
 }
 } catch (e) {}
 }
 
-// 2. Check Supabase 'study_notes' table for cloud PDF chunks (by title slug OR note id)
 if (!sbClient) return null;
+
+// The cloud marker records the exact number of chunks expected for this PDF.
+var expectedChunks = 0;
+if (noteObj.url && String(noteObj.url).indexOf("sb-chunks:") === 0) {
+var markerParts = String(noteObj.url).split(":");
+expectedChunks = parseInt(markerParts[2] || "0", 10) || 0;
+}
+
+// Retry briefly for a transient/incomplete Supabase read. Never assemble a partial PDF.
+for (var attempt = 0; attempt < 3; attempt++) {
 try {
-if (onProgressText) onProgressText("⏳ Loading PDF Pages from Cloud Database...");
+if (onProgressText) onProgressText(attempt ? "⏳ Cloud response incomplete; retrying PDF download..." : "⏳ Loading Original PDF Chunks from Cloud Database...");
 var qRes = await sbClient
 .from("study_notes")
 .select("id,content,views")
 .like("id", "pdfchunk_" + slug + "_%");
 
-var rows = (qRes && qRes.data) ? qRes.data : [];
+var rows = (qRes && !qRes.error && qRes.data) ? qRes.data.slice() : [];
 if (rows.length === 0 && noteObj.id) {
 var qRes2 = await sbClient
 .from("study_notes")
 .select("id,content,views")
 .like("id", "pdfchunk_" + noteObj.id + "_%");
-if (qRes2 && qRes2.data) rows = qRes2.data;
+if (qRes2 && !qRes2.error && qRes2.data) rows = qRes2.data.slice();
 }
 
 if (rows.length > 0) {
+// Parse the complete numeric suffix. Reading only the final character breaks
+// ordering for chunk 10, 11, 20... and corrupts multi-chunk PDFs intermittently.
 rows.sort(function(a, b) {
-var idxA = parseInt(String(a.id).split("").pop() || "0", 10);
-var idxB = parseInt(String(b.id).split("").pop() || "0", 10);
+var aId = String(a && a.id || "");
+var bId = String(b && b.id || "");
+var idxA = parseInt(aId.substring(aId.lastIndexOf("_") + 1), 10);
+var idxB = parseInt(bId.substring(bId.lastIndexOf("_") + 1), 10);
 return idxA - idxB;
 });
+
+var expected = expectedChunks || rows.length;
 var combinedB64 = [];
-for (var r = 0; r < rows.length; r++) {
-if (rows[r] && rows[r].content) combinedB64.push(rows[r].content);
+var complete = rows.length === expected;
+for (var r = 0; r < expected && complete; r++) {
+var row = rows[r];
+var rowId = String(row && row.id || "");
+var chunkIndex = parseInt(rowId.substring(rowId.lastIndexOf("_") + 1), 10);
+if (!row || chunkIndex !== r || !row.content) {
+complete = false;
+break;
 }
-var fullB64 = combinedB64.join("");
-var decodedBuf = await base64ToArrayBufferAsync(fullB64);
-if (decodedBuf && decodedBuf.byteLength > 200) {
-return clonePdfArrayBuffer(decodedBuf);
+combinedB64.push(row.content);
+}
+
+if (complete) {
+var decodedBuf = await base64ToArrayBufferAsync(combinedB64.join(""));
+if (isValidPdfBuffer(decodedBuf)) return clonePdfArrayBuffer(decodedBuf);
 }
 }
 } catch (err) {}
+if (attempt < 2) await new Promise(function(resolve) { setTimeout(resolve, 700 * (attempt + 1)); });
+}
 return null;
 }
 
@@ -3817,9 +3876,15 @@ canvasContainer.classList.remove("hidden");
 if (printAreaBox) printAreaBox.classList.add("hidden");
 renderVisualCroppedPdfPages(pdfBuf, canvasContainer);
 } else {
-canvasContainer.innerHTML = "";
-canvasContainer.classList.add("hidden");
-if (printAreaBox) printAreaBox.classList.remove("hidden");
+// Do not silently replace a missing original PDF with the short OCR/SEO text.
+// Keep the reader in an explicit retry state so users know the PDF did not load.
+canvasContainer.classList.remove("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+canvasContainer.innerHTML = '<div class="bg-amber-50 border border-amber-200 text-amber-900 p-5 rounded-xl text-center">' +
+'<div class="font-extrabold mb-2">Original PDF abhi Cloud se load nahi ho paayi.</div>' +
+'<div class="text-xs mb-3">Internet check karke Retry dabayein. Short preview ko original PDF ki jagah nahi dikhaya jayega.</div>' +
+'<button type="button" onclick="launchOnPageReader(activeReaderNote)" class="bg-indigo-600 text-white font-bold px-5 py-2 rounded-lg">↻ Retry PDF Loading</button>' +
+'</div>';
 }
 }
 
