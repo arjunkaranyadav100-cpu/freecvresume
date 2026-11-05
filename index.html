@@ -1585,20 +1585,34 @@ else el.value = v;
 }
 
 function extractResumeSection(raw, labels, stopLabels) {
-var lines = String(raw || "").split(/\r?\n/).map(function(x){ return x.trim(); }).filter(Boolean);
-var start = -1;
-for (var i=0;i<lines.length;i++) {
- var norm = lines[i].toLowerCase().replace(/[^a-z0-9 &/]/g, "");
- if (labels.some(function(label){ return norm === label || norm.indexOf(label) === 0; })) { start=i+1; break; }
-}
-if (start < 0) return "";
-var out=[];
-for (var j=start;j<lines.length;j++) {
- var norm2=lines[j].toLowerCase().replace(/[^a-z0-9 &/]/g, "");
- if (stopLabels.some(function(label){ return norm2 === label || norm2.indexOf(label) === 0; })) break;
- out.push(lines[j]);
-}
-return out.join("\n").trim();
+ // PDF.js often flattens a designed resume into one long line; find section
+ // headings anywhere in that text instead of relying on line breaks.
+ var source = String(raw || "").replace(/\u00a0/g, " ").replace(/[ \t]+/g, " ").trim();
+ if (!source) return "";
+ function findHeading(list, fromIndex) {
+  var best = null;
+  list.forEach(function(label) {
+   var escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+   var re = new RegExp("\\b" + escaped + "\\b", "ig");
+   re.lastIndex = Math.max(0, fromIndex || 0);
+   var m = re.exec(source);
+   if (m && (!best || m.index < best.start)) best = {start:m.index, end:m.index + m[0].length, label:label};
+  });
+  return best;
+ }
+ var heading = findHeading(labels, 0);
+ if (!heading) return "";
+ var contentStart = heading.end;
+ // Consume common heading suffixes such as "& Key Achievements".
+ var suffix = source.slice(contentStart).match(/^\s*&\s*(?:key\s+)?(?:achievements|technical\s+skills)\b/i);
+ if (suffix) contentStart += suffix[0].length;
+ var next = findHeading(stopLabels, contentStart);
+ var contentEnd = next ? next.start : source.length;
+ return source.slice(contentStart, contentEnd)
+  .replace(/^[\s:|•·\-–—]+/, "")
+  .replace(/[\s|•·\-–—]+$/, "")
+  .replace(/\s{2,}/g, " ")
+  .trim();
 }
 
 async function handleOldResume(e) {
@@ -1660,10 +1674,10 @@ if (firstLine && !/^(mobile|phone|email|address|objective|summary|experience|edu
 if (email) setResumeField("f-email",email);
 if (phone) setResumeField("f-phone",phone.replace(/^\+?91[\s-]?/,"+91 "));
 
-var summary=extractResumeSection(rawText,["professional summary","summary","career objective","objective","profile"],["work experience","experience","employment history","education","academic qualification","skills","technical skills","projects","certifications"]);
-var experience=extractResumeSection(rawText,["work experience","professional experience","experience","employment history","work history"],["education","academic qualification","academic details","skills","technical skills","projects","certifications","personal details","languages"]);
-var education=extractResumeSection(rawText,["education","educational qualification","academic qualification","academic details","qualification"],["work experience","experience","skills","technical skills","projects","certifications","personal details","languages"]);
-var skills=extractResumeSection(rawText,["technical skills","key skills","skills","core competencies","competencies"],["work experience","experience","education","projects","certifications","personal details","languages"]);
+var summary=extractResumeSection(rawText,["professional summary","summary","career objective","objective","profile"],["work experience","experience","employment history","education","academic qualification","skills","technical skills","core competencies","competencies","projects","certifications"]);
+var experience=extractResumeSection(rawText,["work experience & key achievements","work experience","professional experience","employment history","work history","experience"],["education","academic qualification","academic details","skills","technical skills","core competencies","competencies","projects","certifications","personal details","languages"]);
+var education=extractResumeSection(rawText,["education","educational qualification","academic qualification","academic details","qualification"],["work experience","experience","skills","technical skills","core competencies","competencies","projects","certifications","personal details","languages"]);
+var skills=extractResumeSection(rawText,["core competencies & technical skills","technical skills","key skills","core competencies","competencies","skills"],["work experience","experience","education","projects","certifications","personal details","languages"]);
 var address=extractResumeSection(rawText,["address","current address","location"],["email","phone","mobile","objective","summary","work experience","experience","education"]);
 if (summary) setResumeField("f-summary",summary);
 if (experience) setResumeField("f-exp",experience);
