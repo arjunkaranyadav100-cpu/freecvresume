@@ -3930,6 +3930,15 @@ function closeUploadNotesModal() {
 document.getElementById("uploadNotesModal").style.display = "none";
 }
 
+async function getCreatorPdfSha256(buffer) {
+if(!buffer || !window.crypto || !window.crypto.subtle) return "";
+try {
+var bytes = buffer instanceof ArrayBuffer ? buffer : buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+var digest = await window.crypto.subtle.digest("SHA-256", bytes);
+return Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+} catch(err) { console.warn("PDF fingerprint unavailable:",err); return ""; }
+}
+
 async function saveCustomNote(e) {
 e.preventDefault();
 if (window.__fcvNotePublishLock) { alert("Note publish ho raha hai. Kripya wait karein."); return; }
@@ -3965,6 +3974,7 @@ var pdfBufferForThisNote = (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteL
 ? clonePdfArrayBuffer(lastUploadedPdfBuffer)
 : null;
 
+var creatorPdfHash = await getCreatorPdfSha256(pdfBufferForThisNote);
 var newNote = {
 id: uniqueNoteId,
 title: cleanTitle,
@@ -3986,47 +3996,44 @@ hasLocalPdf: !!pdfBufferForThisNote,
 cropHeaderFooter: !!(document.getElementById("upRightsConfirm") && document.getElementById("upRightsConfirm").checked && document.getElementById("upCropHeaderFooter") && document.getElementById("upCropHeaderFooter").checked)
 };
 
-// Stop duplicate publishing when the same creator submits the same note again.
+// Duplicate protection is scoped to this authenticated creator only.
+// Other creators may upload notes on the same subject or with similar titles.
 if (sbClient && acc && acc.id) {
   try {
-    var duplicateCheck = await sbClient.from("study_notes")
-      .select("id,title,content,category,creator,moderation_status")
-      .eq("category", category)
-      .eq("creator", creator)
-      .eq("title", cleanTitle)
+    var duplicateQuery = sbClient.from("study_notes")
+      .select("id,content,pdf_sha256")
+      .eq("creator_id", acc.id)
       .neq("category", "_chunk")
-      .limit(20);
+      .limit(100);
+    if (creatorPdfHash) duplicateQuery = duplicateQuery.eq("pdf_sha256", creatorPdfHash);
+    var duplicateCheck = await duplicateQuery;
     if (duplicateCheck.error) throw duplicateCheck.error;
     var duplicateRows = duplicateCheck.data || [];
     var sameNote = duplicateRows.find(function(row) {
-      return String(row.content || "").trim() === String(cleanContent || "").trim()
-        && row.id !== uniqueNoteId;
+      if (row.id === uniqueNoteId) return false;
+      if (creatorPdfHash && row.pdf_sha256 === creatorPdfHash) return true;
+      return !creatorPdfHash && String(row.content || "").trim() === String(cleanContent || "").trim();
     });
     if (sameNote) {
-      alert("Ye note pehle se upload hai. Duplicate copy publish nahi ki gayi.");
+      alert("Aapne yehi PDF/Content pehle upload kiya hai. Duplicate upload rok diya gaya hai.");
       return;
     }
   } catch (duplicateErr) {
-    console.warn("Duplicate check could not complete:", duplicateErr);
+    console.warn("Creator-scoped duplicate check could not complete:", duplicateErr);
   }
 }
 
 var list = getCustomNotesList();
-var normNewTitle = normalizeNoteTitleKey(newNote.title);
-var filteredList = [];
-for (var idxL = 0; idxL < list.length; idxL++) {
-if (normalizeNoteTitleKey(list[idxL].title) === normNewTitle) {
-newNote.views = Math.max(1, parseInt(list[idxL].views || 1, 10));
-newNote.sales = Math.max(0, parseInt(list[idxL].sales || 0, 10));
-if (list[idxL].id !== newNote.id) {
-markNoteIdDeleted(list[idxL].id);
-if (sbClient) {
-try { sbClient.from("study_notes").delete().eq("id", list[idxL].id).then(function(){}).catch(function(){}); } catch (e) {}
-}
-}
-} else {
-filteredList.push(list[idxL]);
-}
+// Keep other creators' notes and same-title notes. Never delete by title alone.
+var filteredList = list.slice();
+var localDuplicate = filteredList.find(function(existing) {
+var sameCreator = String(existing.creatorEmail || "").toLowerCase() === String(newNote.creatorEmail || "").toLowerCase();
+var sameContent = String(existing.content || "").trim() === String(newNote.content || "").trim();
+return sameCreator && sameContent;
+});
+if (localDuplicate) {
+alert("Aapne yehi note pehle is device par upload kiya hai. Duplicate upload rok diya gaya hai.");
+return;
 }
 
 if (pdfBufferForThisNote) {
@@ -4082,6 +4089,7 @@ sbClient.from("study_notes").upsert([{
 id: newNote.id,
 creator_id: (sbClient.auth && (await sbClient.auth.getUser()).data.user) ? (await sbClient.auth.getUser()).data.user.id : null,
 moderation_status: "pending",
+pdf_sha256: creatorPdfHash || null,
 title: newNote.title,
 category: newNote.category,
 subject: newNote.subject,
