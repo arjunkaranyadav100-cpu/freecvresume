@@ -1992,32 +1992,38 @@ sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
 var currentAuthMode = "signup";
+var creatorAuthReady = false;
+var creatorAuthListenerRegistered = false;
 
 function getActiveCreatorAccount() {
+if (!creatorAuthReady) return null;
 try {
-return JSON.parse(localStorage.getItem("fcv_active_creator_v5") || "null");
+var acc = JSON.parse(localStorage.getItem("fcv_active_creator_v5") || "null");
+if (!acc || typeof acc !== "object") return null;
+if (acc.pass) { delete acc.pass; localStorage.setItem("fcv_active_creator_v5", JSON.stringify(acc)); }
+return acc;
 } catch (e) { return null; }
 }
 
-function getAllCreatorAccounts() {
-try {
-return JSON.parse(localStorage.getItem("fcv_all_creators_v5") || "[]");
-} catch (e) { return []; }
-}
-
-function saveAllCreatorAccounts(list) {
-localStorage.setItem("fcv_all_creators_v5", JSON.stringify(list));
+function saveActiveCreatorAccount(acc) {
+var safe = {
+id: acc.id || "",
+name: acc.name || "",
+email: acc.email || "",
+upi: acc.upi || "",
+role: acc.role || "creator"
+};
+localStorage.setItem("fcv_active_creator_v5", JSON.stringify(safe));
+return safe;
 }
 
 function openCreatorAuthModal() {
 updateCreatorAuthUI();
 document.getElementById("creatorAuthModal").style.display = "flex";
 }
-
 function closeCreatorAuthModal() {
 document.getElementById("creatorAuthModal").style.display = "none";
 }
-
 function switchAuthMode(mode) {
 currentAuthMode = mode;
 var btnSignup = document.getElementById("tabBtnSignup");
@@ -2027,7 +2033,6 @@ var upiField = document.getElementById("authUpiField");
 var submitBtn = document.getElementById("authSubmitBtn");
 var msg = document.getElementById("creatorAuthMsg");
 if (msg) msg.classList.add("hidden");
-
 if (mode === "login") {
 btnLogin.className = "py-2 rounded-lg bg-indigo-600 text-white shadow cursor-pointer";
 btnSignup.className = "py-2 rounded-lg text-slate-600 cursor-pointer";
@@ -2043,103 +2048,164 @@ submitBtn.innerText = "🚀 Create Creator Account & Continue";
 }
 }
 
+async function loadCreatorProfile(user, upiHint) {
+if (!user || !sbClient) return null;
+var profileResult = await sbClient.from("profiles").select("id,display_name,role").eq("id", user.id).maybeSingle();
+if (profileResult.error) throw profileResult.error;
+var profile = profileResult.data || {};
+var cached = null;
+try { cached = JSON.parse(localStorage.getItem("fcv_active_creator_v5") || "null"); } catch(e) {}
+var upi = upiHint || (cached && cached.email === user.email ? cached.upi : "") || "";
+var acc = saveActiveCreatorAccount({
+id:user.id,
+name:profile.display_name || (user.user_metadata && user.user_metadata.full_name) || user.email,
+email:user.email || "",
+upi:upi,
+role:profile.role || "creator"
+});
+var w = getWalletData();
+w.upi = upi;
+w.creatorName = acc.name;
+saveWalletData(w);
+return acc;
+}
+
+async function restoreCreatorSession() {
+if (!sbClient) {
+creatorAuthReady = true;
+localStorage.removeItem("fcv_all_creators_v5");
+localStorage.removeItem("fcv_active_creator_v5");
+updateCreatorAuthUI();
+return;
+}
+try {
+var result = await sbClient.auth.getSession();
+if (result.error) throw result.error;
+var session = result.data && result.data.session;
+if (session && session.user) {
+var cached = null;
+try { cached = JSON.parse(localStorage.getItem("fcv_active_creator_v5") || "null"); } catch(e) {}
+await loadCreatorProfile(session.user, cached && cached.email === session.user.email ? cached.upi : "");
+} else {
+localStorage.removeItem("fcv_active_creator_v5");
+}
+} catch (err) {
+console.error("Creator session restore failed:", err);
+localStorage.removeItem("fcv_active_creator_v5");
+} finally {
+creatorAuthReady = true;
+localStorage.removeItem("fcv_all_creators_v5");
+updateCreatorAuthUI();
+renderCustomNotesCards();
+filterMainStudyNotes();
+}
+if (!creatorAuthListenerRegistered) {
+creatorAuthListenerRegistered = true;
+sbClient.auth.onAuthStateChange(function(event, session) {
+setTimeout(async function() {
+try {
+if (session && session.user) {
+var existing = getActiveCreatorAccount();
+await loadCreatorProfile(session.user, existing && existing.email === session.user.email ? existing.upi : "");
+} else {
+localStorage.removeItem("fcv_active_creator_v5");
+}
+} catch(err) { console.error("Creator auth state update failed:", err); }
+creatorAuthReady = true;
+updateCreatorAuthUI();
+renderCustomNotesCards();
+filterMainStudyNotes();
+}, 0);
+});
+}
+}
+
 async function handleCreatorAuthSubmit(e) {
 e.preventDefault();
 var name = document.getElementById("authCreatorName").value.trim();
 var email = document.getElementById("authCreatorEmail").value.trim().toLowerCase();
 var upi = document.getElementById("authCreatorUpi").value.trim();
-var pass = document.getElementById("authCreatorPass").value.trim();
+var pass = document.getElementById("authCreatorPass").value;
 var msg = document.getElementById("creatorAuthMsg");
 msg.classList.remove("hidden");
-
-var accounts = getAllCreatorAccounts();
-
-if (currentAuthMode === "signup") {
-if (!name || !upi) {
+if (!sbClient) {
 msg.className = "text-[11px] font-bold text-red-600";
-msg.innerText = "⚠️ Please enter your Full Name and UPI ID to create a Creator Account.";
+msg.innerText = "Supabase connection unavailable. Please refresh and try again.";
 return;
 }
-var existing = null;
-for (var i = 0; i < accounts.length; i++) {
-if (accounts[i].email === email) { existing = accounts[i]; break; }
+if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "Valid email address enter karein. Mobile number se login ab supported nahi hai.";
+return;
 }
-var newAcc = {
-name: name,
-email: email,
-upi: upi,
-pass: pass,
-joinedAt: Date.now()
-};
-if (existing) {
-existing.name = name;
-existing.upi = upi;
-existing.pass = pass;
-} else {
-accounts.push(newAcc);
+if (pass.length < 6) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = "Password kam se kam 6 characters ka hona chahiye.";
+return;
 }
-saveAllCreatorAccounts(accounts);
-localStorage.setItem("fcv_active_creator_v5", JSON.stringify(newAcc));
-
-var w = getWalletData();
-w.upi = upi;
-w.creatorName = name;
-saveWalletData(w);
-
-if (sbClient) {
+var submitBtn = document.getElementById("authSubmitBtn");
+submitBtn.disabled = true;
 try {
-await sbClient.from("creator_wallets").upsert([{
-upi: upi,
-creator_name: name
-}], { onConflict: "upi" });
-} catch (err) {}
-}
-
+if (currentAuthMode === "signup") {
+if (!name || !upi) throw new Error("Full Name aur UPI ID dono bharna zaroori hai.");
+localStorage.setItem("fcv_creator_upi_hint_v1_" + email, upi);
+var signUpResult = await sbClient.auth.signUp({
+email:email,
+password:pass,
+options:{data:{full_name:name}}
+});
+if (signUpResult.error) throw signUpResult.error;
+if (signUpResult.data && signUpResult.data.session && signUpResult.data.user) {
+var acc = await loadCreatorProfile(signUpResult.data.user, upi);
+var wallet = getWalletData();
+wallet.upi = upi; wallet.creatorName = acc.name; saveWalletData(wallet);
+try { await sbClient.from("creator_wallets").upsert([{upi:upi,creator_name:acc.name}],{onConflict:"upi"}); } catch(walletErr) { console.warn("Wallet metadata sync skipped:",walletErr); }
+creatorAuthReady = true;
 updateCreatorAuthUI();
 msg.className = "text-[11px] font-bold text-emerald-700";
-msg.innerText = "✅ Creator Account created & logged in as " + name + "!";
-setTimeout(function() { closeCreatorAuthModal(); }, 700);
+msg.innerText = "Account created successfully. You are logged in as " + acc.name + ".";
+setTimeout(closeCreatorAuthModal,900);
 } else {
-var matched = null;
-for (var j = 0; j < accounts.length; j++) {
-if ((accounts[j].email === email || accounts[j].upi === email) && accounts[j].pass === pass) {
-matched = accounts[j];
-break;
+msg.className = "text-[11px] font-bold text-emerald-700";
+msg.innerText = "Signup received. Apne email ka confirmation link kholkar verify karein, phir Login karein.";
 }
-}
-if (!matched) {
-msg.className = "text-[11px] font-bold text-red-600";
-msg.innerText = "⚠️ Invalid Email/Mobile or Password. Please check or Sign Up first.";
-return;
-}
-localStorage.setItem("fcv_active_creator_v5", JSON.stringify(matched));
+} else {
+var signInResult = await sbClient.auth.signInWithPassword({email:email,password:pass});
+if (signInResult.error) throw signInResult.error;
+var hint = "";
+try { hint = localStorage.getItem("fcv_creator_upi_hint_v1_" + email) || ""; } catch(e) {}
+var acc2 = await loadCreatorProfile(signInResult.data.user, hint);
 var w2 = getWalletData();
-w2.upi = matched.upi;
-w2.creatorName = matched.name;
-saveWalletData(w2);
-
-if (sbClient && matched.upi) {
+if (acc2.upi) {
 try {
-var wRes = await sbClient.from("creator_wallets").select("*").eq("upi", matched.upi).maybeSingle();
+var wRes = await sbClient.from("creator_wallets").select("*").eq("upi",acc2.upi).maybeSingle();
 if (wRes && wRes.data) {
 w2.views = wRes.data.views || w2.views;
 w2.adEarnings = Number(wRes.data.ad_earnings || w2.adEarnings);
 w2.sales = wRes.data.sales || w2.sales;
 w2.salesEarnings = Number(wRes.data.sales_earnings || w2.salesEarnings);
-saveWalletData(w2);
 }
-} catch (err) {}
+} catch(err) { console.warn("Wallet data could not be refreshed:",err); }
 }
-
+w2.upi = acc2.upi; w2.creatorName = acc2.name; saveWalletData(w2);
+creatorAuthReady = true;
 updateCreatorAuthUI();
 msg.className = "text-[11px] font-bold text-emerald-700";
-msg.innerText = "✅ Logged in successfully! Welcome back, " + matched.name + ".";
-setTimeout(function() { closeCreatorAuthModal(); }, 700);
+msg.innerText = "Login successful. Welcome back, " + acc2.name + ".";
+setTimeout(closeCreatorAuthModal,900);
+}
+} catch(err) {
+msg.className = "text-[11px] font-bold text-red-600";
+msg.innerText = err && err.message ? err.message : "Authentication failed. Please try again.";
+} finally {
+submitBtn.disabled = false;
 }
 }
 
-function logoutCreatorAccount() {
+async function logoutCreatorAccount() {
+try { if (sbClient) await sbClient.auth.signOut(); } catch(err) { console.error("Logout error:",err); }
 localStorage.removeItem("fcv_active_creator_v5");
+creatorAuthReady = true;
 closeCreatorWalletModal();
 updateCreatorAuthUI();
 renderCustomNotesCards();
