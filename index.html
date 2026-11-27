@@ -527,17 +527,20 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
 <div>
 <div class="flex flex-wrap items-center gap-2 mb-1">
 <span class="bg-purple-100 text-purple-900 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">👑 Creator Dashboard & PDF Manager</span>
-<span id="dashCreatorUpiBadge" class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">UPI Verified</span>
+<span id="dashCreatorUpiBadge" class="bg-slate-100 text-slate-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">UPI provided • Verification pending</span>
 </div>
 <h3 id="dashCreatorWelcome" class="text-base sm:text-xl font-black text-slate-900">Welcome, Creator!</h3>
-<p class="text-xs text-slate-500">Yahan aap apne upload kiye gaye sare PDF notes, live views, AdSense earnings dekh sakte hain aur kisi bhi PDF ko delete kar sakte hain.</p>
+<p class="text-xs text-slate-500">Manage your uploaded notes, review reading activity and check verified revenue updates from one place.</p>
+<div class="mt-3 rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-[11px] leading-relaxed text-indigo-950">
+  <strong>Creator earning policy:</strong> Free-note advertising revenue is shared 50% Creator / 50% Platform only after verified AdSense reports are available. Views are analytics, not earnings. Paid-note payouts will be enabled after secure checkout and settlement integration.
+</div>
 </div>
 <div class="flex flex-wrap items-center gap-2">
 <button type="button" onclick="openUploadNotesModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-xl shadow cursor-pointer flex items-center gap-1.5">
 <i class="fa-solid fa-cloud-arrow-up"></i> + Upload New PDF
 </button>
 <button type="button" onclick="openCreatorWalletModal()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-xl shadow cursor-pointer flex items-center gap-1.5">
-<i class="fa-solid fa-wallet"></i> Withdraw to UPI
+<i class="fa-solid fa-wallet"></i> Payout setup pending
 </button>
 <button type="button" onclick="logoutCreatorAccount()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold px-3 py-2.5 rounded-xl cursor-pointer">
 Logout
@@ -550,12 +553,12 @@ Logout
 <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl">
 <span class="text-[11px] font-bold text-slate-500">My Uploaded PDFs</span>
 <p id="dashTotalPdfs" class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">0</p>
-<span class="text-[10px] text-indigo-600 font-bold">Active on Marketplace</span>
+<span class="text-[10px] text-indigo-600 font-bold">Notes in your creator library</span>
 </div>
 <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-2xl">
 <span class="text-[11px] font-bold text-slate-600">Total PDF Views</span>
 <p id="dashTotalViews" class="text-xl sm:text-2xl font-black text-indigo-700 mt-0.5">0</p>
-<span class="text-[10px] text-slate-600">Verified AdSense Earnings (when connected): <strong id="dashAdEarnings" class="text-indigo-800">₹0.00</strong></span>
+<span class="text-[10px] text-slate-600">Verified AdSense share (50%): <strong id="dashAdEarnings" class="text-indigo-800">₹0.00</strong></span>
 </div>
 <div class="bg-emerald-50 border border-emerald-100 p-3.5 rounded-2xl">
 <span class="text-[11px] font-bold text-slate-600">Paid Notes Sold</span>
@@ -565,14 +568,14 @@ Logout
 <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl">
 <span class="text-[11px] font-bold text-amber-900">Total Wallet Balance</span>
 <p id="dashGrandTotal" class="text-xl sm:text-2xl font-black text-amber-700 mt-0.5">₹0.00</p>
-<span class="text-[10px] text-emerald-700 font-bold">Payout after verified settlement</span>
+<span class="text-[10px] text-emerald-700 font-bold">Not withdrawable until settlement is enabled</span>
 </div>
 </div>
 
 <!-- Creator's Uploaded PDFs List with Delete & Preview -->
 <div class="space-y-2.5">
 <div class="flex justify-between items-center">
-<h4 class="text-xs sm:text-sm font-black text-slate-800"><i class="fa-solid fa-file-pdf text-rose-600 mr-1.5"></i> My Uploaded PDF Notes (Manage, View Earnings & Delete)</h4>
+<h4 class="text-xs sm:text-sm font-black text-slate-800"><i class="fa-solid fa-file-pdf text-rose-600 mr-1.5"></i> My Notes (Manage, Preview & Delete)</h4>
 <span id="dashNotesCountLabel" class="text-[11px] font-bold text-slate-500">0 PDFs</span>
 </div>
 <div id="dashUploadedNotesList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1"></div>
@@ -1314,8 +1317,8 @@ Remove top/bottom PDF watermark (Header/Footer)
 <i class="fa-solid fa-user-check mr-1"></i> <span id="walletCreatorAccountStatus">Switch Creator Account</span>
 </button>
 </div>
-<h3 class="text-lg font-black text-slate-900 mt-1 mb-1">Your Creator Earnings & Uploaded PDFs</h3>
-<p class="text-xs text-slate-500 mb-4">Track live views, Google AdSense revenue share, and paid sales on your uploaded PDFs, or delete any PDF note below:</p>
+<h3 class="text-lg font-black text-slate-900 mt-1 mb-1">Your Creator Activity & Uploaded PDFs</h3>
+<p class="text-xs text-slate-500 mb-4">Review your notes and activity. Earnings and payouts will appear only after the relevant revenue or payment integrations are verified:</p>
 
 <div class="grid grid-cols-3 gap-3 text-center mb-4">
 <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl">
@@ -1345,7 +1348,7 @@ Remove top/bottom PDF watermark (Header/Footer)
 </div>
 
 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
-<h4 class="font-extrabold text-slate-800">🏦 Withdraw Earnings to Bank via UPI</h4>
+<h4 class="font-extrabold text-slate-800">🏦 Creator payouts (coming after payment verification)</h4>
 <div class="flex flex-col sm:flex-row gap-2">
 <input type="text" id="withdrawUpiInput" placeholder="Enter your UPI ID (e.g., mobile@ybl)" class="flex-1 border border-slate-300 rounded-xl px-3 py-2.5 bg-white font-semibold">
 <button type="button" onclick="requestWalletWithdrawal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow cursor-pointer">
@@ -4374,35 +4377,12 @@ document.getElementById("creatorWalletModal").style.display = "none";
 }
 
 async function requestWalletWithdrawal() {
-var upi = document.getElementById("withdrawUpiInput").value.trim();
-var w = getWalletData();
-var total = (w.adEarnings || 0) + (w.salesEarnings || 0);
 var msg = document.getElementById("walletWithdrawMsg");
-msg.classList.remove("hidden");
-
-if (!upi || upi.indexOf("@") === -1) {
-msg.className = "text-[11px] font-bold text-red-600";
-msg.innerText = "⚠️ Please enter a valid UPI ID (e.g., name@ybl).";
-return;
+if (msg) {
+  msg.className = "text-[11px] font-bold text-amber-700";
+  msg.classList.remove("hidden");
+  msg.innerText = "Payouts are not enabled yet. We will activate withdrawals only after secure payment settlement, creator verification and server-side payout integration are complete. No payout request has been submitted.";
 }
-if (total < 100) {
-msg.className = "text-[11px] font-bold text-amber-700";
-msg.innerText = "ℹ️ Minimum withdrawal limit is ₹100. Your current balance is ₹" + total.toFixed(2) + ". Upload & share more notes to reach ₹100!";
-return;
-}
-
-if (sbClient) {
-try {
-await sbClient.from("payout_requests").insert([{ upi: upi, amount: total, status: "pending" }]);
-} catch (err) {}
-}
-
-w.adEarnings = 0;
-w.salesEarnings = 0;
-w.upi = upi;
-saveWalletData(w);
-msg.className = "text-[11px] font-bold text-emerald-700";
-msg.innerText = "✅ UPI withdrawal request for ₹" + total.toFixed(2) + " (" + upi + ") submitted! Payout will be credited within 24–48 hours.";
 }
 
 // =========================================================================
