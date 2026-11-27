@@ -4,7 +4,7 @@ const { json, env, supabaseAdmin, safeEqual } = require("../_lib/razorpay");
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
   try {
-    const raw = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body || {}));
+    const raw = await readRawBody(req);
     const expected = crypto.createHmac("sha256", env("RAZORPAY_WEBHOOK_SECRET")).update(raw).digest("hex");
     const received = req.headers["x-razorpay-signature"] || "";
     if (!safeEqual(expected, received)) return json(res, 400, { error: "Invalid webhook signature." });
@@ -35,3 +35,15 @@ module.exports = async function handler(req, res) {
     return json(res, 500, { error: "Webhook processing failed; provider may retry." });
   }
 };
+
+
+module.exports.config = { api: { bodyParser: false } };
+
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on("data", chunk => chunks.push(Buffer.from(chunk)));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
