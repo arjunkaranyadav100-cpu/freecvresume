@@ -1328,7 +1328,7 @@ document.getElementById("out-role").innerText = role;
 document.getElementById("out-contact").innerText = phone + " | " + email + " | " + addr;
 document.getElementById("out-summary").innerText = document.getElementById("f-summary").value;
 document.getElementById("out-exp").innerText = document.getElementById("f-exp").value;
-document.getElementById("out-edu").innerText = document.getElementById("f-edu").value;
+applyEduScores();
 document.getElementById("out-skills").innerText = document.getElementById("f-skills").value;
 document.getElementById("out-personal").innerText = document.getElementById("f-personal").value;
 }
@@ -1681,9 +1681,15 @@ if (education) setResumeField("f-edu",education);
 if (skills) setResumeField("f-skills",skills);
 if (address && address.length<180) setResumeField("f-addr",address.replace(/\n/g,", "));
 
-// Keep every extracted line available in the experience box if headings were non-standard,
-// so details are not silently thrown away. User can then review and move text to fields.
+// Preserve the complete original text if section detection could not confidently
+// account for enough of the document. This avoids silently dropping paragraphs from designed PDFs.
+var extractedLength = [summary,experience,education,skills].join(" ").replace(/\s/g,"").length;
+var sourceLength = clean.replace(/\s/g,"").length;
 if (!experience && !education && !skills && !summary) setResumeField("f-exp",clean);
+else if (sourceLength > 0 && extractedLength / sourceLength < 0.55) {
+ setResumeField("f-exp",clean);
+ if (msg) msg.innerText = "⚠️ Resume ka layout complex tha, isliye poora original text Experience box mein rakha hai. Download se pehle sections check karke arrange kar lein.";
+}
 updateCV();
 updateResumeProgressUI(100,"✅ Resume ki poori available text reading complete!");
 if (msg) msg.innerText="✓ Resume read ho gaya. Form ke fields check karein—PDF scan wali file mein OCR ki wajah se kuch spelling galat ho sakti hai.";
