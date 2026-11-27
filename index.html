@@ -747,7 +747,7 @@ data-keywords="neet ug notes pdf ncert biology line by line notes human physiolo
 NEET UG Complete NCERT Biology (Botany + Zoology), Organic Chemistry & Physics Master Notes
 </h3>
 <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
-Complete NCERT summary: Human Physiology, Genetics & Biotechnology, Plant Physiology (Krebs & C3/C4 Cycle), Cell Biology, Ecology, NCERT Named Reactions & Physics formula sheets — completely free of coaching watermarks.
+Complete NCERT summary: Human Physiology, Genetics & Biotechnology, Plant Physiology (Krebs & C3/C4 Cycle), Cell Biology, Ecology, NCERT Named Reactions & Physics formula sheets — with original author and publisher attribution preserved.
 </p>
 </div>
 <div>
@@ -1092,14 +1092,14 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <div class="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-600">
 <label class="flex items-center gap-1 font-bold text-emerald-800 cursor-pointer">
 <input type="checkbox" id="upAutoRemoveCoaching" checked onchange="reRunSanitizerPreview()">
-Auto-remove coaching/teacher names, phone numbers & links
+Preserve all original text, author names, links and attribution
 </label>
 <label class="flex items-center gap-1 font-bold text-indigo-800 cursor-pointer">
 <input type="checkbox" id="upCropHeaderFooter" checked>
-Remove top/bottom PDF watermark (Header/Footer)
+Preserve original PDF header, footer and watermarks
 </label>
 </div>
-<input type="text" id="upCustomRemoveWords" oninput="reRunSanitizerPreview()" placeholder="Any specific coaching/teacher name to strip (comma-separated, e.g., XYZ Classes, Ramesh Sir)..." class="w-full mt-2 border border-indigo-200 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+<input type="text" id="upCustomRemoveWords" oninput="reRunSanitizerPreview()" placeholder="Optional notes about this PDF (do not remove author or copyright details)..." class="w-full mt-2 border border-indigo-200 bg-white rounded-lg px-2.5 py-1.5 text-xs">
 <!-- Live PDF Upload & Scanning Percentage Progress Bar -->
 <div id="pdfUploadProgressWrap" class="mt-3 hidden bg-white p-3 rounded-xl border border-indigo-200 shadow-xs">
 <div class="flex justify-between items-center text-[11px] font-extrabold text-indigo-900 mb-1.5">
@@ -1293,7 +1293,7 @@ Remove top/bottom PDF watermark (Header/Footer)
 <div id="readerPaywallBox" style="display:none;" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-2xl p-6 text-center shadow-xl space-y-3">
 <span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">🔒 Premium Study Note (Sample Preview Above)</span>
 <h4 class="text-lg font-black">Unlock Full Study Note & Clean PDF Download</h4>
-<p class="text-xs text-indigo-100 max-w-lg mx-auto">You are viewing a free sample preview above. Pay just <strong id="paywallPriceText" class="text-amber-300 text-sm">₹29</strong> to unlock the complete note and download the watermark-free PDF instantly.</p>
+<p class="text-xs text-indigo-100 max-w-lg mx-auto">You are viewing a free sample preview above. Pay just <strong id="paywallPriceText" class="text-amber-300 text-sm">₹29</strong> to unlock the complete note and download the original PDF with its creator attribution intact.</p>
 <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
 <button type="button" onclick="unlockPaidNoteNow()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg cursor-pointer">
 🔒 Secure checkout coming soon (<span id="paywallBtnPrice">₹29</span>)
@@ -2385,7 +2385,7 @@ var st = document.getElementById("pdfSanitizeStatus");
 if (st) {
 st.classList.remove("hidden");
 var wordCount = res.cleanText ? res.cleanText.split(/\s+/).length : 0;
-st.innerText = "✅ 100% Auto-Sanitized: " + res.removedCount + " Coaching/Teacher/Link watermarks removed | 🔍 " + wordCount + " Words ready to Publish!";
+st.innerText = "✅ Text formatting checked (original content preserved): " + res.removedCount + " source text items removed (none are stripped) | 🔍 " + wordCount + " Words ready to Publish!";
 }
 }
 
@@ -3623,7 +3623,7 @@ sales: 0,
 rating: 4.9,
 purchased: false,
 hasLocalPdf: !!pdfBufferForThisNote,
-cropHeaderFooter: document.getElementById("upCropHeaderFooter") ? document.getElementById("upCropHeaderFooter").checked : true
+cropHeaderFooter: false
 };
 
 var list = getCustomNotesList();
@@ -4845,7 +4845,7 @@ var box = document.getElementById("legal-modal-content");
 var map = {
 about: "<h3 class='text-base font-black text-slate-900'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is India's dedicated educational & career utility portal offering a 100% Free AI ATS Resume Builder, Exam Photo Resizer, Typing Test, and an open Study Notes Marketplace for IIT JEE, NEET UG, B.Sc, M.Sc, CSIR-UGC NET/JRF, GATE, SSC & Railway aspirants.</p>",
 privacy: "<h3 class='text-base font-black text-slate-900'>Privacy Policy</h3><p>We respect your privacy. Resume data and uploaded notes are processed securely in your browser. Third-party vendors, including Google AdSense, use cookies to serve relevant advertisements based on user visits.</p>",
-terms: "<h3 class='text-base font-black text-slate-900'>Terms of Service</h3><p>Users uploading study notes must ensure the content is educational and helpful. Coaching watermarks, phone numbers, and promotional links are automatically stripped by our sanitizer to keep study material clean for students.</p>",
+terms: "<h3 class='text-base font-black text-slate-900'>Terms of Service</h3><p>Users uploading study notes must ensure the content is educational and helpful. Original author names, copyright notices, watermarks, phone numbers and links are preserved. Uploaders must have permission to share the material.</p>",
 contact: "<h3 class='text-base font-black text-slate-900'>Contact & Creator Support</h3><p>For creator payout queries, notes support, or feedback, reach out via our official portal at <strong>support@freecvresume.co.in</strong>.</p>"
 };
 box.innerHTML = map[type] || map.about;
