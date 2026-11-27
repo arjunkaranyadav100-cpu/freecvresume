@@ -193,7 +193,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
 <!-- Left Form -->
-<div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3.5">
+<div id="resume-editor-panel" class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3.5">
 <div class="flex justify-between items-center border-b pb-2.5">
 <h3 class="font-extrabold text-sm text-slate-800">Details Modify Karein</h3>
 <button type="button" onclick="aiUpgradeAll(this)" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm cursor-pointer">
@@ -289,8 +289,8 @@ html, body { height: auto !important; overflow: visible !important; }
 </div>
 
 <!-- Right Live Editable A4 Paper -->
-<div class="lg:col-span-7 bg-slate-200 p-3 sm:p-6 rounded-2xl overflow-x-auto">
-<div class="flex justify-between items-center mb-2"><button type="button" onclick="toggleResumeMobilePreview()" class="lg:hidden text-xs font-bold bg-indigo-600 text-white px-3 py-2 rounded-lg">Toggle Mobile Preview</button>
+<div id="resume-preview-panel" class="lg:col-span-7 bg-slate-200 p-3 sm:p-6 rounded-2xl overflow-x-auto">
+<div class="flex justify-between items-center mb-2"><button type="button" id="mobilePreviewToggleBtn" onclick="toggleResumeMobilePreview()" class="lg:hidden text-xs font-bold bg-indigo-600 text-white px-3 py-2 rounded-lg">Toggle Mobile Preview</button>
 <span class="text-xs font-bold text-slate-600"><i class="fa-solid fa-pen-to-square mr-1"></i> Niche Resume ke kisi bhi text par click karke seedha edit bhi kar sakte hain:</span>
 <button type="button" onclick="downloadPDF(this)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow cursor-pointer">Save Free PDF</button>
 </div>
@@ -1318,11 +1318,20 @@ if (activeBtn) activeBtn.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bo
 // FULL AI RESUME BUILDER LOGIC (ALL 10 ROLES + CYCLING AI REWRITES)
 // =========================================================================
 function toggleResumeMobilePreview() {
-var paper=document.getElementById("resume-paper");
-if(!paper) return;
-paper.scrollIntoView({behavior:"smooth",block:"start"});
-paper.classList.toggle("ring-2");
-paper.classList.toggle("ring-indigo-500");
+var editor=document.getElementById("resume-editor-panel");
+var preview=document.getElementById("resume-preview-panel");
+var btn=document.getElementById("mobilePreviewToggleBtn");
+if(!editor || !preview) return;
+var previewOnly=editor.classList.contains("hidden");
+if(previewOnly) {
+editor.classList.remove("hidden");
+if(btn) btn.innerText="Toggle Mobile Preview";
+editor.scrollIntoView({behavior:"smooth",block:"start"});
+} else {
+editor.classList.add("hidden");
+if(btn) btn.innerText="Back to Edit";
+preview.scrollIntoView({behavior:"smooth",block:"start"});
+}
 }
 function addResumeBullet(id) {
 var el=document.getElementById(id); if(!el) return;
