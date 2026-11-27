@@ -5102,11 +5102,18 @@ syncNotesFromSupabase();
     action.disabled=price>0;
     action.textContent=price>0 ? "Secure checkout coming in next phase" : "Read online";
     action.className="flex-1 rounded-xl text-white font-extrabold text-sm px-4 py-3 "+(price>0 ? "bg-slate-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700");
+    var noteId=card.getAttribute("data-note-id") || "";
     action.onclick=function(){
       if(price>0) return;
       window.closeNoteDetailModal();
-      var existing=card.querySelector("button[onclick*='openBuiltinNoteReader'], button[onclick*='openCustomNoteReader'], a[href]");
-      if(existing) existing.click();
+      if(!noteId){ window.alert("This note is missing its unique ID. Please refresh and try again."); return; }
+      if(noteId.indexOf("custom-note")===0){
+        if(typeof window.openCustomNoteReader==="function") window.openCustomNoteReader(noteId);
+        else window.alert("The custom note reader is not available. Please refresh and try again.");
+      } else {
+        if(typeof window.openBuiltinNoteReader==="function") window.openBuiltinNoteReader(noteId);
+        else window.alert("The study note reader is not available. Please refresh and try again.");
+      }
     };
     modal.style.display="flex";
     document.body.style.overflow="hidden";
@@ -5117,7 +5124,7 @@ syncNotesFromSupabase();
     var cards=document.querySelectorAll("#studyNotesContainer .main-note-card");
     cards.forEach(function(card){
       if(card.querySelector(".note-detail-open")) return;
-      var actions=card.querySelector("button, a");
+      var actions=card.querySelector("button[onclick*='openBuiltinNoteReader'], button[onclick*='openCustomNoteReader']");
       if(!actions) return;
       var btn=document.createElement("button");
       btn.type="button";
