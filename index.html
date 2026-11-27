@@ -2261,39 +2261,75 @@ return false;
 }
 
 async function loadAdminModeration() {
-var panel=document.getElementById("adminModerationPanel");
-var list=document.getElementById("adminModerationList");
-var msg=document.getElementById("adminModerationMessage");
-if(!panel || !list || !msg) return;
+var panel=document.getElementById("adminModerationPanel"), list=document.getElementById("adminModerationList"), msg=document.getElementById("adminModerationMessage");
+if(!panel||!list||!msg)return;
 var acc=getActiveCreatorAccount();
-if(!acc || acc.role!=="admin") { panel.style.display="none"; return; }
-panel.style.display="block";
-msg.textContent="Loading pending notes…"; list.innerHTML="";
+if(!acc||acc.role!=="admin"){panel.style.display="none";return;}
+panel.style.display="block"; msg.textContent="Loading notes…"; list.innerHTML="";
 try {
-var result=await sbClient.from("study_notes").select("id,title,creator,category,created_at,moderation_status,moderation_note").neq("category","_chunk").eq("moderation_status","pending").order("created_at",{ascending:false});
-if(result.error) throw result.error;
+var result=await sbClient.from("study_notes").select("id,title,creator,category,created_at,moderation_status,moderation_note,content,url,price,language,subject").neq("category","_chunk").in("moderation_status",["pending","approved","rejected"]).order("created_at",{ascending:false}).limit(100);
+if(result.error)throw result.error;
 var rows=result.data||[];
-msg.textContent=rows.length ? rows.length+" note(s) waiting for review." : "No pending notes. All caught up!";
+var pending=rows.filter(function(n){return n.moderation_status==="pending";});
+var approved=rows.filter(function(n){return n.moderation_status==="approved";});
+var rejected=rows.filter(function(n){return n.moderation_status==="rejected";});
+msg.textContent=pending.length+" pending • "+approved.length+" approved • "+rejected.length+" rejected (latest 100)";
+if(!rows.length){msg.textContent="No notes found.";return;}
 rows.forEach(function(note){
-var card=document.createElement("div"); card.className="rounded-xl border border-rose-200 bg-white p-3";
-var title=document.createElement("p"); title.className="font-bold text-sm text-slate-900"; title.textContent=note.title||"Untitled note";
-var meta=document.createElement("p"); meta.className="text-xs text-slate-500 mt-1"; meta.textContent=(note.creator||"Creator")+" • "+(note.category||"Uncategorized");
-var actions=document.createElement("div"); actions.className="flex flex-wrap gap-2 mt-3";
-function action(label,color,status){var b=document.createElement("button");b.type="button";b.className="rounded-lg px-3 py-2 text-xs font-bold text-white "+color;b.textContent=label;b.addEventListener("click",function(){moderateStudyNote(note.id,status);});actions.appendChild(b);}
-action("Approve","bg-emerald-600","approved"); action("Reject","bg-amber-600","rejected");
-card.appendChild(title);card.appendChild(meta);card.appendChild(actions);list.appendChild(card);
+var card=document.createElement("div");card.className="rounded-xl border border-rose-100 bg-white p-3 space-y-2";
+var head=document.createElement("div");head.className="flex items-start justify-between gap-2";
+var title=document.createElement("p");title.className="font-bold text-sm text-slate-900";title.textContent=note.title||"Untitled note";
+var status=document.createElement("span");status.className="text-[10px] font-black rounded-full px-2 py-1 "+(note.moderation_status==="approved"?"bg-emerald-100 text-emerald-800":note.moderation_status==="rejected"?"bg-slate-200 text-slate-700":"bg-amber-100 text-amber-800");status.textContent=note.moderation_status.toUpperCase();
+head.appendChild(title);head.appendChild(status);
+var meta=document.createElement("p");meta.className="text-xs text-slate-500";meta.textContent=(note.creator||"Creator")+" • "+(note.category||"Uncategorized")+" • "+(note.language||"")+(note.price>0?" • ₹"+note.price:" • Free");
+var detail=document.createElement("p");detail.className="text-xs text-slate-600";detail.textContent=(note.content||"No description provided.").slice(0,350)+(note.content&&note.content.length>350?"…":"");
+var actions=document.createElement("div");actions.className="flex flex-wrap gap-2";
+function btn(label,cls,fn){var b=document.createElement("button");b.type="button";b.className="rounded-lg px-3 py-2 text-xs font-bold text-white "+cls;b.textContent=label;b.addEventListener("click",fn);actions.appendChild(b);}
+btn("Preview PDF","bg-indigo-600",function(){previewAdminStudyPdf(note);});
+btn("View details","bg-slate-700",function(){alert("Title: "+note.title+"\nCreator: "+note.creator+"\nCategory: "+note.category+"\nSubject: "+note.subject+"\nLanguage: "+note.language+"\nPrice: ₹"+(note.price||0)+"\nStatus: "+note.moderation_status+"\n\nDescription:\n"+(note.content||"No description"));});
+if(note.moderation_status!=="approved")btn("Approve","bg-emerald-600",function(){moderateStudyNote(note.id,"approved");});
+if(note.moderation_status!=="rejected")btn("Reject","bg-amber-600",function(){moderateStudyNote(note.id,"rejected");});
+if(note.moderation_status!=="pending")btn("Move to Pending","bg-purple-600",function(){moderateStudyNote(note.id,"pending");});
+btn("Delete","bg-rose-700",function(){deleteAdminStudyNote(note.id,note.title);});
+card.appendChild(head);card.appendChild(meta);card.appendChild(detail);
+if(note.moderation_note){var reason=document.createElement("p");reason.className="text-xs text-rose-700";reason.textContent="Moderation note: "+note.moderation_note;card.appendChild(reason);}
+card.appendChild(actions);list.appendChild(card);
 });
-} catch(err) { msg.textContent="Could not load moderation queue: "+(err.message||"Please retry"); }
+} catch(err){msg.textContent="Could not load moderation queue: "+(err.message||"Please retry");}
+}
+async function previewAdminStudyPdf(note) {
+if(!note||!note.id)return;
+try {
+var msg=document.getElementById("adminModerationMessage");if(msg)msg.textContent="Loading PDF preview…";
+var buf=await fetchPdfBufferFromCloud(note,function(t){if(msg)msg.textContent=t;});
+if(buf&&buf.byteLength>200){
+var blob=new Blob([buf],{type:"application/pdf"});var url=URL.createObjectURL(blob);var win=window.open(url,"_blank");
+if(!win){var a=document.createElement("a");a.href=url;a.download=(note.title||"study-note")+".pdf";a.click();}
+setTimeout(function(){URL.revokeObjectURL(url);},60000);
+if(msg)msg.textContent="PDF preview opened.";
+}else{
+alert("Is note ka PDF cloud par available nahi mila. Description/details review kar sakte hain.");
+if(msg)msg.textContent="PDF unavailable; note details are shown in the card.";
+}
+}catch(err){alert("PDF preview failed: "+(err.message||"Please retry"));}
 }
 async function moderateStudyNote(noteId,status) {
-if(!noteId || ["approved","rejected"].indexOf(status)<0) return;
-var acc=getActiveCreatorAccount();
-if(!acc || acc.role!=="admin") { alert("Admin permission required."); return; }
-var result=await sbClient.from("study_notes").update({moderation_status:status,moderation_note:status==="rejected"?"Rejected by admin":null,moderated_at:new Date().toISOString(),moderated_by:acc.id}).eq("id",noteId);
-if(result.error) { alert("Moderation failed: "+result.error.message); return; }
-await loadAdminModeration();
-await syncNotesFromSupabase();
-alert(status==="approved"?"Note approved and visible to students.":"Note rejected and hidden from public.");
+if(!noteId||["pending","approved","rejected"].indexOf(status)<0)return;
+var acc=getActiveCreatorAccount();if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+var reason="";
+if(status==="rejected"){reason=prompt("Reject karne ka reason likhein:","Content policy / quality issue");if(reason===null)return;if(!reason.trim()){alert("Rejection reason zaroor likhein.");return;}}
+var result=await sbClient.from("study_notes").update({moderation_status:status,moderation_note:reason||null,moderated_at:new Date().toISOString(),moderated_by:acc.id}).eq("id",noteId);
+if(result.error){alert("Moderation failed: "+result.error.message);return;}
+await loadAdminModeration();await syncNotesFromSupabase();
+alert(status==="approved"?"Note approved and visible to students.":status==="rejected"?"Note rejected and hidden from public.":"Note moved back to pending review.");
+}
+async function deleteAdminStudyNote(noteId,title) {
+var acc=getActiveCreatorAccount();if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+if(!confirm("Permanently delete '"+(title||"this note")+"' and its database record?"))return;
+var result=await sbClient.from("study_notes").delete().eq("id",noteId);
+if(result.error){alert("Delete failed: "+result.error.message);return;}
+await loadAdminModeration();await syncNotesFromSupabase();
+alert("Note database record deleted. PDF chunk cleanup may need separate storage cleanup.");
 }
 
 function updateCreatorAuthUI() {
