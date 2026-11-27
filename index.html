@@ -4391,7 +4391,9 @@ var select = document.getElementById("notesSortSelect");
 if (!container || !select) return;
 var cards = Array.prototype.slice.call(container.querySelectorAll(".main-note-card"));
 var mode = select.value;
-if (mode === "az") {
+if (mode === "recommended") {
+cards.sort(function(a,b) { return parseInt(a.getAttribute("data-original-order") || "0",10) - parseInt(b.getAttribute("data-original-order") || "0",10); });
+} else if (mode === "az") {
 cards.sort(function(a,b) {
 var at = (a.querySelector("h3") ? a.querySelector("h3").innerText : "").toLowerCase();
 var bt = (b.querySelector("h3") ? b.querySelector("h3").innerText : "").toLowerCase();
@@ -4401,7 +4403,7 @@ return at.localeCompare(bt);
 cards.sort(function(a,b) { return (parseFloat(a.getAttribute("data-price") || "0") - parseFloat(b.getAttribute("data-price") || "0")); });
 } else if (mode === "popular") {
 cards.sort(function(a,b) {
-var av = parseInt((a.innerText.match(/([0-9,]+)\\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
+var av = parseInt((a.innerText.match(/([0-9,]+)\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
 var bv = parseInt((b.innerText.match(/([0-9,]+)\\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
 return bv-av;
 });
@@ -4414,7 +4416,13 @@ var cards = document.querySelectorAll("#studyNotesContainer .main-note-card");
 for (var i=0;i<cards.length;i++) {
 var card = cards[i];
 var noteId = card.getAttribute("data-note-id");
-if (!noteId || card.querySelector(".save-study-note-btn")) continue;
+if (!noteId) {
+var titleEl = card.querySelector("h3");
+noteId = "study-" + String(titleEl ? titleEl.innerText : "note").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,70);
+card.setAttribute("data-note-id", noteId);
+}
+if (!card.hasAttribute("data-original-order")) card.setAttribute("data-original-order", String(i));
+if (card.querySelector(".save-study-note-btn")) continue;
 var btn = document.createElement("button");
 btn.type = "button";
 btn.setAttribute("data-save-note-id", noteId);
