@@ -4573,15 +4573,15 @@ if (catBtns.length) catBtns[0].className = "note-cat-btn bg-indigo-600 text-whit
 filterMainStudyNotes();
 }
 function normalizeStudySearchText(value) {
-return String(value||"").toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^\\p{L}\\p{N}]+/gu," ").trim();
+return String(value||"").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\p{L}\p{N}]+/gu," ").trim();
 }
 function hasStudyFilterToken(value, token) {
-return String(value||"").toLowerCase().split(/\\s+/).filter(Boolean).indexOf(String(token||"").toLowerCase())!==-1;
+return String(value||"").toLowerCase().split(/\s+/).filter(Boolean).indexOf(String(token||"").toLowerCase())!==-1;
 }
 function filterMainStudyNotes() {
 var qInput = document.getElementById("mainNotesSearch");
 var query = normalizeStudySearchText(qInput ? qInput.value : "");
-var terms = query ? query.split(/\\s+/).filter(Boolean) : [];
+var terms = query ? query.split(/\s+/).filter(Boolean) : [];
 var clearBtn = document.getElementById("clearSearchBtn");
 if (clearBtn) clearBtn.style.display = query.length > 0 ? "block" : "none";
 var cards = document.querySelectorAll("#studyNotesContainer .main-note-card");
