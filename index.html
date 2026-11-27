@@ -4531,8 +4531,8 @@ else wrongWords++;
 }
 var elapsedSeconds = Math.max(1, getTypingDuration() - tyTimeLeft);
 var minutes = elapsedSeconds / 60;
-var grossWpm = Math.round(typedWords.length / minutes);
-var netWpm = Math.max(0, Math.round((correctWords - wrongWords) / minutes));
+var grossWpm = Math.round((typed.length / 5) / minutes);
+var netWpm = Math.max(0, Math.round(((correctChars / 5) - (errors / 5)) / minutes));
 var accuracy = typed.length ? Math.round(correctChars / typed.length * 100) : 100;
 return {typed:typed,target:target,correctChars:correctChars,errors:errors,correctWords:correctWords,wrongWords:wrongWords,typedWords:typedWords.length,elapsedSeconds:elapsedSeconds,grossWpm:grossWpm,netWpm:netWpm,accuracy:accuracy};
 }
@@ -4559,7 +4559,7 @@ if(inp) inp.disabled=true;
 var m=updateTypingStats();
 var lang=document.getElementById("ty-language").value==="hi"?"Hindi Unicode":"English";
 var duration=document.getElementById("ty-duration").value+" min";
-var record={date:new Date().toLocaleString(),language:lang,duration:duration,netWpm:m.netWpm,accuracy:m.accuracy+"%",errors:m.errors,correctWords:m.correctWords,wrongWords:m.wrongWords,typedWords:m.typedWords,elapsedSeconds:m.elapsedSeconds};
+var record={date:new Date().toLocaleString(),language:lang,duration:duration,netWpm:m.netWpm,grossWpm:m.grossWpm,accuracy:m.accuracy+"%",errors:m.errors,correctWords:m.correctWords,wrongWords:m.wrongWords,typedWords:m.typedWords,elapsedSeconds:m.elapsedSeconds};
 try {
 var history=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]");
 history.unshift(record);
@@ -4604,7 +4604,7 @@ var box=document.getElementById("ty-history"); if(!box) return;
 try {
 var h=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]");
 box.innerHTML=h.length?h.map(function(r){
-return "<div class='py-2 border-b border-slate-100'>"+r.date+" · "+r.language+" · "+r.duration+" · <b>"+r.netWpm+" WPM</b> · "+r.accuracy+" · "+r.errors+" errors · "+(r.correctWords||0)+" correct words</div>";
+return "<div class='py-2 border-b border-slate-100'>"+r.date+" · "+r.language+" · "+r.duration+" · <b>"+r.netWpm+" Net WPM</b> · Gross "+(r.grossWpm||"—")+" WPM · "+r.accuracy+" · "+r.errors+" errors · "+(r.correctWords||0)+" correct words</div>";
 }).join(""):"No completed tests yet.";
 } catch(e) { box.textContent="History unavailable in this browser."; }
 }
