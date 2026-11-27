@@ -76,6 +76,24 @@ body * { visibility: hidden; }
 #resume-paper p, #resume-paper div { overflow: visible !important; }
 html, body { height: auto !important; overflow: visible !important; }
 }
+/* Study Hub mobile touch and professional discovery layout */
+#tab-notes .study-search-shell { position:relative; z-index:30; isolation:isolate; pointer-events:auto; }
+#tab-notes #mainNotesSearch { position:relative; z-index:2; display:block; width:100%; min-height:54px; padding:14px 48px 14px 48px; font-size:16px; line-height:1.4; border:2px solid #c7d2fe; border-radius:16px; background:#fff; color:#0f172a; pointer-events:auto; touch-action:manipulation; -webkit-appearance:none; appearance:none; }
+#tab-notes #mainNotesSearch:focus { outline:3px solid rgba(129,140,248,.28); border-color:#6366f1; }
+#tab-notes #clearSearchBtn { z-index:4; min-width:36px; min-height:36px; }
+#tab-notes .study-hub-panel { border:1px solid #e2e8f0; border-radius:20px; background:#fff; box-shadow:0 8px 24px rgba(15,23,42,.05); }
+#tab-notes .main-note-card { min-width:0; border-radius:18px; }
+#tab-notes .note-cat-btn { min-height:40px; }
+#tab-notes .study-step-card { min-height:112px; }
+@media(max-width:640px) {
+ #tab-notes { gap:16px; }
+ #tab-notes .study-hero { padding:18px 14px; border-radius:22px; }
+ #tab-notes .study-search-shell { margin-top:14px; }
+ #tab-notes #mainNotesSearch { font-size:16px; }
+ #tab-notes .study-quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+ #tab-notes .study-quick-actions button { min-height:46px; }
+ #tab-notes .study-step-card { min-height:0; }
+}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
@@ -370,7 +388,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <section id="tab-notes" class="tab-content hidden space-y-6">
 
 <!-- Blue Hero Box: Search + Creator Account + Upload/Sell Notes + Creator Wallet -->
-<div class="bg-gradient-to-b from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800/50">
+<div class="study-hero bg-gradient-to-b from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800/50">
 <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-3 border-b border-indigo-800/60">
 <div class="flex flex-wrap gap-2">
 <span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">🔥 UPSC CSE, IIT JEE & NEET Added</span>
@@ -397,10 +415,13 @@ Search every single word inside any PDF! Upload your own study notes for <strong
 </p>
 
 <!-- Search Input (Searches Every Single Word Inside PDFs) -->
-<div class="relative mb-3 max-w-4xl mx-auto">
+<div class="study-search-shell relative mb-3 max-w-4xl mx-auto">
 <input
-type="text"
+type="search"
 id="mainNotesSearch"
+autocomplete="off"
+enterkeyhint="search"
+aria-label="Search study notes by exam, subject or keyword"
 oninput="filterMainStudyNotes()"
 onkeydown="if(event.key === 'Enter') triggerManualSearch()"
 placeholder="Search any word or topic inside PDFs (e.g., Rotational Motion, Thermodynamics, Genetics, Geography, GDP, Polity)..."
@@ -417,7 +438,7 @@ class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-5
 </div>
 
 <!-- Action Buttons: Search + Upload & Sell Notes + Creator Wallet (Hidden until Login) + Creator Account -->
-<div id="heroActionBtnsGrid" class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div id="heroActionBtnsGrid" class="study-quick-actions max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3">
 <button
 type="button"
 onclick="triggerManualSearch()"
@@ -464,15 +485,15 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
 </div>
 
 <!-- First-time student guide: keep the study flow simple on mobile -->
-<div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-4 sm:p-5">
+<div class="study-hub-panel bg-white rounded-2xl border border-indigo-100 shadow-sm p-4 sm:p-5">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
 <div><p class="text-[10px] font-black uppercase tracking-wide text-indigo-600">New to the Study Hub?</p><h3 class="text-sm sm:text-base font-black text-slate-900">Start studying in 3 easy steps</h3></div>
 <span class="text-[10px] font-bold text-slate-500">Made for mobile learners</span>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-<div class="rounded-xl bg-indigo-50 p-3"><span class="text-lg">🔎</span><p class="text-xs font-extrabold text-slate-900 mt-1">1. Find your exam</p><p class="text-[11px] leading-relaxed text-slate-600">Search a topic or tap UPSC, JEE, NEET, SSC or Railway.</p></div>
-<div class="rounded-xl bg-emerald-50 p-3"><span class="text-lg">🎯</span><p class="text-xs font-extrabold text-slate-900 mt-1">2. Narrow it down</p><p class="text-[11px] leading-relaxed text-slate-600">Choose a subject and language to see relevant notes.</p></div>
-<div class="rounded-xl bg-amber-50 p-3"><span class="text-lg">📖</span><p class="text-xs font-extrabold text-slate-900 mt-1">3. Read and save</p><p class="text-[11px] leading-relaxed text-slate-600">Open a note, save useful notes for later, and download when available.</p></div>
+<div class="study-step-card rounded-xl bg-indigo-50 p-3"><span class="text-lg">🔎</span><p class="text-xs font-extrabold text-slate-900 mt-1">1. Find your exam</p><p class="text-[11px] leading-relaxed text-slate-600">Search a topic or tap UPSC, JEE, NEET, SSC or Railway.</p></div>
+<div class="study-step-card rounded-xl bg-emerald-50 p-3"><span class="text-lg">🎯</span><p class="text-xs font-extrabold text-slate-900 mt-1">2. Narrow it down</p><p class="text-[11px] leading-relaxed text-slate-600">Choose a subject and language to see relevant notes.</p></div>
+<div class="study-step-card rounded-xl bg-amber-50 p-3"><span class="text-lg">📖</span><p class="text-xs font-extrabold text-slate-900 mt-1">3. Read and save</p><p class="text-[11px] leading-relaxed text-slate-600">Open a note, save useful notes for later, and download when available.</p></div>
 </div>
 <p class="text-[11px] text-slate-500 mt-3">Want to contribute? Sign in as a creator, upload your original PDF, add its details and publish it for students.</p>
 </div>
@@ -4449,6 +4470,25 @@ else card.insertBefore(btn, card.firstChild);
 refreshSavedStudyNoteButtons();
 }
 
+function focusStudyNotesSearch() {
+var field = document.getElementById("mainNotesSearch");
+if (!field) return;
+field.focus();
+if (field.scrollIntoView) field.scrollIntoView({behavior:"smooth",block:"center"});
+}
+function clearNotesSearch() {
+var qInput = document.getElementById("mainNotesSearch");
+if (qInput) { qInput.value = ""; qInput.focus(); }
+currentActiveSub = "all-sub";
+currentActiveLang = "all-lang";
+currentActiveCategory = "all";
+var catBtns = document.querySelectorAll(".note-cat-btn");
+for (var ci=0;ci<catBtns.length;ci++) {
+catBtns[ci].className = "note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer";
+}
+if (catBtns.length) catBtns[0].className = "note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer";
+filterMainStudyNotes();
+}
 function filterMainStudyNotes() {
 var qInput = document.getElementById("mainNotesSearch");
 var query = qInput ? qInput.value.toLowerCase().trim() : "";
@@ -4517,9 +4557,11 @@ setNotesCategory("all", document.querySelector(".note-cat-btn"));
 
 function quickSearchTopic(topic) {
 var qInput = document.getElementById("mainNotesSearch");
-if (qInput) qInput.value = topic;
+if (qInput) { qInput.value = topic; qInput.focus(); }
 currentActiveCategory = "all";
 filterMainStudyNotes();
+var container = document.getElementById("studyNotesContainer");
+if (container) container.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 // =========================================================================
