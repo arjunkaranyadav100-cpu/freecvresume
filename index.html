@@ -3880,6 +3880,8 @@ document.getElementById("uploadNotesModal").style.display = "none";
 
 async function saveCustomNote(e) {
 e.preventDefault();
+if (window.__fcvNotePublishLock) { alert("Note publish ho raha hai. Kripya wait karein."); return; }
+window.__fcvNotePublishLock = true;
 var submitBtn = e.target.querySelector('button[type="submit"]');
 var origBtnText = submitBtn ? submitBtn.innerHTML : "☁️ Publish Clean Note & Start Earning";
 if (submitBtn) {
@@ -3931,6 +3933,31 @@ purchased: false,
 hasLocalPdf: !!pdfBufferForThisNote,
 cropHeaderFooter: !!(document.getElementById("upRightsConfirm") && document.getElementById("upRightsConfirm").checked && document.getElementById("upCropHeaderFooter") && document.getElementById("upCropHeaderFooter").checked)
 };
+
+// Stop duplicate publishing when the same creator submits the same note again.
+if (sbClient && acc && acc.id) {
+  try {
+    var duplicateCheck = await sbClient.from("study_notes")
+      .select("id,title,content,category,creator,moderation_status")
+      .eq("category", category)
+      .eq("creator", creator)
+      .eq("title", cleanTitle)
+      .neq("category", "_chunk")
+      .limit(20);
+    if (duplicateCheck.error) throw duplicateCheck.error;
+    var duplicateRows = duplicateCheck.data || [];
+    var sameNote = duplicateRows.find(function(row) {
+      return String(row.content || "").trim() === String(cleanContent || "").trim()
+        && row.id !== uniqueNoteId;
+    });
+    if (sameNote) {
+      alert("Ye note pehle se upload hai. Duplicate copy publish nahi ki gayi.");
+      return;
+    }
+  } catch (duplicateErr) {
+    console.warn("Duplicate check could not complete:", duplicateErr);
+  }
+}
 
 var list = getCustomNotesList();
 var normNewTitle = normalizeNoteTitleKey(newNote.title);
@@ -4050,6 +4077,12 @@ submitBtn.disabled = false;
 submitBtn.innerHTML = origBtnText;
 }
 alert("⚠️ Note publish karne mein error aaya: " + (err.message || "Please try again."));
+} finally {
+window.__fcvNotePublishLock = false;
+if (submitBtn) {
+  submitBtn.disabled = false;
+  if (submitBtn.innerHTML.indexOf("Publishing Note") >= 0) submitBtn.innerHTML = origBtnText;
+}
 }
 }
 
