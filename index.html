@@ -547,6 +547,9 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
   <p id="adminPayoutMessage" class="text-xs text-slate-600">Loading payout records…</p>
   <div id="adminPayoutList" class="space-y-2"></div>
 </div>
+<div id="adminCopyrightPanel" class="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 space-y-3">
+<div class="flex items-center justify-between gap-2"><div><h3 class="font-black text-amber-900">⚑ Copyright & Takedown Reports</h3><p class="text-xs text-amber-800">Review reported notes and take action.</p></div><button type="button" onclick="loadCopyrightReports()" class="rounded-lg bg-amber-700 text-white text-xs font-bold px-3 py-2">Refresh</button></div>
+<p id="copyrightReportMessage" class="text-xs text-slate-600">Loading reports…</p><div id="copyrightReportList" class="space-y-2"></div></div>
 </div>
 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 pb-4">
 <div>
@@ -2306,6 +2309,55 @@ var result=await sbClient.from("payout_requests").update(patch).eq("id",item.id)
 if(result.error){alert("Payout update failed: "+result.error.message);return;}
 await loadAdminPayouts();alert("Payout record updated. This only records status; it does not send money.");
 }
+async function reportStudyNote(noteId,noteTitle){
+if(!sbClient){alert("Reporting service is temporarily unavailable.");return;}
+var reason=prompt("Report reason (copyright / stolen content / harmful / wrong PDF / other):","copyright");
+if(reason===null)return;reason=reason.trim();
+if(reason.length<3){alert("Please enter a valid report reason.");return;}
+var details=prompt("Add details or proof link (optional):","");if(details===null)return;
+var email=prompt("Your email (optional, for follow-up):","");if(email===null)return;
+var result=await sbClient.from("copyright_reports").insert([{note_id:String(noteId),note_title:String(noteTitle||"Study note"),reason:reason.slice(0,80),details:details.slice(0,3000)||null,reporter_email:email.slice(0,254)||null}]);
+if(result.error){alert("Report submit nahi hua: "+result.error.message);return;}
+alert("Report submit ho gayi. Admin review karega. Thank you.");
+}
+async function loadCopyrightReports(){
+var list=document.getElementById("copyrightReportList"),msg=document.getElementById("copyrightReportMessage"),acc=getActiveCreatorAccount();
+if(!list||!msg||!acc||acc.role!=="admin")return;
+list.innerHTML="";msg.textContent="Loading reports…";
+try{
+var res=await sbClient.from("copyright_reports").select("*").order("created_at",{ascending:false}).limit(100);
+if(res.error)throw res.error;
+var rows=res.data||[];msg.textContent=rows.length+" report(s) • latest 100";
+if(!rows.length){msg.textContent="No copyright reports yet.";return;}
+rows.forEach(function(r){
+var card=document.createElement("div");card.className="rounded-xl border border-amber-200 bg-white p-3 space-y-2";
+var title=document.createElement("p");title.className="font-bold text-sm";title.textContent=r.note_title+" • "+String(r.status).toUpperCase();
+var info=document.createElement("p");info.className="text-xs text-slate-600";info.textContent="Reason: "+r.reason+" • Note ID: "+r.note_id+" • "+new Date(r.created_at).toLocaleString();
+var detail=document.createElement("p");detail.className="text-xs text-slate-700";detail.textContent=(r.details||"No extra details")+(r.reporter_email?" • Reporter: "+r.reporter_email:"");
+card.appendChild(title);card.appendChild(info);card.appendChild(detail);
+var actions=document.createElement("div");actions.className="flex flex-wrap gap-2";
+function act(label,cls,fn){var b=document.createElement("button");b.type="button";b.className="rounded-lg px-3 py-2 text-xs font-bold text-white "+cls;b.textContent=label;b.addEventListener("click",fn);actions.appendChild(b);}
+if(r.status!=="takedown")act("Take down note","bg-rose-700",function(){resolveCopyrightReport(r,"takedown");});
+if(r.status!=="resolved")act("Resolve","bg-emerald-700",function(){resolveCopyrightReport(r,"resolved");});
+if(r.status!=="dismissed")act("Dismiss","bg-slate-600",function(){resolveCopyrightReport(r,"dismissed");});
+card.appendChild(actions);list.appendChild(card);
+});
+}catch(err){msg.textContent="Could not load reports: "+(err.message||"Please retry");}
+}
+async function resolveCopyrightReport(report,status){
+var acc=getActiveCreatorAccount();if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+var note=prompt("Admin review note (optional):","");if(note===null)return;
+if(!confirm("Set report to "+status.toUpperCase()+"?"+(status==="takedown"?" The note will be hidden from public listings.":"")))return;
+if(status==="takedown"){
+var nr=await sbClient.from("study_notes").update({moderation_status:"rejected",moderation_note:"Copyright/content takedown: "+note,moderated_at:new Date().toISOString(),moderated_by:acc.id}).eq("id",report.note_id);
+if(nr.error){alert("Note takedown failed: "+nr.error.message);return;}
+}
+var rr=await sbClient.from("copyright_reports").update({status:status,admin_note:note||null,reviewed_at:new Date().toISOString(),reviewed_by:acc.id}).eq("id",report.id);
+if(rr.error){alert("Report update failed: "+rr.error.message);return;}
+await loadCopyrightReports();await loadAdminModeration();await syncNotesFromSupabase();
+alert(status==="takedown"?"Note hidden from public listings.":"Report status updated.");
+}
+
 async function loadAdminModeration() {
 var panel=document.getElementById("adminModerationPanel"), list=document.getElementById("adminModerationList"), msg=document.getElementById("adminModerationMessage");
 if(!panel||!list||!msg)return;
@@ -2401,7 +2453,7 @@ if (walletBtnHero) walletBtnHero.style.display = "flex";
 if (heroGrid) heroGrid.className = "max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-3";
 if (dashSec) dashSec.style.display = "block";
 renderCreatorDashboard();
-if (acc.role === "admin") { loadAdminModeration(); loadAdminPayouts(); }
+if (acc.role === "admin") { loadAdminModeration(); loadAdminPayouts(); loadCopyrightReports(); }
 } else {
 if (topTxt) topTxt.innerText = "Creator Login / Sign Up";
 if (logoutBtn) logoutBtn.style.display = "none";
@@ -4142,6 +4194,7 @@ priceBadgeHTML +
 '<span id="views-' + item.id + '">👁️ ' + (item.views || 1) + ' Views</span>' +
 '</div>' +
 '<div class="flex items-center gap-2">' +
+'<button type="button" class="custom-report-btn border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold px-3 py-3 rounded-xl" title="Report copyright or content issue">⚑ Report</button>' +
 '<button type="button" class="custom-open-btn flex-1 ' + (isPaid ? 'bg-amber-500 hover:bg-amber-600 text-slate-950' : 'bg-indigo-600 hover:bg-indigo-700 text-white') + ' text-center text-xs sm:text-sm font-extrabold py-3.5 px-3 rounded-xl shadow transition cursor-pointer">' +
 (isPaid ? '🔓 Read Sample & Unlock Full Note (₹' + item.price + ')' : '📖 Read Online & Download Clean PDF') +
 '</button>' +
@@ -4149,6 +4202,8 @@ ownerManageBtnsHTML +
 '</div>' +
 '</div>';
 
+var reportBtn = card.querySelector(".custom-report-btn");
+if(reportBtn) reportBtn.onclick = function(){ reportStudyNote(item.id,item.title); };
 var btn = card.querySelector(".custom-open-btn");
 if (btn) {
 btn.onclick = function() { openCustomNoteReader(item.id); };
