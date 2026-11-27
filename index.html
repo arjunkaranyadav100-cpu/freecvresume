@@ -939,7 +939,7 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <!-- Educational SEO Article for AdSense Approval -->
 <article class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
 <h3 class="text-sm font-extrabold text-slate-900">Why Short Revision Notes Are Crucial for IIT JEE, NEET, SSC & Railway Exams</h3>
-<p>Whether you are preparing for engineering and medical entrance tests like IIT JEE (Mains & Advanced) and NEET UG, higher education exams like CSIR-UGC NET/JRF and GATE, or government recruitment exams like SSC CGL and RRB NTPC, concise formula sheets and handwritten revision notes are essential during the final 15 days before the exam. On FreeCVResume.co.in, educators and toppers can create a Creator Account, upload PDF notes (automatically cleaned of third-party coaching watermarks), sell premium study material, or earn Google AdSense revenue share from free note reads.</p>
+<p>Whether you are preparing for engineering and medical entrance tests like IIT JEE (Mains & Advanced) and NEET UG, higher education exams like CSIR-UGC NET/JRF and GATE, or government recruitment exams like SSC CGL and RRB NTPC, concise formula sheets and handwritten revision notes are essential during the final 15 days before the exam. On FreeCVResume.co.in, educators and toppers can create a Creator Account, upload PDF notes (kept intact with original creator attribution and watermarks), sell premium study material, or earn Google AdSense revenue share from free note reads.</p>
 </article>
 
 </section>
@@ -2356,54 +2356,16 @@ return false;
 
 function sanitizeNoteText(rawText) {
 if (!rawText) return { cleanText: "", removedCount: 0 };
-var text = String(rawText);
-var removedCount = 0;
-
-var chk = document.getElementById("upAutoRemoveCoaching");
-if (chk && !chk.checked) {
+// Preserve source material and attribution. Never strip names, links, phone numbers,
+// coaching references, creator marks, copyright notices, or watermarks automatically.
+// Only normalize excess whitespace for readability; creators must have rights to upload.
+var text = String(rawText)
+  .replace(/[\\t\\f\\v ]+/g, " ")
+  .replace(/\\r\\n?/g, "\\n")
+  .replace(/\\n{3,}/g, "\\n\\n")
+  .trim();
 return { cleanText: text, removedCount: 0 };
 }
-
-var rules = [
-new RegExp("https?://[^ \n\r\t]+", "gi"),
-new RegExp("www.[^ \n\r\t]+", "gi"),
-new RegExp("t.me/[^ \n\r\t]+", "gi"),
-new RegExp("@[a-zA-Z0-9_]{3,}", "g"),
-new RegExp("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}", "g"),
-new RegExp("[6-9][0-9]{9}", "g"),
-new RegExp("(Physics Wallah|PW Vidyapeeth|Alakh Pandey|Allen|Aakash|Byju|Unacademy|Resonance|FIITJEE|Motion|Narayana|Chaitanya|Careerwill|crwill|Rojgar With Ankit|RWA|Adda247|Exampur|Utkarsh|WiFiStudy|KD Campus|Paramount|Drishti IAS|Vision IAS|Vajiram|Next IAS|ForumIAS|Khan Sir|Shivant Sir|KGS|Gagan Pratap|Rakesh Yadav|Competishun|Vedantu|Doubtnut|Testbook|Oliveboard|Abhinay Maths|Neetu Singh|Pathfinder|Sankalp Bharat)", "gi"),
-new RegExp("\b[A-Za-z]+\s+(Sir|Madam)\b", "gi"),
-new RegExp("(Notes by|Prepared by|Compiled by|Taught by|Guided by|Faculty:|Teacher:|Join Telegram|Subscribe YouTube|Download App|WhatsApp Us)", "gi")
-];
-
-for (var i = 0; i < rules.length; i++) {
-text = text.replace(rules[i], function() {
-removedCount++;
-return "";
-});
-}
-
-var customInput = document.getElementById("upCustomRemoveWords");
-if (customInput && customInput.value.trim()) {
-var list = customInput.value.split(",");
-for (var c = 0; c < list.length; c++) {
-var w = list[c].trim();
-if (w.length > 1) {
-var parts = text.split(w);
-if (parts.length > 1) {
-removedCount += (parts.length - 1);
-text = parts.join("");
-}
-}
-}
-}
-
-// Copy-paste safe single-pass whitespace normalizer (zero space literals in regex, no while loop)
-text = text.replace(/[^\S\r\n]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
-
-return { cleanText: text, removedCount: removedCount };
-}
-
 function reRunSanitizerPreview() {
 if (!rawUploadedNoteText) return;
 var res = sanitizeNoteText(rawUploadedNoteText);
