@@ -4549,10 +4549,18 @@ if (container) container.scrollIntoView({ behavior: "smooth", block: "start" });
 
 function clearNotesSearch() {
 var qInput = document.getElementById("mainNotesSearch");
-if (qInput) qInput.value = "";
+if (qInput) { qInput.value = ""; qInput.focus(); }
 currentActiveSub = "all-sub";
 currentActiveLang = "all-lang";
-setNotesCategory("all", document.querySelector(".note-cat-btn"));
+currentActiveCategory = "all";
+savedNotesOnly = false;
+var catBtns = document.querySelectorAll(".note-cat-btn");
+for (var ci=0;ci<catBtns.length;ci++) {
+catBtns[ci].className = "note-cat-btn bg-white text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap cursor-pointer";
+}
+if (catBtns.length) catBtns[0].className = "note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer";
+refreshSavedStudyNoteButtons();
+filterMainStudyNotes();
 }
 
 function quickSearchTopic(topic) {
