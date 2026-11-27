@@ -4911,11 +4911,25 @@ if(m.typed.length>=m.target.length) finishTypingTest();
 
 function renderTypingHistory() {
 var box=document.getElementById("ty-history"); if(!box) return;
+box.textContent="";
 try {
-var h=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]");
-box.innerHTML=h.length?h.map(function(r){
-return "<div class='py-2 border-b border-slate-100'>"+r.date+" · "+r.language+" · "+r.duration+" · <b>"+r.netWpm+" Net WPM</b> · Gross "+(r.grossWpm||"—")+" WPM · "+r.accuracy+" · "+r.errors+" errors · "+(r.correctWords||0)+" correct words</div>";
-}).join(""):"No completed tests yet.";
+var stored=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]");
+var h=Array.isArray(stored)?stored.slice(0,10):[];
+if(!h.length){box.textContent="No completed tests yet.";return;}
+h.forEach(function(r){
+if(!r || typeof r!=="object") return;
+var row=document.createElement("div");
+row.className="py-2 border-b border-slate-100";
+var date=document.createElement("span");
+date.textContent=String(r.date||"Date unavailable")+" · "+String(r.language||"Unknown language")+" · "+String(r.duration||"");
+var score=document.createElement("strong");
+score.className="font-bold";
+score.textContent=" · "+(Number.isFinite(Number(r.netWpm))?Number(r.netWpm):0)+" Net WPM";
+var details=document.createElement("span");
+details.textContent=" · Gross "+(Number.isFinite(Number(r.grossWpm))?Number(r.grossWpm):"—")+" WPM · "+String(r.accuracy||"—")+" · "+(Number.isFinite(Number(r.errors))?Number(r.errors):0)+" errors · "+(Number.isFinite(Number(r.correctWords))?Number(r.correctWords):0)+" correct words";
+row.appendChild(date);row.appendChild(score);row.appendChild(details);box.appendChild(row);
+});
+if(!box.childNodes.length) box.textContent="No completed tests yet.";
 } catch(e) { box.textContent="History unavailable in this browser."; }
 }
 function clearTypingHistory() {
