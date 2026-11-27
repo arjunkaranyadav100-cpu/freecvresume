@@ -1261,6 +1261,11 @@ Remove top/bottom PDF watermark (Header/Footer)
 <!-- Scrollable Reader Body -->
 <div class="flex-1 overflow-y-auto space-y-4 pr-1" id="readerScrollBody">
 
+<div id="readerAdPlacement" class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center" aria-label="Advertisement placement">
+  <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Advertisement</p>
+  <p class="text-xs text-slate-500 mt-1">Ad placement reserved — live ads appear only after approved AdSense ad-unit setup.</p>
+</div>
+
 <!-- Original PDF pages are displayed without removing ownership or copyright marks. -->
 <div id="readerCanvasContainer" class="space-y-4 hidden"></div>
 
@@ -4032,6 +4037,8 @@ pageImg.src = finalCanvas.toDataURL("image/jpeg", 0.82);
 pageImg.loading = "lazy";
 pageImg.alt = "Page " + i;
 pageImg.className = "pdf-rendered-page w-full h-auto rounded-xl shadow-md border border-slate-300 bg-white mb-4 block";
+pageImg.style.width = readerZoomPercent + "%";
+pageImg.style.maxWidth = "none";
 container.appendChild(pageImg);
 
 if (page.cleanup) page.cleanup();
