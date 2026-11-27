@@ -4895,7 +4895,7 @@ result.classList.remove("hidden");
 
 function runTyping() {
 var inp=document.getElementById("ty-input");
-if(tyFinished) return;
+if(tyFinished || typingComposition) return;
 if(!tyStarted && inp.value.length>0) {
 tyStarted=true;
 tyTimer=setInterval(function(){
