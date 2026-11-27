@@ -411,7 +411,7 @@ Logout
 📚 UPSC IAS, IIT JEE, NEET, SSC & Railway Study Notes Marketplace
 </h2>
 <p class="text-xs sm:text-sm text-indigo-100 text-center max-w-3xl mx-auto mb-5 leading-relaxed">
-Search every single word inside any PDF! Upload your own study notes for <strong>Free or Paid (₹)</strong> — our AI automatically strips <strong>coaching names, teacher names & promo links</strong> upon upload, and you earn a share of <strong>Google AdSense revenue</strong> on every free note view.
+Find study material by exam, subject, language or keyword. Read free notes online, or upload original PDFs that you own the rights to share. Creator earnings will be shown only after verified sales or approved advertising reports.
 </p>
 
 <!-- Search Input (Searches Every Single Word Inside PDFs) -->
@@ -419,6 +419,7 @@ Search every single word inside any PDF! Upload your own study notes for <strong
 <input
 type="search"
 id="mainNotesSearch"
+onclick="this.focus()"
 autocomplete="off"
 enterkeyhint="search"
 aria-label="Search study notes by exam, subject or keyword"
@@ -640,7 +641,7 @@ data-keywords="upsc cse notes pdf ias ips ifs state pcs uppcs bpsc mppcs ras pre
 <div>
 <div class="flex justify-between items-center gap-2 mb-3">
 <span class="inline-block bg-rose-100 text-rose-900 text-xs font-extrabold px-3 py-1 rounded-md">🏛️ UPSC CSE (IAS / IPS / PCS)</span>
-<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • Read Online</span>
 </div>
 <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
 UPSC CSE (Prelims + Mains GS Paper 1, 2, 3 & 4 Ethics) Complete NCERT & Standard Books Master Notes
@@ -1130,7 +1131,7 @@ Remove top/bottom PDF watermark (Header/Footer)
 <div>
 <label class="block font-bold text-slate-700 mb-1">Monetization Type (Free / Paid) *</label>
 <select id="upNoteSellType" onchange="togglePriceInput()" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold text-indigo-700">
-<option value="free">🆓 Free (Earn via AdSense Views)</option>
+<option value="free">🆓 Free (AdSense monetization after approval)</option>
 <option value="paid">💰 Sell Paid Note (Set Price ₹)</option>
 </select>
 </div>
@@ -1203,8 +1204,8 @@ Remove top/bottom PDF watermark (Header/Footer)
 <!-- Google AdSense Monetization Slot + Creator Revenue Share Status -->
 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 flex flex-col sm:flex-row justify-between items-center gap-2">
 <div class="text-xs">
-<span class="font-extrabold text-amber-900"><i class="fa-solid fa-coins mr-1"></i> Creator AdSense Revenue Share:</span>
-<span id="readerAdTimerText" class="text-amber-800 font-semibold">Read for 5 seconds to credit AdSense view bonus to the creator's wallet...</span>
+<span class="font-extrabold text-amber-900"><i class="fa-solid fa-coins mr-1"></i> Creator monetization status:</span>
+<span id="readerAdTimerText" class="text-amber-800 font-semibold">Earnings are calculated only from verified advertising reports or completed paid orders.</span>
 </div>
 <button type="button" id="readerDownloadBtn" onclick="downloadSanitizedNotePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2 rounded-lg shadow shrink-0 cursor-pointer">
 <i class="fa-solid fa-file-pdf mr-1"></i> Download Clean PDF
@@ -3739,7 +3740,7 @@ card.setAttribute("data-keywords", allKeywords);
 
 var priceBadgeHTML = isPaid
 ? '<span class="inline-block bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full">💎 ₹' + item.price + ' (Sample Preview Available)</span>'
-: '<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">🆓 FREE • AdSense Share Active</span>';
+: '<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">🆓 FREE • Read Online</span>';
 
 var snippet = item.content.length > 220 ? item.content.slice(0, 220) + "..." : item.content;
 var ratingVal = item.rating || 4.9;
@@ -4113,37 +4114,7 @@ dlBtn.innerHTML = '<i class="fa-solid fa-file-pdf mr-1"></i> Download Clean PDF'
 
 if (adShareTimer) clearTimeout(adShareTimer);
 var timerTxt = document.getElementById("readerAdTimerText");
-
-if (hasUserAlreadyEarnedForNote(note.id)) {
-timerTxt.innerText = "🛡️ Anti-Spam Active: Unique view from this device has already been counted today.";
-return;
-}
-
-timerTxt.innerText = "⏳ Read for 5 seconds to credit Google AdSense view reward to the Creator Wallet...";
-
-adShareTimer = setTimeout(async function() {
-markNoteAsEarnedByUser(note.id);
-var w = getWalletData();
-w.views = (w.views || 0) + 1;
-w.adEarnings = +( (w.adEarnings || 0) + 0.25 ).toFixed(2);
-saveWalletData(w);
-
-if (sbClient && note.upi) {
-try {
-await sbClient.from("study_notes").update({ views: (note.views || 1) + 1 }).eq("id", note.id);
-var wRes = await sbClient.from("creator_wallets").select("*").eq("upi", note.upi).maybeSingle();
-var curV = (wRes.data && wRes.data.views) ? wRes.data.views + 1 : 1;
-var curAd = (wRes.data && wRes.data.ad_earnings) ? +(Number(wRes.data.ad_earnings) + 0.25).toFixed(2) : 0.25;
-await sbClient.from("creator_wallets").upsert([{
-upi: note.upi,
-creator_name: note.creator || "Educator",
-views: curV,
-ad_earnings: curAd
-}], { onConflict: "upi" });
-} catch (err) {}
-}
-timerTxt.innerText = "✅ +₹0.25 Unique View AdSense Share credited to Creator Wallet!";
-}, 5000);
+if (timerTxt) timerTxt.innerText = "📊 Views may be counted for note analytics. AdSense earnings are not paid per view; creator revenue can be calculated only from verified AdSense reports after account approval.";
 }
 
 function closeOnPageReader() {
