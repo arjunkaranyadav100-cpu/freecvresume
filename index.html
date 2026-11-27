@@ -70,7 +70,10 @@ overflow-wrap: break-word;
 @media print {
 body * { visibility: hidden; }
 #resume-paper, #resume-paper * { visibility: visible; }
-#resume-paper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+#resume-paper { position: static !important; width: 100% !important; max-width: none !important; min-height: 0 !important; box-shadow: none !important; }
+#resume-paper h2, #resume-paper img { break-inside: avoid; page-break-inside: avoid; }
+#resume-paper p, #resume-paper div { overflow: visible !important; }
+html, body { height: auto !important; overflow: visible !important; }
 }
 </style>
 </head>
@@ -249,35 +252,14 @@ body * { visibility: hidden; }
 • Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</textarea>
 </div>
 
-<!-- UPGRADED EDUCATION SECTION WITH PERCENTAGE / CGPA -->
-<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-<div class="flex justify-between items-center">
-<label class="text-[11px] font-extrabold text-slate-700"><i class="fa-solid fa-graduation-cap text-indigo-600 mr-1"></i> Education (Qualification & Percentage / CGPA)</label>
-<button type="button" onclick="aiRewriteEdu(this)" class="text-[11px] bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-2.5 py-0.5 rounded shadow-xs cursor-pointer">
-<i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Format (% / CGPA)
-</button>
-</div>
-
-<div class="grid grid-cols-3 gap-1.5">
-<div>
-<span class="text-[10px] font-bold text-slate-500">Graduation % / CGPA</span>
-<input type="text" id="edu-grad-score" oninput="applyEduScores()" placeholder="Ex: 72% or 6.8 CGPA" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
-</div>
-<div>
-<span class="text-[10px] font-bold text-slate-500">12th Percentage (%)</span>
-<input type="text" id="edu-12-score" oninput="applyEduScores()" placeholder="Ex: 76%" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
-</div>
-<div>
-<span class="text-[10px] font-bold text-slate-500">10th Percentage (%)</span>
-<input type="text" id="edu-10-score" oninput="applyEduScores()" placeholder="Ex: 80% or 8 CGPA" class="w-full text-[11px] border bg-white rounded px-2 py-1 font-semibold">
-</div>
-</div>
-
-<textarea id="f-edu" oninput="updateCV()" rows="3" class="w-full text-xs border bg-white rounded-lg p-2 leading-relaxed">• Bachelor's Degree (Graduation) – Recognized University | Year: 2025 | Marks: 72% (First Division)
-• Intermediate (12th Standard) – State / Central Board | Year: 2022 | Marks: 76% (First Division)
-• High School (10th Standard) – State / Central Board | Year: 2020 | Marks: 80% (8.0 CGPA)</textarea>
-</div>
-
+<!-- Structured Education Builder: separate fields for each qualification -->
+<div class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200 space-y-3">
+<div class="flex flex-wrap justify-between items-center gap-2"><label class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-graduation-cap text-indigo-600 mr-1"></i> Education Details</label><button type="button" onclick="aiRewriteEdu(this)" class="text-[11px] bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer">Format Education</button></div>
+<div class="bg-white border rounded-xl p-3 space-y-2"><p class="text-xs font-extrabold text-indigo-700">Graduation / College</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+<input id="edu-grad-degree" oninput="applyEduScores()" placeholder="Degree (B.A., B.Com, B.Sc...)" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-grad-subject" oninput="applyEduScores()" placeholder="Subject / Specialization" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-grad-college" oninput="applyEduScores()" placeholder="College name" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-grad-university" oninput="applyEduScores()" placeholder="University name" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-grad-year" oninput="applyEduScores()" placeholder="Passing year" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-grad-score" oninput="applyEduScores()" placeholder="Percentage / CGPA / Marks" class="w-full text-xs border rounded-lg px-3 py-2"></div></div>
+<div class="bg-white border rounded-xl p-3 space-y-2"><p class="text-xs font-extrabold text-indigo-700">12th / Senior Secondary</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="edu-12-school" oninput="applyEduScores()" placeholder="School name" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-12-board" oninput="applyEduScores()" placeholder="Board (CBSE / State Board...)" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-12-stream" oninput="applyEduScores()" placeholder="Stream / Subjects" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-12-year" oninput="applyEduScores()" placeholder="Passing year" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-12-score" oninput="applyEduScores()" placeholder="Percentage / CGPA / Marks" class="w-full text-xs border rounded-lg px-3 py-2 sm:col-span-2"></div></div>
+<div class="bg-white border rounded-xl p-3 space-y-2"><p class="text-xs font-extrabold text-indigo-700">10th / Secondary School</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="edu-10-school" oninput="applyEduScores()" placeholder="School name" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-10-board" oninput="applyEduScores()" placeholder="Board (CBSE / State Board...)" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-10-year" oninput="applyEduScores()" placeholder="Passing year" class="w-full text-xs border rounded-lg px-3 py-2"><input id="edu-10-score" oninput="applyEduScores()" placeholder="Percentage / CGPA / Marks" class="w-full text-xs border rounded-lg px-3 py-2"></div></div>
+<div><label class="block text-[11px] font-bold text-slate-600 mb-1">Other education / Imported details (optional)</label><textarea id="f-edu" oninput="updateCV()" rows="2" placeholder="Diploma, certificate, additional qualification..." class="w-full text-xs border bg-white rounded-lg p-2 leading-relaxed"></textarea></div><p class="text-[10px] text-slate-500">जो जानकारी लागू न हो, उसे खाली छोड़ सकते हैं। Percentage, CGPA या marks—जो भी सही हो, लिखें।</p></div>
 <div>
 <div class="flex justify-between items-center mb-1">
 <label class="text-[11px] font-bold text-slate-600">Key & Technical Skills</label>
@@ -1352,16 +1334,18 @@ document.getElementById("out-personal").innerText = document.getElementById("f-p
 }
 
 function applyEduScores() {
-var g = document.getElementById("edu-grad-score").value.trim() || "72% / 6.8 CGPA";
-var tw = document.getElementById("edu-12-score").value.trim() || "76% (First Division)";
-var tn = document.getElementById("edu-10-score").value.trim() || "80% (8.0 CGPA)";
-
-var formattedEdu = "• Bachelor's Degree (Graduation) – Recognized University | Score: " + g + "\n" +
-"• Intermediate (12th Standard) – State / Central Board | Score: " + tw + "\n" +
-"• High School (10th Standard) – State / Central Board | Score: " + tn;
-
-document.getElementById("f-edu").value = formattedEdu;
-updateCV();
+var val = function(id){ var el=document.getElementById(id); return el ? el.value.trim() : ""; };
+var rows = [];
+var grad = [val("edu-grad-degree"),val("edu-grad-subject"),val("edu-grad-college"),val("edu-grad-university"),val("edu-grad-year"),val("edu-grad-score")].filter(Boolean);
+if (grad.length) rows.push("Graduation: " + grad.join(" | "));
+var tw = [val("edu-12-school"),val("edu-12-board"),val("edu-12-stream"),val("edu-12-year"),val("edu-12-score")].filter(Boolean);
+if (tw.length) rows.push("12th: " + tw.join(" | "));
+var tn = [val("edu-10-school"),val("edu-10-board"),val("edu-10-year"),val("edu-10-score")].filter(Boolean);
+if (tn.length) rows.push("10th: " + tn.join(" | "));
+var other = val("f-edu");
+if (other) rows.push(other);
+var out = document.getElementById("out-edu");
+if (out) out.innerText = rows.join("\n");
 }
 
 var presets = {
@@ -1469,19 +1453,9 @@ flashBtn(btn, "Updated!");
 }
 
 function aiRewriteEdu(btn) {
-var g = document.getElementById("edu-grad-score").value.trim();
-var tw = document.getElementById("edu-12-score").value.trim();
-var tn = document.getElementById("edu-10-score").value.trim();
-
-var edus = [
-"• Bachelor of Arts (B.A. Honours) – Central / State University (2025) | Score: " + (g || "6.73 CGPA / First Division") + "\n• Intermediate (12th Standard) – State Examination Board (2022) | Percentage: " + (tw || "75% (First Division)") + "\n• High School (10th Standard) – State Examination Board (2020) | Score: " + (tn || "8.0 CGPA / 80%") + "\n• Professional Certification: Diploma in Computer Applications (DCA) & MS Office Suite",
-"• Bachelor's Degree (Graduation) – Recognized University | Marks: " + (g || "72% (First Division)") + "\n• Senior Secondary (Class XII) – UP / CBSE / State Board | Marks: " + (tw || "78% (First Division)") + "\n• Matriculation (Class X) – UP / CBSE / State Board | Marks: " + (tn || "82% (First Division)") + "\n• Technical Qualification: Certified in Computer Operations, Advanced MS Excel & Fast Typing",
-"• Graduation (B.A. / B.Com / B.Sc) – Recognized University | CGPA / Percentage: " + (g || "7.2 CGPA (70%)") + "\n• Higher Secondary (10+2) – State Board of Education | Percentage: " + (tw || "74%") + "\n• Secondary School (10th) – State Board of Education | Percentage: " + (tn || "80% (8.0 CGPA)")
-];
-document.getElementById("f-edu").value = edus[aiCycleIndex % edus.length];
+applyEduScores();
 aiCycleIndex++;
-updateCV();
-flashBtn(btn, "% Format Applied!");
+flashBtn(btn, "Education Formatted!");
 }
 
 function aiRewriteSkills(btn) {
@@ -1643,7 +1617,19 @@ if (ext === "pdf") {
  for (var i=1;i<=total;i++) {
   var page = await pdf.getPage(i);
   var content = await page.getTextContent();
-  var pageText = (content.items || []).map(function(it){ return it.str || ""; }).join(" ");
+  var textItems = content.items || [];
+  var pageText = "";
+  var previousY = null;
+  textItems.forEach(function(it) {
+   var str = (it.str || "").trim();
+   if (!str) return;
+   var y = it.transform && it.transform.length > 5 ? it.transform[5] : null;
+   if (pageText && y !== null && previousY !== null && Math.abs(y - previousY) > 2.5) pageText += "\n";
+   else if (pageText && !/\s$/.test(pageText)) pageText += " ";
+   pageText += str;
+   if (it.hasEOL) pageText += "\n";
+   previousY = y;
+  });
   // Scanned/image-only PDFs need OCR; render page and read it when embedded text is missing.
   if (pageText.trim().length < 25 && window.Tesseract) {
    try {
@@ -1672,7 +1658,7 @@ if (ext === "pdf") {
 } else { throw new Error("Sirf PDF, DOCX ya TXT file upload karein."); }
 
 var lines=rawText.split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean);
-var clean=rawText.replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();
+var clean=rawText.replace(/\u00a0/g," ").replace(/[ \t]+/g," ").replace(/ *\n */g,"\n").replace(/\n{3,}/g,"\n\n").trim();
 if (clean.length < 20) throw new Error("Is file se text nahi mil paya. PDF scanned ya password-protected ho sakti hai.");
 
 // Extract contact details without discarding the remaining resume text.
@@ -1741,8 +1727,9 @@ var opt = {
 margin: [6, 6, 6, 6],
 filename: cleanName + "_FreeCVResume.pdf",
 image: { type: "jpeg", quality: 0.98 },
-html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: source.scrollWidth },
+jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+pagebreak: { mode: ["css", "legacy"], avoid: ["h2", "img", ".resume-section-heading"] }
 };
 
 html2pdf().set(opt).from(source).save().then(function() {
