@@ -927,15 +927,25 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 </div>
 </div>
 
-<div class="grid grid-cols-3 gap-3 text-center">
-<div class="bg-indigo-50 p-3 rounded-xl"><span class="text-xs font-bold">Time</span><p id="ty-time" class="text-xl font-black">60s</p></div>
-<div class="bg-emerald-50 p-3 rounded-xl"><span class="text-xs font-bold">Speed (WPM)</span><p id="ty-wpm" class="text-xl font-black">0</p></div>
-<div class="bg-amber-50 p-3 rounded-xl"><span class="text-xs font-bold">Accuracy</span><p id="ty-acc" class="text-xl font-black">100%</p></div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<div><label for="ty-language" class="block text-[11px] font-bold text-slate-600 mb-1">Typing Language</label><select id="ty-language" onchange="changeTypingLanguage()" class="w-full text-xs font-bold border rounded-xl px-3 py-2 bg-slate-50"><option value="en">English</option><option value="hi">हिंदी Unicode (Mangal)</option></select></div>
+<div><label for="ty-duration" class="block text-[11px] font-bold text-slate-600 mb-1">Test Duration</label><select id="ty-duration" onchange="resetTypingTest()" class="w-full text-xs font-bold border rounded-xl px-3 py-2 bg-slate-50"><option value="1">1 Minute</option><option value="3">3 Minutes</option><option value="5">5 Minutes</option><option value="10">10 Minutes</option></select></div>
+<div><label class="block text-[11px] font-bold text-slate-600 mb-1">Practice Mode</label><div class="w-full text-xs font-bold border rounded-xl px-3 py-2 bg-indigo-50 text-indigo-700">Live accuracy + Net WPM</div></div>
 </div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+<div class="bg-indigo-50 p-3 rounded-xl"><span class="text-[11px] font-bold">Time Left</span><p id="ty-time" class="text-xl font-black tabular-nums">1:00</p></div>
+<div class="bg-emerald-50 p-3 rounded-xl"><span class="text-[11px] font-bold">Net WPM</span><p id="ty-wpm" class="text-xl font-black">0</p></div>
+<div class="bg-amber-50 p-3 rounded-xl"><span class="text-[11px] font-bold">Accuracy</span><p id="ty-acc" class="text-xl font-black">100%</p></div>
+<div class="bg-rose-50 p-3 rounded-xl"><span class="text-[11px] font-bold">Errors</span><p id="ty-errors" class="text-xl font-black">0</p></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500"><span id="ty-progress-label">Progress: 0 characters</span><span id="ty-gross">Gross WPM: 0</span></div>
+<div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden"><div id="ty-progress" class="h-full bg-indigo-600 rounded-full" style="width:0%"></div></div>
 
 <p id="ty-text" class="bg-slate-50 p-4 rounded-xl border text-sm leading-relaxed select-none font-medium text-slate-800">Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across India.</p>
 
-<textarea id="ty-input" oninput="runTyping()" placeholder="Yahan type karna shuru karein... (Naye words ke liye upar AI Change Words par click karein)" class="w-full h-32 border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none rounded-xl p-3 text-sm"></textarea>
+<textarea id="ty-input" oninput="runTyping()" placeholder="Yahan type karna shuru karein..." spellcheck="false" autocapitalize="off" class="w-full h-36 border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none rounded-xl p-3 text-sm leading-relaxed"></textarea>
+<div id="ty-result" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900"></div>
+<p class="text-[11px] text-slate-500">हिंदी अभ्यास Unicode में है और मोबाइल हिंदी कीबोर्ड से टाइप किया जा सकता है। Mangal एक Unicode फ़ॉन्ट है; Kruti Dev अलग legacy encoding है, इसलिए उसे सही तरह चलाने के लिए अलग desktop/font support चाहिए—उसे गलत तरीके से चालू नहीं दिखाया गया है।</p>
 </div>
 </section>
 
@@ -4382,6 +4392,11 @@ tech: [
 corporate: [
 "Effective workplace communication, accurate documentation, and timely reporting are the cornerstones of smooth corporate operations. Inventory reconciliation and quality assurance ensure uninterrupted supply chain efficiency.",
 "Standard operating procedures help organizations maintain consistency, reduce operational bottlenecks, and deliver reliable service to customers within agreed turnaround timelines."
+],
+hindi: [
+"भारत में शिक्षा और रोजगार के अवसर लगातार बढ़ रहे हैं। किसी भी प्रतियोगी परीक्षा में सफलता पाने के लिए नियमित अभ्यास, समय का सही उपयोग और शुद्धता बहुत आवश्यक है। विद्यार्थियों को प्रतिदिन पढ़ने और लिखने की आदत विकसित करनी चाहिए।",
+"भारत का संविधान देश की शासन व्यवस्था का आधार है। यह नागरिकों को मौलिक अधिकार प्रदान करता है और उनके कर्तव्यों का भी उल्लेख करता है। लोकतंत्र में जागरूक नागरिकों की भागीदारी देश के विकास के लिए महत्वपूर्ण होती है।",
+"समय प्रबंधन किसी भी कार्य को सफलतापूर्वक पूरा करने की महत्वपूर्ण कला है। यदि हम अपने लक्ष्य निर्धारित करके नियमित रूप से प्रयास करें, तो कठिन से कठिन कार्य भी सरल हो सकता है। निरंतर अभ्यास से गति और आत्मविश्वास दोनों बढ़ते हैं।"
 ]
 };
 
@@ -4389,13 +4404,41 @@ var tyTimer = null;
 var tyTimeLeft = 60;
 var tyStarted = false;
 var tyPassIdx = 0;
+var tyFinished = false;
 
-function aiChangeTypingText(btn) {
+function getTypingDuration() {
+var el = document.getElementById("ty-duration");
+return Math.max(1, parseInt(el ? el.value : "1", 10) || 1) * 60;
+}
+
+function formatTypingTime(seconds) {
+var m = Math.floor(seconds / 60);
+var sec = seconds % 60;
+return m + ":" + String(sec).padStart(2, "0");
+}
+
+function getTypingPool() {
+var lang = document.getElementById("ty-language");
+if (lang && lang.value === "hi") return typingPassages.hindi;
 var topic = document.getElementById("ty-topic").value;
 var pool = typingPassages[topic] || typingPassages.ssc;
-if (topic === "ai_mix") {
-pool = [].concat(typingPassages.ssc, typingPassages.economy, typingPassages.tech, typingPassages.corporate);
+if (topic === "ai_mix") pool = [].concat(typingPassages.ssc, typingPassages.economy, typingPassages.tech, typingPassages.corporate);
+return pool;
 }
+
+function changeTypingLanguage() {
+var lang = document.getElementById("ty-language").value;
+var topic = document.getElementById("ty-topic");
+if (topic) topic.disabled = lang === "hi";
+tyPassIdx = 0;
+document.getElementById("ty-text").innerText = getTypingPool()[0];
+var inp = document.getElementById("ty-input");
+if (inp) inp.placeholder = lang === "hi" ? "यहाँ हिंदी में टाइप करना शुरू करें..." : "Start typing here...";
+resetTypingTest();
+}
+
+function aiChangeTypingText(btn) {
+var pool = getTypingPool();
 tyPassIdx = (tyPassIdx + 1) % pool.length;
 document.getElementById("ty-text").innerText = pool[tyPassIdx];
 resetTypingTest();
@@ -4405,15 +4448,39 @@ if (btn) flashBtn(btn, "New Passage!");
 function resetTypingTest() {
 if (tyTimer) clearInterval(tyTimer);
 tyTimer = null;
-tyTimeLeft = 60;
+tyTimeLeft = getTypingDuration();
 tyStarted = false;
-document.getElementById("ty-time").innerText = "60s";
-document.getElementById("ty-wpm").innerText = "0";
-document.getElementById("ty-acc").innerText = "100%";
+tyFinished = false;
+var timeEl = document.getElementById("ty-time");
+if (timeEl) timeEl.innerText = formatTypingTime(tyTimeLeft);
+["ty-wpm","ty-gross","ty-errors","ty-progress-label"].forEach(function(id) {
+var el = document.getElementById(id);
+if (el) el.innerText = id === "ty-gross" ? "Gross WPM: 0" : id === "ty-progress-label" ? "Progress: 0 characters" : "0";
+});
+var acc = document.getElementById("ty-acc");
+if (acc) acc.innerText = "100%";
+var bar = document.getElementById("ty-progress");
+if (bar) bar.style.width = "0%";
+var result = document.getElementById("ty-result");
+if (result) { result.classList.add("hidden"); result.innerText = ""; }
 var inp = document.getElementById("ty-input");
-if (inp) {
-inp.value = "";
-inp.disabled = false;
+if (inp) { inp.value = ""; inp.disabled = false; }
+}
+
+function finishTypingTest() {
+if (tyFinished) return;
+tyFinished = true;
+if (tyTimer) clearInterval(tyTimer);
+tyTimer = null;
+var inp = document.getElementById("ty-input");
+if (inp) inp.disabled = true;
+var result = document.getElementById("ty-result");
+if (result) {
+var net = document.getElementById("ty-wpm").innerText;
+var acc = document.getElementById("ty-acc").innerText;
+var errors = document.getElementById("ty-errors").innerText;
+result.innerText = "Test complete! Net WPM: " + net + " | Accuracy: " + acc + " | Errors: " + errors;
+result.classList.remove("hidden");
 }
 }
 
@@ -4421,29 +4488,37 @@ function runTyping() {
 var inp = document.getElementById("ty-input");
 var target = document.getElementById("ty-text").innerText;
 var typed = inp.value;
+if (tyFinished) return;
 
 if (!tyStarted && typed.length > 0) {
 tyStarted = true;
 tyTimer = setInterval(function() {
-tyTimeLeft--;
-document.getElementById("ty-time").innerText = tyTimeLeft + "s";
-if (tyTimeLeft <= 0) {
-clearInterval(tyTimer);
-inp.disabled = true;
-}
+tyTimeLeft = Math.max(0, tyTimeLeft - 1);
+var timeEl = document.getElementById("ty-time");
+if (timeEl) timeEl.innerText = formatTypingTime(tyTimeLeft);
+if (tyTimeLeft <= 0) finishTypingTest();
 }, 1000);
 }
 
 var correctChars = 0;
+var errors = 0;
 for (var i = 0; i < typed.length; i++) {
-if (typed[i] === target[i]) correctChars++;
+if (i < target.length && typed[i] === target[i]) correctChars++;
+else errors++;
 }
-var acc = typed.length > 0 ? Math.round((correctChars / typed.length) * 100) : 100;
-var elapsedMin = Math.max((60 - tyTimeLeft) / 60, 1 / 60);
-var wpm = Math.round((typed.length / 5) / elapsedMin);
-
-document.getElementById("ty-acc").innerText = acc + "%";
-document.getElementById("ty-wpm").innerText = wpm;
+var accuracy = typed.length > 0 ? Math.round((correctChars / typed.length) * 100) : 100;
+var elapsedSeconds = Math.max(getTypingDuration() - tyTimeLeft, 1);
+var elapsedMinutes = elapsedSeconds / 60;
+var grossWpm = Math.round((typed.length / 5) / elapsedMinutes);
+var netWpm = Math.max(0, Math.round(((correctChars / 5) - (errors / 5)) / elapsedMinutes));
+document.getElementById("ty-acc").innerText = accuracy + "%";
+document.getElementById("ty-wpm").innerText = netWpm;
+document.getElementById("ty-errors").innerText = errors;
+document.getElementById("ty-gross").innerText = "Gross WPM: " + grossWpm;
+document.getElementById("ty-progress-label").innerText = "Progress: " + typed.length + " characters";
+var progress = document.getElementById("ty-progress");
+if (progress) progress.style.width = Math.min(100, (typed.length / Math.max(target.length, 1)) * 100) + "%";
+if (typed.length >= target.length) finishTypingTest();
 }
 
 // =========================================================================
