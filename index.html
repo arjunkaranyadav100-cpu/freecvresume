@@ -1377,7 +1377,7 @@ Ignore the top and bottom 7% of each page during OCR (may omit content near page
 <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl">
 <span class="text-[11px] font-bold text-amber-900">Total Balance</span>
 <p id="walletGrandTotal" class="text-lg sm:text-xl font-black text-amber-700">₹0.00</p>
-<span class="text-[10px] text-emerald-700 font-bold">Ready for UPI</span>
+<span class="text-[10px] text-amber-700 font-bold">Payouts not enabled</span>
 </div>
 </div>
 
@@ -1391,14 +1391,14 @@ Ignore the top and bottom 7% of each page during OCR (may omit content near page
 </div>
 
 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
-<h4 class="font-extrabold text-slate-800">🏦 Creator payouts (coming after payment verification)</h4>
+<h4 class="font-extrabold text-slate-800">🏦 Payout account settings</h4>
+<p class="text-[11px] text-slate-600">Save your UPI ID for future payouts. This does not trigger a payment or withdrawal.</p>
 <div class="flex flex-col sm:flex-row gap-2">
-<input type="text" id="withdrawUpiInput" placeholder="Enter your UPI ID (e.g., mobile@ybl)" class="flex-1 border border-slate-300 rounded-xl px-3 py-2.5 bg-white font-semibold">
-<button type="button" onclick="requestWalletWithdrawal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow cursor-pointer">
-Withdraw to UPI
-</button>
+<input type="text" id="withdrawUpiInput" placeholder="Enter UPI ID (e.g., mobile@ybl)" autocomplete="off" class="flex-1 border border-slate-300 rounded-xl px-3 py-2.5 bg-white font-semibold">
+<button type="button" onclick="saveCreatorPayoutUpi()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow cursor-pointer">Save UPI</button>
 </div>
-<p id="walletWithdrawMsg" class="text-[11px] font-bold text-emerald-700 hidden"></p>
+<p id="walletWithdrawMsg" class="text-[11px] font-bold text-slate-600 hidden"></p>
+<p class="text-[11px] text-amber-700 font-semibold">Withdrawals are disabled until verified payment settlement and server-side payout processing are connected.</p>
 </div>
 </div>
 </div>
@@ -2191,7 +2191,7 @@ if (signUpResult.data && signUpResult.data.session && signUpResult.data.user) {
 var acc = await loadCreatorProfile(signUpResult.data.user, upi);
 var wallet = getWalletData();
 wallet.upi = upi; wallet.creatorName = acc.name; saveWalletData(wallet);
-try { await sbClient.from("creator_wallets").upsert([{upi:upi,creator_name:acc.name}],{onConflict:"upi"}); } catch(walletErr) { console.warn("Wallet metadata sync skipped:",walletErr); }
+try { await sbClient.from("creator_wallets").upsert([{upi:upi,creator_id:acc.id,creator_name:acc.name}],{onConflict:"upi"}); } catch(walletErr) { console.warn("Wallet metadata sync skipped:",walletErr); }
 creatorAuthReady = true;
 updateCreatorAuthUI();
 msg.className = "text-[11px] font-bold text-emerald-700";
@@ -2210,7 +2210,7 @@ var acc2 = await loadCreatorProfile(signInResult.data.user, hint);
 var w2 = getWalletData();
 if (acc2.upi) {
 try {
-var wRes = await sbClient.from("creator_wallets").select("*").eq("upi",acc2.upi).maybeSingle();
+var wRes = await sbClient.from("creator_wallets").select("*").eq("creator_id",acc2.id).maybeSingle();
 if (wRes && wRes.data) {
 w2.views = wRes.data.views || w2.views;
 w2.adEarnings = Number(wRes.data.ad_earnings || w2.adEarnings);
@@ -4735,13 +4735,24 @@ function closeCreatorWalletModal() {
 document.getElementById("creatorWalletModal").style.display = "none";
 }
 
-async function requestWalletWithdrawal() {
-var msg = document.getElementById("walletWithdrawMsg");
-if (msg) {
-  msg.className = "text-[11px] font-bold text-amber-700";
-  msg.classList.remove("hidden");
-  msg.innerText = "Payouts are not enabled yet. We will activate withdrawals only after secure payment settlement, creator verification and server-side payout integration are complete. No payout request has been submitted.";
+async function saveCreatorPayoutUpi() {
+var acc=getActiveCreatorAccount(), input=document.getElementById("withdrawUpiInput"), msg=document.getElementById("walletWithdrawMsg");
+if(!acc||!sbClient){alert("Please sign in first.");return;}
+var upi=String(input&&input.value||"").trim().toLowerCase();
+if(!/^[a-z0-9._-]{2,}@[a-z0-9]{2,}$/i.test(upi)){if(msg){msg.className="text-[11px] font-bold text-rose-700";msg.classList.remove("hidden");msg.textContent="Valid UPI ID enter karein, jaise name@bank."; }return;}
+try{
+var result=await sbClient.from("creator_wallets").upsert([{upi:upi,creator_id:acc.id,creator_name:acc.name}],{onConflict:"upi"});
+if(result.error)throw result.error;
+acc.upi=upi;saveActiveCreatorAccount(acc);
+var wallet=getWalletData();wallet.upi=upi;wallet.creatorName=acc.name;saveWalletData(wallet);
+var hintKey="fcv_creator_upi_hint_v1_"+String(acc.email||"").toLowerCase();localStorage.setItem(hintKey,upi);
+updateCreatorAuthUI();
+if(msg){msg.className="text-[11px] font-bold text-emerald-700";msg.classList.remove("hidden");msg.textContent="UPI ID securely saved to your creator account.";}
+}catch(err){if(msg){msg.className="text-[11px] font-bold text-rose-700";msg.classList.remove("hidden");msg.textContent="Could not save UPI: "+(err.message||"Please retry.");}}
 }
+async function requestWalletWithdrawal() {
+var msg=document.getElementById("walletWithdrawMsg");
+if(msg){msg.className="text-[11px] font-bold text-amber-700";msg.classList.remove("hidden");msg.textContent="Withdrawals are not enabled yet. No payout request or payment has been created.";}
 }
 
 // =========================================================================
