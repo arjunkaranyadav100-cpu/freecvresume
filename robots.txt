@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Sitemap: https://freecvresume.co.in/sitemap.xml
+Sitemap: https://www.freecvresume.co.in/sitemap.xml
