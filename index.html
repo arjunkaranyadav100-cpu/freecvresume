@@ -375,7 +375,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <div class="space-y-1.5 text-center md:text-left">
 <span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase">🎓 IIT JEE • NEET • SSC • Railway Study Hub</span>
 <h2 class="text-lg sm:text-xl font-black">Read, Sell & Earn AdSense Revenue from IIT JEE, NEET & Govt Exam Study Notes!</h2>
-<p class="text-xs text-indigo-100 max-w-2xl">Read clean short notes & PDFs for IIT JEE, NEET UG, B.Sc, M.Sc, NET/JRF, GATE, SSC CGL & Railway NTPC. Create your Creator Account, upload PDF notes (coaching & teacher watermarks are removed automatically), and earn from paid sales or free AdSense views!</p>
+<p class="text-xs text-indigo-100 max-w-2xl">Read clean short notes & PDFs for IIT JEE, NEET UG, B.Sc, M.Sc, NET/JRF, GATE, SSC CGL & Railway NTPC. Create your Creator Account, upload original PDF notes that you have the rights to share, and earn from paid sales or free AdSense views!</p>
 </div>
 <button type="button" onclick="switchTab('notes'); window.scrollTo(0,0);" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-5 py-3 rounded-xl shadow-md shrink-0 cursor-pointer transition">
 📖 Explore Study Notes & Earnings →
@@ -393,7 +393,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <div class="flex flex-wrap gap-2">
 <span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-0.5 rounded-full uppercase">🔥 UPSC CSE, IIT JEE & NEET Added</span>
 <span class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full">💰 Sell Notes & Earn AdSense Revenue</span>
-<span class="bg-purple-500/20 border border-purple-400/40 text-purple-200 text-[11px] font-extrabold px-3 py-0.5 rounded-full">🛡️ Auto Coaching/Watermark Remover</span>
+<span class="bg-purple-500/20 border border-purple-400/40 text-purple-200 text-[11px] font-extrabold px-3 py-0.5 rounded-full">🛡️ Creator Rights & Content Review</span>
 </div>
 
 <!-- Creator Account Login / Signup Status Bar -->
@@ -483,6 +483,28 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
 <button type="button" onclick="quickSearchTopic('Polity')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">⚖️ Indian Polity</button>
 <button type="button" onclick="quickSearchTopic('Static GK')" class="bg-indigo-950/60 hover:bg-indigo-700 px-2.5 py-1 rounded-full cursor-pointer">🏆 Static GK</button>
 </div>
+</div>
+
+<!-- Marketplace storefront intro: Phase 1 -->
+<div class="marketplace-intro bg-white rounded-3xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="min-w-0">
+      <p class="text-[10px] font-black uppercase tracking-[.16em] text-indigo-600">FreeCV Study Marketplace</p>
+      <h3 class="text-xl sm:text-2xl font-black text-slate-950 mt-1">Discover notes. Learn smarter.</h3>
+      <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">Explore free study material or discover premium notes shared by independent creators. Check each note's details before opening it.</p>
+    </div>
+    <div class="grid grid-cols-2 gap-2 shrink-0">
+      <div class="rounded-2xl bg-emerald-50 border border-emerald-100 px-4 py-3"><p class="text-[10px] font-bold text-emerald-700">FREE LIBRARY</p><p class="text-sm font-black text-emerald-950">Read online</p></div>
+      <div class="rounded-2xl bg-violet-50 border border-violet-100 px-4 py-3"><p class="text-[10px] font-bold text-violet-700">CREATOR NOTES</p><p class="text-sm font-black text-violet-950">Free & premium</p></div>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-2 text-[11px] font-bold">
+    <span class="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5">🏛️ UPSC & State PCS</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5">⚛️ IIT JEE</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5">🩺 NEET</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5">📝 SSC & Railway</span>
+    <span class="rounded-full bg-slate-100 text-slate-700 px-3 py-1.5">🌐 Hindi & English</span>
+  </div>
 </div>
 
 <!-- First-time student guide: keep the study flow simple on mobile -->
@@ -4860,5 +4882,95 @@ filterMainStudyNotes();
 syncNotesFromSupabase();
 });
 </script>
+
+<style>
+.marketplace-intro { scroll-margin-top: 100px; }
+.note-detail-backdrop { position:fixed; inset:0; z-index:9998; background:rgba(15,23,42,.66); display:none; align-items:center; justify-content:center; padding:16px; }
+.note-detail-dialog { width:min(100%,560px); max-height:88vh; overflow:auto; background:#fff; border-radius:24px; box-shadow:0 24px 80px rgba(0,0,0,.28); }
+.note-detail-dialog:focus { outline:3px solid #a5b4fc; }
+.note-detail-open { min-height:42px; }
+@media(max-width:640px){.note-detail-backdrop{align-items:flex-end;padding:8px}.note-detail-dialog{max-height:90vh;border-radius:22px 22px 14px 14px}}
+</style>
+<div id="noteDetailModal" class="note-detail-backdrop" role="dialog" aria-modal="true" aria-labelledby="noteDetailTitle">
+  <div class="note-detail-dialog p-5 sm:p-6" tabindex="-1">
+    <div class="flex items-start justify-between gap-3">
+      <div><p class="text-[10px] uppercase tracking-wider font-black text-indigo-600">Note details</p><h3 id="noteDetailTitle" class="text-lg sm:text-xl font-black text-slate-950 mt-1">Study note</h3></div>
+      <button type="button" onclick="closeNoteDetailModal()" aria-label="Close details" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-black">✕</button>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-4">
+      <span id="noteDetailPrice" class="rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3 py-1.5">FREE</span>
+      <span id="noteDetailCreator" class="rounded-full bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5">Creator</span>
+    </div>
+    <p id="noteDetailDescription" class="text-sm leading-relaxed text-slate-600 mt-4"></p>
+    <div class="border-t border-slate-100 mt-5 pt-4 flex flex-col sm:flex-row gap-2">
+      <button id="noteDetailPrimaryAction" type="button" class="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm px-4 py-3">Read online</button>
+      <button type="button" onclick="closeNoteDetailModal()" class="rounded-xl bg-slate-100 text-slate-700 font-bold text-sm px-4 py-3">Back to marketplace</button>
+    </div>
+    <p id="noteDetailNotice" class="text-[11px] text-slate-500 mt-3">Creator-provided material. Please respect copyright and usage terms.</p>
+  </div>
+</div>
+<script>
+(function(){
+  function textOf(el){ return el ? (el.innerText || el.textContent || "").trim() : ""; }
+  window.closeNoteDetailModal = function(){
+    var modal=document.getElementById("noteDetailModal");
+    if(modal) modal.style.display="none";
+    document.body.style.overflow="";
+  };
+  window.openNoteDetailModal = function(card){
+    if(!card) return;
+    var title=textOf(card.querySelector("h3")) || "Study note";
+    var creator=card.getAttribute("data-creator") || textOf(card.querySelector(".creator-name")) || "FreeCV Study Hub";
+    var price=Number(card.getAttribute("data-price") || 0);
+    var desc=textOf(card.querySelector("p")) || "Open this study note to view its available material and reading options.";
+    var modal=document.getElementById("noteDetailModal");
+    if(!modal) return;
+    document.getElementById("noteDetailTitle").textContent=title;
+    document.getElementById("noteDetailCreator").textContent="By "+creator;
+    document.getElementById("noteDetailPrice").textContent=price>0 ? "PREMIUM • ₹"+price.toFixed(2) : "FREE • Read online";
+    document.getElementById("noteDetailPrice").className=price>0 ? "rounded-full bg-violet-50 text-violet-800 text-xs font-extrabold px-3 py-1.5" : "rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3 py-1.5";
+    document.getElementById("noteDetailDescription").textContent=desc;
+    var action=document.getElementById("noteDetailPrimaryAction");
+    action.disabled=price>0;
+    action.textContent=price>0 ? "Secure checkout coming in next phase" : "Read online";
+    action.className="flex-1 rounded-xl text-white font-extrabold text-sm px-4 py-3 "+(price>0 ? "bg-slate-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700");
+    action.onclick=function(){
+      if(price>0) return;
+      window.closeNoteDetailModal();
+      var existing=card.querySelector("button[onclick*='openBuiltinNoteReader'], button[onclick*='openCustomNoteReader'], a[href]");
+      if(existing) existing.click();
+    };
+    modal.style.display="flex";
+    document.body.style.overflow="hidden";
+    var dialog=modal.querySelector(".note-detail-dialog");
+    if(dialog) dialog.focus();
+  };
+  function enhanceCards(){
+    var cards=document.querySelectorAll("#studyNotesContainer .main-note-card");
+    cards.forEach(function(card){
+      if(card.querySelector(".note-detail-open")) return;
+      var actions=card.querySelector("button, a");
+      if(!actions) return;
+      var btn=document.createElement("button");
+      btn.type="button";
+      btn.className="note-detail-open w-full mt-2 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-extrabold py-3 rounded-xl";
+      btn.textContent="View note details";
+      btn.addEventListener("click",function(){window.openNoteDetailModal(card);});
+      actions.parentNode.insertBefore(btn,actions);
+    });
+  }
+  document.addEventListener("DOMContentLoaded",function(){
+    enhanceCards();
+    var container=document.getElementById("studyNotesContainer");
+    if(container && window.MutationObserver){
+      new MutationObserver(enhanceCards).observe(container,{childList:true,subtree:true});
+    }
+    var modal=document.getElementById("noteDetailModal");
+    if(modal) modal.addEventListener("click",function(e){if(e.target===modal) window.closeNoteDetailModal();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape") window.closeNoteDetailModal();});
+  });
+})();
+</script>
+
 </body>
 </html>
