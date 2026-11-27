@@ -185,7 +185,8 @@ overflow: visible !important; color: #111827 !important;
 
 <div class="bg-white/10 border border-white/20 rounded-xl p-4">
 <h2 class="text-sm font-bold mb-1"><i class="fa-solid fa-robot text-emerald-300 mr-1"></i> Role-Based Resume Suggestions (Editable Templates)</h2>
-<p class="text-xs text-indigo-100 mb-3">Job Profile chunein—Selected job role ke liye sample Summary, Experience aur Skills bhare jayenge. Har line ko apne asli experience ke hisaab se edit karein:</p>
+<p class="text-xs text-indigo-100 mb-3">Selected job role ke liye sample Summary, Experience aur Skills bhare jayenge. Har line ko apne asli experience ke hisaab se edit karein:</p>
+<p class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-[11px] leading-relaxed text-amber-900"><strong>Important:</strong> Ye role-based sample text hai, live AI-generated content nahi. Isme diye gaye skills, achievements, numbers ya job duties ko tabhi rakhein jab woh aapke actual experience se match karte hon. Galat ya banawati details hata dein.</p>
 <div class="flex flex-col sm:flex-row gap-2">
 <select id="ai-role" class="flex-1 bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 border border-white/20">
 <option value="warehouse">Store Operations / Billing / Inventory / Q-Commerce</option>
@@ -1515,7 +1516,7 @@ sk: "• Core Operations: POS Billing & Invoicing, Inventory & Stock Audit, Rapi
 },
 dataentry: {
 role: "MIS Executive & Back Office Operations Specialist",
-sum: "Detail-oriented Back Office and MIS Specialist with high-speed typing precision and advanced command over MS Excel, database management, CRM operations, and corporate documentation with 99.9% accuracy.",
+sum: "Detail-oriented Back Office and MIS Specialist with high-speed typing precision and advanced command over MS Excel, database management, CRM operations, and corporate documentation with  accuracy.",
 exp: "• Back Office & MIS Executive: Maintained master databases, created automated daily/monthly Excel MIS dashboards, and verified client KYC documentation.\n• Data Auditing & Billing Support: Audited high-volume transaction logs, rectified ledger discrepancies, and streamlined spreadsheet workflows.\n• Official Documentation: Drafted corporate correspondence and handled inter-departmental data coordination.",
 sk: "• Technical Proficiency: Advanced MS Excel (VLOOKUP, HLOOKUP, Pivot Tables), MS Word & PowerPoint, Google Sheets\n• Data Operations: High-Speed English & Hindi Typing (45+ WPM), CRM Data Entry, KYC Verification, ERP Billing\n• Soft Skills: Analytical Thinking, Data Confidentiality, Zero-Error Execution, Time Management"
 },
@@ -1534,7 +1535,7 @@ sk: "• Administrative Skills: Official Drafting & Noting, File & Record Manage
 sales: {
 role: "Business Development & Relationship Executive",
 sum: "Target-driven Sales and Relationship Management professional skilled in B2B/B2C client acquisition, consultative selling, financial product pitching, and territory expansion.",
-exp: "• Sales & Relationship Executive: Identified high-potential prospects, conducted product demos, and achieved 120%+ of monthly sales targets.\n• Client Retention & CRM: Managed an active customer portfolio, resolved post-sales queries swiftly, and drove repeat business.\n• Market Analysis: Monitored local market trends and executed promotional campaigns to expand brand footprint.",
+exp: "• Sales & Relationship Executive: Identified high-potential prospects, conducted product demos, and achieved monthly sales targets.\n• Client Retention & CRM: Managed an active customer portfolio, resolved post-sales queries swiftly, and drove repeat business.\n• Market Analysis: Monitored local market trends and executed promotional campaigns to expand brand footprint.",
 sk: "• Sales & Marketing: Lead Generation, Consultative Selling, Key Account Management, Field & Inside Sales, Negotiation\n• Tools & Reporting: CRM Software, Sales Funnel Tracking, MS Excel MIS Reporting, Digital Pitching\n• Soft Skills: Persuasive Communication, Client Relationship Building, Target Orientation, Resilience"
 },
 bpo: {
@@ -1600,7 +1601,7 @@ flashBtn(btn, "Updated!");
 function aiRewriteExp(btn) {
 var role = document.getElementById("f-role").value || "Operations Associate";
 var exps = [
-"• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving 99.9% accuracy and SLA-focused execution.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to improve turnaround time and upheld strict quality standards.",
+"• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving  accuracy and SLA-focused execution.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to improve turnaround time and upheld strict quality standards.",
 "• Senior Associate – " + role + ": Managed high-volume daily transactions, inward/outward stock verification, HHT barcode scanning, and customer invoicing with accurate billing and reconciliation practices.\n• Audit & Quality Control: Conducted regular physical stock counts, resolved billing mismatches, and implemented FIFO standards to minimize shrinkage.\n• Training & Coordination: Assisted management in daily scheduling, vendor coordination, and onboarding new team members.",
 "• Executive – " + role + ": Executed end-to-end back-office and floor operations including data entry, invoice processing, and client query resolution.\n• Database & Record Management: Digitized official records, verified compliance documents, and generated automated daily dispatch summaries.\n• Key Achievement: Recognized for high productivity, punctuality, and maintaining seamless operations during peak hours."
 ];
