@@ -245,7 +245,7 @@ body * { visibility: hidden; }
 </button>
 </div>
 <textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
-• POS Billing & MIS Management: Processed daily customer invoices with zero discrepancy and maintained stock reconciliation reports on MS Excel.
+• POS Billing & MIS Management: Processed daily customer invoices with accurate billing and reconciliation practices and maintained stock reconciliation reports on MS Excel.
 • Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</textarea>
 </div>
 
@@ -330,7 +330,7 @@ body * { visibility: hidden; }
 <div>
 <h2 id="sec-h2" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Work Experience & Key Achievements</h2>
 <div id="out-exp" contenteditable="true" class="text-xs leading-relaxed text-slate-800 whitespace-pre-line">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
-• POS Billing & MIS Management: Processed daily customer invoices with zero discrepancy and maintained stock reconciliation reports on MS Excel.
+• POS Billing & MIS Management: Processed daily customer invoices with accurate billing and reconciliation practices and maintained stock reconciliation reports on MS Excel.
 • Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</div>
 </div>
 
@@ -1368,7 +1368,7 @@ var presets = {
 warehouse: {
 role: "Senior Store Operations, Inventory & Billing Executive",
 sum: "Results-driven Operations & Supply Chain Professional with comprehensive expertise in high-velocity fulfillment, POS billing, inward/outward stock auditing, and SLA-driven dispatch execution. Proven track record of maintaining 99.9% inventory accuracy and minimizing shrinkage.",
-exp: "• Store Operations & Inventory Associate: Directed end-to-end fulfillment workflows including HHT barcode scanning, rapid picking/packing, and quality checks.\n• POS Billing & Reconciliation: Processed 300+ daily customer invoices with zero discrepancy and maintained stock sheets in MS Excel.\n• Audit & SLA Compliance: Executed daily cycle counts, FIFO stock rotation, and achieved 100% on-time dispatch targets.",
+exp: "• Store Operations & Inventory Associate: Directed end-to-end fulfillment workflows including HHT barcode scanning, rapid picking/packing, and quality checks.\n• POS Billing & Reconciliation: Processed 300+ daily customer invoices with accurate billing and reconciliation practices and maintained stock sheets in MS Excel.\n• Audit & SLA Compliance: Executed daily cycle counts, FIFO stock rotation, and achieved on-time dispatch coordination.",
 sk: "• Core Operations: POS Billing & Invoicing, Inventory & Stock Audit, Rapid Order Fulfillment, FIFO & Shrinkage Control\n• Software & Tools: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), ERP/WMS Portals, HHT Barcode Scanners\n• Professional Skills: SLA Time Management, Team Supervision, Quality Assurance (QC), Fast Problem Solving"
 },
 dataentry: {
@@ -1459,7 +1459,7 @@ function aiRewriteExp(btn) {
 var role = document.getElementById("f-role").value || "Operations Associate";
 var exps = [
 "• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving 99.9% accuracy and 100% SLA compliance.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to reduce turnaround time by 20% and upheld strict quality standards.",
-"• Senior Associate – " + role + ": Managed high-volume daily transactions, inward/outward stock verification, HHT barcode scanning, and customer invoicing with zero discrepancy.\n• Audit & Quality Control: Conducted regular physical stock counts, resolved billing mismatches, and implemented FIFO standards to minimize shrinkage.\n• Training & Coordination: Assisted management in daily scheduling, vendor coordination, and onboarding new team members.",
+"• Senior Associate – " + role + ": Managed high-volume daily transactions, inward/outward stock verification, HHT barcode scanning, and customer invoicing with accurate billing and reconciliation practices.\n• Audit & Quality Control: Conducted regular physical stock counts, resolved billing mismatches, and implemented FIFO standards to minimize shrinkage.\n• Training & Coordination: Assisted management in daily scheduling, vendor coordination, and onboarding new team members.",
 "• Executive – " + role + ": Executed end-to-end back-office and floor operations including data entry, invoice processing, and client query resolution.\n• Database & Record Management: Digitized official records, verified compliance documents, and generated automated daily dispatch summaries.\n• Key Achievement: Recognized for high productivity, punctuality, and maintaining seamless operations during peak hours."
 ];
 document.getElementById("f-exp").value = exps[aiCycleIndex % exps.length];
@@ -1709,6 +1709,20 @@ console.error("Old resume import error:",err);
 }
 
 function downloadPDF(btn) {
+var emailField = document.getElementById("f-email");
+var phoneField = document.getElementById("f-phone");
+var emailValue = emailField ? emailField.value.trim() : "";
+var phoneValue = phoneField ? phoneField.value.trim() : "";
+if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+alert("Please enter a valid email address before downloading your resume.");
+if (emailField) emailField.focus();
+return;
+}
+if (phoneValue && phoneValue.replace(/\D/g, "").length < 10) {
+alert("Please enter a valid phone number with at least 10 digits.");
+if (phoneField) phoneField.focus();
+return;
+}
 updateCV();
 var targetBtn = btn || document.getElementById("dl-btn");
 var oldText = targetBtn ? targetBtn.innerHTML : "";
