@@ -5072,7 +5072,9 @@ syncNotesFromSupabase();
 
 <style>
 #cookie-consent{position:fixed;inset:auto 12px 12px;z-index:10050;max-width:760px;margin:0 auto;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:18px;box-shadow:0 18px 60px rgba(15,23,42,.24);padding:18px}
-#cookie-consent[hidden],#cookie-settings[hidden]{display:none}
+#cookie-consent[hidden],#cookie-settings[hidden]{display:none !important}
+#cookie-settings:not([hidden]){display:flex !important;pointer-events:auto;touch-action:pan-y}
+#cookie-settings button{position:relative;z-index:2;pointer-events:auto;touch-action:manipulation;cursor:pointer}
 #cookie-consent button,#cookie-settings button{min-height:42px;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px}
 @media(max-width:640px){#cookie-consent{inset:auto 8px 8px;padding:14px}#cookie-consent .cookie-actions{display:grid;grid-template-columns:1fr 1fr}}
 </style>
@@ -5085,7 +5087,7 @@ syncNotesFromSupabase();
   <button type="button" onclick="openCookieSettings()" style="background:#fff;border:1px solid #cbd5e1;color:#334155">Cookie settings</button>
  </div>
 </section>
-<section id="cookie-settings" role="dialog" aria-modal="true" aria-labelledby="cookie-settings-title" hidden style="position:fixed;inset:0;z-index:10060;background:rgba(15,23,42,.65);padding:16px;display:flex;align-items:center;justify-content:center">
+<section id="cookie-settings" role="dialog" aria-modal="true" aria-labelledby="cookie-settings-title" hidden style="position:fixed;inset:0;z-index:10060;background:rgba(15,23,42,.65);padding:16px;align-items:center;justify-content:center">
  <div style="background:#fff;color:#0f172a;width:min(100%,480px);padding:22px;border-radius:18px;max-height:85vh;overflow:auto">
   <h2 id="cookie-settings-title" style="font-size:18px;font-weight:800;margin:0 0 10px">Cookie settings</h2>
   <p style="font-size:13px;line-height:1.55;color:#475569">Essential storage is required for core site features and cannot be switched off here. Advertising cookies are optional. If enabled, the Google AdSense script may load.</p>
@@ -5115,8 +5117,8 @@ syncNotesFromSupabase();
   try{localStorage.setItem(KEY,allow?"accepted":"rejected")}catch(e){}
   var banner=document.getElementById("cookie-consent");
   var settings=document.getElementById("cookie-settings");
-  if(banner)banner.hidden=true;
-  if(settings)settings.hidden=true;
+  if(banner){banner.hidden=true;banner.style.display="none";}
+  if(settings){settings.hidden=true;settings.style.display="none";}
   if(allow)loadAds();
   var label=document.getElementById("cookie-current-choice");
   if(label)label.textContent="Current choice: "+(allow?"Advertising cookies allowed":"Optional advertising cookies rejected");
@@ -5124,17 +5126,17 @@ syncNotesFromSupabase();
  window.openCookieSettings=function(){
   var panel=document.getElementById("cookie-settings");
   var banner=document.getElementById("cookie-consent");
-  if(banner)banner.hidden=true;
-  if(panel)panel.hidden=false;
+  if(banner){banner.hidden=true;banner.style.display="none";}
+  if(panel){panel.hidden=false;panel.style.display="flex";}
   var label=document.getElementById("cookie-current-choice");
   if(label){var c=getChoice();label.textContent="Current choice: "+(c==="accepted"?"Advertising cookies allowed":c==="rejected"?"Optional advertising cookies rejected":"not set")}
  };
- window.closeCookieSettings=function(){var panel=document.getElementById("cookie-settings");if(panel)panel.hidden=true};
+ window.closeCookieSettings=function(){var panel=document.getElementById("cookie-settings");if(panel){panel.hidden=true;panel.style.display="none"}};
  document.addEventListener("DOMContentLoaded",function(){
   var choice=getChoice();
   if(choice==="accepted")loadAds();
   else if(choice==="rejected")return;
-  else {var banner=document.getElementById("cookie-consent");if(banner)banner.hidden=false}
+  else {var banner=document.getElementById("cookie-consent");if(banner){banner.hidden=false;banner.style.display="block"}}
  });
 })();
 </script>
