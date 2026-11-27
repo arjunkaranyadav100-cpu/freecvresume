@@ -532,6 +532,14 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
 
 <!-- ==================== LOGGED-IN CREATOR DASHBOARD (HIDDEN FOR PUBLIC VISITORS) ==================== -->
 <div id="creatorDashboardSection" style="display:none;" class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-300 shadow-lg space-y-5">
+<div id="adminModerationPanel" style="display:none;" class="rounded-2xl border-2 border-rose-300 bg-rose-50 p-4 space-y-3">
+  <div class="flex items-center justify-between gap-2">
+    <div><h3 class="font-black text-rose-900">🛡️ Admin Moderation</h3><p class="text-xs text-rose-800">Review new study notes before public approval.</p></div>
+    <button type="button" onclick="loadAdminModeration()" class="rounded-lg bg-rose-700 text-white text-xs font-bold px-3 py-2">Refresh</button>
+  </div>
+  <p id="adminModerationMessage" class="text-xs text-slate-600">Loading pending notes…</p>
+  <div id="adminModerationList" class="space-y-2"></div>
+</div>
 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 pb-4">
 <div>
 <div class="flex flex-wrap items-center gap-2 mb-1">
@@ -2252,6 +2260,42 @@ if (!nEmail && String(note.id || "").indexOf("custom-note") === 0) return true;
 return false;
 }
 
+async function loadAdminModeration() {
+var panel=document.getElementById("adminModerationPanel");
+var list=document.getElementById("adminModerationList");
+var msg=document.getElementById("adminModerationMessage");
+if(!panel || !list || !msg) return;
+var acc=getActiveCreatorAccount();
+if(!acc || acc.role!=="admin") { panel.style.display="none"; return; }
+panel.style.display="block";
+msg.textContent="Loading pending notes…"; list.innerHTML="";
+try {
+var result=await sbClient.from("study_notes").select("id,title,creator,category,created_at,moderation_status,moderation_note").neq("category","_chunk").eq("moderation_status","pending").order("created_at",{ascending:false});
+if(result.error) throw result.error;
+var rows=result.data||[];
+msg.textContent=rows.length ? rows.length+" note(s) waiting for review." : "No pending notes. All caught up!";
+rows.forEach(function(note){
+var card=document.createElement("div"); card.className="rounded-xl border border-rose-200 bg-white p-3";
+var title=document.createElement("p"); title.className="font-bold text-sm text-slate-900"; title.textContent=note.title||"Untitled note";
+var meta=document.createElement("p"); meta.className="text-xs text-slate-500 mt-1"; meta.textContent=(note.creator||"Creator")+" • "+(note.category||"Uncategorized");
+var actions=document.createElement("div"); actions.className="flex flex-wrap gap-2 mt-3";
+function action(label,color,status){var b=document.createElement("button");b.type="button";b.className="rounded-lg px-3 py-2 text-xs font-bold text-white "+color;b.textContent=label;b.addEventListener("click",function(){moderateStudyNote(note.id,status);});actions.appendChild(b);}
+action("Approve","bg-emerald-600","approved"); action("Reject","bg-amber-600","rejected");
+card.appendChild(title);card.appendChild(meta);card.appendChild(actions);list.appendChild(card);
+});
+} catch(err) { msg.textContent="Could not load moderation queue: "+(err.message||"Please retry"); }
+}
+async function moderateStudyNote(noteId,status) {
+if(!noteId || ["approved","rejected"].indexOf(status)<0) return;
+var acc=getActiveCreatorAccount();
+if(!acc || acc.role!=="admin") { alert("Admin permission required."); return; }
+var result=await sbClient.from("study_notes").update({moderation_status:status,moderation_note:status==="rejected"?"Rejected by admin":null,moderated_at:new Date().toISOString(),moderated_by:acc.id}).eq("id",noteId);
+if(result.error) { alert("Moderation failed: "+result.error.message); return; }
+await loadAdminModeration();
+await syncNotesFromSupabase();
+alert(status==="approved"?"Note approved and visible to students.":"Note rejected and hidden from public.");
+}
+
 function updateCreatorAuthUI() {
 var acc = getActiveCreatorAccount();
 var topTxt = document.getElementById("creatorAuthBtnText");
@@ -2275,6 +2319,7 @@ if (walletBtnHero) walletBtnHero.style.display = "flex";
 if (heroGrid) heroGrid.className = "max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-3";
 if (dashSec) dashSec.style.display = "block";
 renderCreatorDashboard();
+if (acc.role === "admin") loadAdminModeration();
 } else {
 if (topTxt) topTxt.innerText = "Creator Login / Sign Up";
 if (logoutBtn) logoutBtn.style.display = "none";
