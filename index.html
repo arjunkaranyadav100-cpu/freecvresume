@@ -683,7 +683,7 @@ data-keywords="iit jee notes pdf jee mains jee advanced physics chemistry mathem
 <div>
 <div class="flex justify-between items-center gap-2 mb-3">
 <span class="inline-block bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-1 rounded-md">⚛️ IIT JEE (MAINS + ADV)</span>
-<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • Read Online</span>
 </div>
 <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
 IIT JEE (Mains & Advanced) Physics, Chemistry & Calculus Complete Formula & Concept Handbook
@@ -716,7 +716,7 @@ data-keywords="neet ug notes pdf ncert biology line by line notes human physiolo
 <div>
 <div class="flex justify-between items-center gap-2 mb-3">
 <span class="inline-block bg-emerald-100 text-emerald-900 text-xs font-extrabold px-3 py-1 rounded-md">🩺 NEET UG (MEDICAL)</span>
-<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>
+<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • Read Online</span>
 </div>
 <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">
 NEET UG Complete NCERT Biology (Botany + Zoology), Organic Chemistry & Physics Master Notes
@@ -2183,9 +2183,9 @@ var item = myNotes[j];
 var nViews = parseInt(item.views || 1, 10);
 var nSales = parseInt(item.sales || 0, 10);
 var nPrice = parseFloat(item.price || 0);
-var noteAdEarn = +(nViews * 0.25).toFixed(2);
+var noteAdEarn = 0; // No per-view AdSense estimate; use verified AdSense statements only.
 var noteSaleEarn = +(nSales * nPrice * 0.85).toFixed(2);
-var noteTotalEarn = +(noteAdEarn + noteSaleEarn).toFixed(2);
+var noteTotalEarn = noteSaleEarn;
 
 listHtml += '<div class="bg-slate-50 hover:bg-indigo-50/40 border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 transition">' +
 '<div class="space-y-1 min-w-0 flex-1">' +
@@ -2193,7 +2193,7 @@ listHtml += '<div class="bg-slate-50 hover:bg-indigo-50/40 border border-slate-2
 '<span class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded">' + escapeHtml(item.badge || "PDF NOTE") + '</span>' +
 (nPrice > 0
 ? '<span class="bg-amber-100 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-full">💎 Paid ₹' + nPrice + '</span>'
-: '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free (AdSense)</span>') +
+: '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">🆓 Free (verified AdSense reports only)</span>') +
 '</div>' +
 '<h5 class="text-xs sm:text-sm font-black text-slate-900 truncate">' + escapeHtml(item.title) + '</h5>' +
 '<div class="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-600">' +
@@ -3067,7 +3067,7 @@ calcSalesRev += +(s * p * 0.85).toFixed(2);
 }
 }
 var viewsCount = Math.max(w.views || 0, calcViews);
-var adEarn = Math.max(w.adEarnings || 0, +(calcViews * 0.25).toFixed(2));
+var adEarn = 0; // AdSense is not paid at a fixed rate per view.
 var salesCount = Math.max(w.sales || 0, calcSales);
 var salesEarn = Math.max(w.salesEarnings || 0, +calcSalesRev.toFixed(2));
 var total = +(adEarn + salesEarn).toFixed(2);
@@ -3137,7 +3137,7 @@ card.setAttribute("data-keywords", "bsc notes pdf msc notes pdf csir net jrf not
 card.innerHTML = '<div>' +
 '<div class="flex justify-between items-center gap-2 mb-3">' +
 '<span class="inline-block bg-purple-100 text-purple-900 text-xs font-extrabold px-3 py-1 rounded-md">🎓 B.Sc • M.Sc • NET/JRF • GATE</span>' +
-'<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • AdSense Share Active</span>' +
+'<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full">FREE • Read Online</span>' +
 '</div>' +
 '<h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">B.Sc, M.Sc, CSIR-UGC NET / JRF & GATE Complete Master Notes (Physics, Chem, Maths, Life Sci & Research)</h3>' +
 '<p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">Concise revision notes covering Quantum & Classical Mechanics, Linear Algebra, Complex Analysis, NMR/IR Spectroscopy, Pericyclic Reactions, CSIR NET Life Sciences (Cell Signaling, CRISPR) & UGC NET Paper-1 Research Aptitude + GATE.</p>' +
