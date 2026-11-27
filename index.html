@@ -658,6 +658,7 @@ All Notes
 <div id="searchStatusText" class="text-xs font-bold text-slate-600">📚 Available Study Notes (8)</div>
 <div class="flex flex-wrap items-center gap-2">
 <button type="button" id="savedNotesToggle" onclick="toggleSavedNotesFilter()" aria-pressed="false" class="text-[11px] font-extrabold px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-800">☆ Saved Notes (<span id="savedNotesCount">0</span>)</button>
+<button type="button" id="studentLibraryToggle" onclick="toggleStudentLibrary()" aria-expanded="false" class="text-[11px] font-extrabold px-3 py-2 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-800">📚 My Library</button>
 <label for="notesSortSelect" class="sr-only">Sort study notes</label>
 <select id="notesSortSelect" onchange="applyNotesSort()" class="text-[11px] font-bold border border-slate-200 rounded-lg bg-white text-slate-700 px-2.5 py-2">
 <option value="recommended">Recommended</option><option value="az">Title: A to Z</option><option value="free">Free first</option><option value="popular">Most viewed</option>
@@ -668,6 +669,20 @@ All Notes
 <i class="fa-solid fa-shield-halved mr-1"></i> Upload safety checks: review copyright and ownership before publishing
 </div>
 </div>
+
+<!-- STUDENT LIBRARY: BOOKMARKS, CONTINUE READING & HISTORY -->
+<section id="studentLibraryPanel" class="hidden mb-5 rounded-2xl border border-indigo-200 bg-white p-4 sm:p-5 shadow-sm" aria-labelledby="studentLibraryTitle">
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div><h3 id="studentLibraryTitle" class="text-base font-black text-slate-900">📚 My Student Library</h3><p class="text-[11px] text-slate-500 mt-1">Your bookmarks, reading progress and recently opened notes on this device</p></div>
+    <button type="button" onclick="clearStudentReadingHistory()" class="text-[11px] font-bold text-rose-600 border border-rose-200 rounded-lg px-3 py-2">Clear history</button>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+    <div class="rounded-xl border border-amber-200 bg-amber-50/50 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-black text-amber-900">★ Bookmarks</h4><span id="studentBookmarkCount" class="text-[10px] font-bold text-amber-800">0</span></div><div id="studentBookmarkList" class="space-y-2"></div></div>
+    <div class="rounded-xl border border-indigo-200 bg-indigo-50/50 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-black text-indigo-900">↗ Continue reading</h4><span id="studentProgressCount" class="text-[10px] font-bold text-indigo-800">0</span></div><div id="studentProgressList" class="space-y-2"></div></div>
+    <div class="rounded-xl border border-slate-200 bg-slate-50 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-black text-slate-900">◷ Recently opened</h4><span id="studentHistoryCount" class="text-[10px] font-bold text-slate-700">0</span></div><div id="studentHistoryList" class="space-y-2"></div></div>
+  </div>
+  <p class="text-[10px] text-slate-500 mt-3">Note: This library currently saves data in this browser/device. Cross-device sync requires account-based cloud storage.</p>
+</section>
 
 <!-- STUDY NOTES CARDS CONTAINER -->
 <div id="studyNotesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -3900,6 +3915,7 @@ kwMeta.setAttribute("content", kwMeta.getAttribute("content") + ", " + combinedK
 function openBuiltinNoteReader(noteId) {
 var note = builtinNotesData[noteId];
 if (!note) return;
+recordStudentNoteOpen(note);
 note.views = (note.views || 4500) + 1;
 var vSpan = document.getElementById("views-" + noteId);
 if (vSpan) vSpan.innerText = "👁️ " + note.views + " Views";
@@ -3918,6 +3934,7 @@ break;
 }
 saveCustomNotesList(list);
 if (!found) return;
+recordStudentNoteOpen(found);
 var vSpan = document.getElementById("views-" + noteId);
 if (vSpan) vSpan.innerText = "👁️ " + found.views + " Views";
 renderCreatorDashboard();
@@ -4243,6 +4260,81 @@ document.addEventListener("DOMContentLoaded",function(){
   if(jump) jump.addEventListener("keydown",function(e){if(e.key==="Enter") goToReaderPage();});
 });
 
+function getStudentReadingHistory() {
+try { var x=JSON.parse(localStorage.getItem("fcv_student_reading_history_v1")||"[]"); return Array.isArray(x)?x:[]; } catch(e) { return []; }
+}
+function recordStudentNoteOpen(note) {
+if(!note || !note.id) return;
+var id=String(note.id), history=getStudentReadingHistory();
+history=history.filter(function(item){return item && String(item.id)!==id;});
+history.unshift({id:id,openedAt:Date.now()});
+try { localStorage.setItem("fcv_student_reading_history_v1",JSON.stringify(history.slice(0,40))); } catch(e) {}
+}
+function findStudentLibraryNote(noteId) {
+var id=String(noteId||"");
+var custom=getCustomNotesList();
+for(var i=0;i<custom.length;i++){if(String(custom[i].id)===id)return custom[i];}
+if(typeof builtinNotesData!=="undefined" && builtinNotesData[id]) return builtinNotesData[id];
+return null;
+}
+function createStudentLibraryRow(container,note,meta,actionLabel,onOpen,onRemove) {
+var row=document.createElement("div");
+row.className="rounded-lg border border-slate-200 bg-white p-2.5";
+var title=document.createElement("p"); title.className="text-[11px] font-extrabold text-slate-800 leading-snug"; title.textContent=note.title||"Study note";
+var detail=document.createElement("p"); detail.className="text-[10px] text-slate-500 mt-1"; detail.textContent=meta||"Study material";
+var actions=document.createElement("div"); actions.className="flex gap-2 mt-2";
+var open=document.createElement("button"); open.type="button"; open.className="flex-1 rounded-md bg-indigo-600 text-white text-[10px] font-bold px-2 py-2"; open.textContent=actionLabel||"Open"; open.addEventListener("click",onOpen);
+actions.appendChild(open);
+if(onRemove){var remove=document.createElement("button");remove.type="button";remove.className="rounded-md border border-rose-200 text-rose-700 text-[10px] font-bold px-2 py-2";remove.textContent="Remove";remove.addEventListener("click",onRemove);actions.appendChild(remove);}
+row.appendChild(title);row.appendChild(detail);row.appendChild(actions);container.appendChild(row);
+}
+function renderStudentLibrary() {
+var panel=document.getElementById("studentLibraryPanel"); if(!panel)return;
+var bookmarks=getReaderBookmarks(), progress=getReaderProgressMap(), history=getStudentReadingHistory();
+var lists=[
+{box:"studentBookmarkList",count:"studentBookmarkCount",items:bookmarks.map(function(id){return {id:id};}),type:"bookmark"},
+{box:"studentProgressList",count:"studentProgressCount",items:Object.keys(progress).filter(function(id){return progress[id] && Number(progress[id].percent)>0 && Number(progress[id].percent)<100;}).sort(function(a,b){return (progress[b].updatedAt||0)-(progress[a].updatedAt||0);}).map(function(id){return {id:id};}),type:"progress"},
+{box:"studentHistoryList",count:"studentHistoryCount",items:history,type:"history"}
+];
+lists.forEach(function(group){
+var box=document.getElementById(group.box), count=document.getElementById(group.count); if(!box)return;
+box.innerHTML="";
+var valid=[];
+group.items.forEach(function(entry){
+var note=findStudentLibraryNote(entry.id); if(note)valid.push({entry:entry,note:note});
+});
+if(count)count.textContent=String(valid.length);
+if(!valid.length){var empty=document.createElement("p");empty.className="text-[10px] text-slate-500 py-2";empty.textContent=group.type==="bookmark"?"No bookmarked notes yet.":group.type==="progress"?"No reading progress yet.":"No recently opened notes yet.";box.appendChild(empty);return;}
+valid.slice(0,8).forEach(function(item){
+var meta="";
+if(group.type==="progress")meta=Math.round(Number(progress[item.entry.id].percent)||0)+"% read";
+if(group.type==="history")meta="Opened "+new Date(item.entry.openedAt||Date.now()).toLocaleDateString();
+if(group.type==="bookmark")meta="Saved for later";
+createStudentLibraryRow(box,item.note,meta,"Open",function(){
+var id=String(item.note.id);
+if(id.indexOf("custom-note")===0)openCustomNoteReader(id);else openBuiltinNoteReader(id);
+},group.type==="bookmark"?function(){
+var latest=getReaderBookmarks().filter(function(x){return String(x)!==id;});
+try{localStorage.setItem("fcv_reader_bookmarks_v1",JSON.stringify(latest));}catch(e){}
+renderStudentLibrary();
+}:null);
+});
+});
+}
+var savedCount=document.getElementById("savedNotesCount"); if(savedCount)savedCount.textContent=String(bookmarks.length);
+}
+function toggleStudentLibrary() {
+var panel=document.getElementById("studentLibraryPanel"),btn=document.getElementById("studentLibraryToggle");if(!panel)return;
+var opening=panel.classList.contains("hidden");
+panel.classList.toggle("hidden",!opening);
+if(btn){btn.setAttribute("aria-expanded",opening?"true":"false");btn.textContent=opening?"📚 Hide My Library":"📚 My Library";}
+if(opening){renderStudentLibrary();panel.scrollIntoView({behavior:"smooth",block:"start"});}
+}
+function clearStudentReadingHistory() {
+if(!confirm("Clear recently opened notes history on this device? Bookmarks and reading progress will remain."))return;
+try{localStorage.removeItem("fcv_student_reading_history_v1");}catch(e){}
+renderStudentLibrary();
+}
 function getReaderProgressMap() {
 try { var x=JSON.parse(localStorage.getItem("fcv_reader_progress_v1")||"{}"); return x && typeof x==="object" ? x : {}; } catch(e) { return {}; }
 }
@@ -4266,6 +4358,7 @@ var id=String(activeReaderNote.id), list=getReaderBookmarks(), i=list.indexOf(id
 if(i===-1) list.unshift(id); else list.splice(i,1);
 try { localStorage.setItem("fcv_reader_bookmarks_v1",JSON.stringify(list)); } catch(e) {}
 updateReaderBookmarkButton();
+var libraryPanel=document.getElementById("studentLibraryPanel"); if(libraryPanel && !libraryPanel.classList.contains("hidden")) renderStudentLibrary();
 }
 function updateReaderProgress() {
 var body=document.getElementById("readerScrollBody"); if(!body || !activeReaderNote) return;
@@ -4282,6 +4375,7 @@ var max=body.scrollHeight-body.clientHeight;
 body.scrollTop=Math.round(max*rec.percent/100);
 }
 updateReaderBookmarkButton(); updateReaderProgress();
+var libraryPanel=document.getElementById("studentLibraryPanel"); if(libraryPanel && !libraryPanel.classList.contains("hidden")) renderStudentLibrary();
 }
 (function bindReaderProgressEvents(){
 var body=document.getElementById("readerScrollBody"); if(!body || body.dataset.progressBound==="1") return;
@@ -4295,6 +4389,7 @@ currentRenderJobId++;
 activeReaderNote = null;
 if (adShareTimer) clearTimeout(adShareTimer);
 document.getElementById("onPageReaderModal").style.display = "none";
+var libraryPanel=document.getElementById("studentLibraryPanel"); if(libraryPanel && !libraryPanel.classList.contains("hidden")) renderStudentLibrary();
 }
 
 async function unlockPaidNoteNow() {
