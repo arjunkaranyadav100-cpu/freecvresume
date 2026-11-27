@@ -2373,29 +2373,24 @@ if (enabled && customInput && customInput.value.trim()) {
   for (var i = 0; i < terms.length; i++) {
     var term = terms[i].trim();
     if (term.length < 2) continue;
-    var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\function sanitizeNoteText(rawText) {
-if (!rawText) return { cleanText: "", removedCount: 0 };
-// Preserve source material and attribution. Never strip names, links, phone numbers,
-// coaching references, creator marks, copyright notices, or watermarks automatically.
-// Only normalize excess whitespace for readability; creators must have rights to upload.
-var text = String(rawText)
-  .replace(/[\\t\\f\\v ]+/g, " ")
-  .replace(/\\r\\n?/g, "\\n")
-  .replace(/\\n{3,}/g, "\\n\\n")
-  .trim();
-return { cleanText: text, removedCount: 0 };
-}");
+    var escaped = term.split("").map(function(ch) {
+      return "\\^$.*+?()[]{}|".indexOf(ch) >= 0 ? "\\" + ch : ch;
+    }).join("");
     var re = new RegExp(escaped, "gi");
     text = text.replace(re, function(match) { removedCount++; return ""; });
   }
 }
-text = text.replace(/[\\t\\f\\v ]+/g, " ")
-  .replace(/\\r\\n?/g, "\\n")
-  .replace(/\\n{3,}/g, "\\n\\n")
+text = text.replace(/[\t\f\v ]+/g, " ")
+  .replace(/\r\n?/g, "\n")
+  .replace(/\n{3,}/g, "\n\n")
   .trim();
 return { cleanText: text, removedCount: removedCount };
 }
 function reRunSanitizerPreview() {
+var rights = document.getElementById("upRightsConfirm");
+var removeSelected = document.getElementById("upAutoRemoveCoaching");
+var customInput = document.getElementById("upCustomRemoveWords");
+if (customInput) customInput.disabled = !(rights && rights.checked && removeSelected && removeSelected.checked);
 if (!rawUploadedNoteText) return;
 var res = sanitizeNoteText(rawUploadedNoteText);
 fullSanitizedNoteContent = res.cleanText;
