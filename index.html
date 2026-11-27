@@ -1091,7 +1091,7 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <span class="bg-purple-100 text-purple-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">💰 Sell or Earn from AdSense</span>
 </div>
 <h3 class="text-lg font-black text-slate-900 mb-1">☁️ Upload PDF Study Notes & Earn Money</h3>
-<p class="text-xs text-slate-500 mb-4">As soon as you upload a PDF, our system automatically removes <strong>coaching names, teacher names, phone numbers & links</strong> and indexes every single word for Google Search:</p>
+<p class="text-xs text-slate-500 mb-4">Your original PDF is preserved. We extract searchable text for the Notes listing; optional text cleanup only applies when you confirm you own or have permission to edit the material. It does not remove marks or change the original PDF:</p>
 
 <form onsubmit="saveCustomNote(event)" class="space-y-3.5 text-xs sm:text-sm">
 
@@ -3718,12 +3718,20 @@ submitBtn.disabled = false;
 submitBtn.innerHTML = origBtnText;
 }
 
-alert("✅ Aapka PDF Note turant Publish ho gaya hai! Ab har note mein sirf uska apna PDF dikhega.");
+if (cloudPublishStatus === "fully-synced") {
+alert("✅ Note publish ho gaya aur PDF cloud par sync ho gaya. Ab ise doosre devices par bhi khola ja sakta hai.");
+} else if (cloudPublishStatus === "metadata-synced") {
+alert("✅ Note listing cloud par save ho gayi. PDF file attach nahi thi; isliye cloud PDF sync ki zaroorat nahi padi.");
+} else if (cloudPublishStatus === "local-only" || cloudPublishStatus === "metadata-sync-failed" || cloudPublishStatus === "cloud-sync-failed") {
+alert("⚠️ Note is device par save ho gaya, lekin cloud sync confirm nahi ho saka. Is device ka local copy available rahega; doosre device par dikhne se pehle cloud sync fix karna hoga.");
+} else {
+alert("⚠️ Note is device par publish ho gaya, lekin PDF cloud sync nahi hua. Doosre device par PDF khulne se pehle dobara sync karna hoga.");
+}
 
+var cloudPublishStatus = "local-only";
 if (sbClient) {
-(async function() {
 try {
-await Promise.race([
+var noteUpsertResult = await Promise.race([
 sbClient.from("study_notes").upsert([{
 id: newNote.id,
 title: newNote.title,
@@ -3740,22 +3748,32 @@ views: newNote.views || 1,
 sales: newNote.sales || 0,
 rating: 4.9
 }], { onConflict: "id" }),
-new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 5000); })
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Cloud metadata sync timed out" } }); }, 10000); })
 ]);
+if (noteUpsertResult && !noteUpsertResult.error) {
+cloudPublishStatus = "metadata-synced";
 if (upi) {
-await Promise.race([
-sbClient.from("creator_wallets").upsert([{
-upi: upi,
-creator_name: creator
-}], { onConflict: "upi" }),
-new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3500); })
+var walletResult = await Promise.race([
+sbClient.from("creator_wallets").upsert([{ upi: upi, creator_name: creator }], { onConflict: "upi" }),
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Creator wallet sync timed out" } }); }, 5000); })
 ]);
+if (walletResult && walletResult.error) console.warn("Creator wallet cloud sync failed:", walletResult.error);
 }
 if (pdfBufferForThisNote) {
-await uploadPdfBufferToCloud(newNote, pdfBufferForThisNote, true);
+var uploadedPdfUrl = await uploadPdfBufferToCloud(newNote, pdfBufferForThisNote, true);
+if (uploadedPdfUrl) cloudPublishStatus = "fully-synced";
+else cloudPublishStatus = "pdf-sync-failed";
+} else if (extUrl) {
+cloudPublishStatus = "fully-synced";
 }
-} catch (bgErr) {}
-})();
+} else {
+cloudPublishStatus = "metadata-sync-failed";
+console.warn("Study note cloud metadata sync failed:", noteUpsertResult && noteUpsertResult.error);
+}
+} catch (cloudErr) {
+cloudPublishStatus = "cloud-sync-failed";
+console.warn("Study note cloud sync failed:", cloudErr);
+}
 }
 } catch (err) {
 if (submitBtn) {
