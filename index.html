@@ -248,7 +248,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Experience
 </button>
 </div>
-<textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed"><div class="flex gap-2 mb-2"><button type="button" onclick="addResumeBullet('f-exp')" class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">+ Add experience point</button><button type="button" onclick="removeResumeBullet('f-exp')" class="text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-1 rounded">− Remove last point</button></div>• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
+<div class="flex justify-end gap-2 mb-1"><button type="button" onclick="addResumeBullet('f-exp')" class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">+ Add experience point</button><button type="button" onclick="removeResumeBullet('f-exp')" class="text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-1 rounded">− Remove last point</button></div><textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
 • POS Billing & MIS Management: Processed daily customer invoices with accurate billing and reconciliation practices and maintained stock reconciliation reports on MS Excel.
 • Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</textarea>
 </div>
@@ -1324,7 +1324,7 @@ paper.scrollIntoView({behavior:"smooth",block:"start"});
 paper.classList.toggle("ring-2");
 paper.classList.toggle("ring-indigo-500");
 }
-function updateCV() {function addResumeBullet(id) {
+function addResumeBullet(id) {
 var el=document.getElementById(id); if(!el) return;
 var lines=el.value.trim(); el.value=(lines ? lines+"\n" : "")+"• ";
 el.focus(); updateCV();
@@ -1335,6 +1335,7 @@ var lines=el.value.split("\n"); if(lines.length) lines.pop();
 el.value=lines.join("\n"); updateCV();
 }
 
+function updateCV() {
 var name = document.getElementById("f-name").value || "YOUR FULL NAME";
 var role = document.getElementById("f-role").value || "";
 var phone = document.getElementById("f-phone").value || "";
