@@ -575,9 +575,18 @@ All Notes
 </div>
 
 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 px-1">
+<div class="flex flex-wrap items-center gap-2">
 <div id="searchStatusText" class="text-xs font-bold text-slate-600">📚 Available Study Notes (8)</div>
+<div class="flex flex-wrap items-center gap-2">
+<button type="button" id="savedNotesToggle" onclick="toggleSavedNotesFilter()" aria-pressed="false" class="text-[11px] font-extrabold px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-800">☆ Saved Notes (<span id="savedNotesCount">0</span>)</button>
+<label for="notesSortSelect" class="sr-only">Sort study notes</label>
+<select id="notesSortSelect" onchange="applyNotesSort()" class="text-[11px] font-bold border border-slate-200 rounded-lg bg-white text-slate-700 px-2.5 py-2">
+<option value="recommended">Recommended</option><option value="az">Title: A to Z</option><option value="free">Free first</option><option value="popular">Most viewed</option>
+</select>
+</div>
+</div>
 <div class="text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-<i class="fa-solid fa-shield-halved mr-1"></i> Auto-Sanitizer Active: Coaching names, teacher names & links are automatically stripped from uploaded PDFs
+<i class="fa-solid fa-shield-halved mr-1"></i> Upload safety checks: review copyright and ownership before publishing
 </div>
 </div>
 
@@ -4327,6 +4336,97 @@ if (btn) btn.className = "lang-f-btn bg-indigo-600 text-white font-bold px-3 py-
 filterMainStudyNotes();
 }
 
+var savedNotesOnly = false;
+
+function getSavedStudyNoteIds() {
+try {
+var ids = JSON.parse(localStorage.getItem("fcv_saved_study_notes_v1") || "[]");
+return Array.isArray(ids) ? ids : [];
+} catch (e) { return []; }
+}
+
+function saveStudyNoteIds(ids) {
+try { localStorage.setItem("fcv_saved_study_notes_v1", JSON.stringify(ids)); } catch (e) {}
+}
+
+function refreshSavedStudyNoteButtons() {
+var ids = getSavedStudyNoteIds();
+var buttons = document.querySelectorAll(".save-study-note-btn");
+for (var i = 0; i < buttons.length; i++) {
+var id = buttons[i].getAttribute("data-save-note-id");
+var saved = ids.indexOf(id) !== -1;
+buttons[i].innerHTML = saved ? "★ Saved" : "☆ Save";
+buttons[i].setAttribute("aria-pressed", saved ? "true" : "false");
+buttons[i].className = "save-study-note-btn text-[11px] font-extrabold px-3 py-1.5 rounded-lg border " + (saved ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-white text-slate-600 border-slate-200");
+}
+var count = document.getElementById("savedNotesCount");
+if (count) count.innerText = ids.length;
+var toggle = document.getElementById("savedNotesToggle");
+if (toggle) {
+toggle.setAttribute("aria-pressed", savedNotesOnly ? "true" : "false");
+toggle.className = "text-[11px] font-extrabold px-3 py-2 rounded-lg border " + (savedNotesOnly ? "bg-amber-500 text-slate-950 border-amber-500" : "border-amber-200 bg-amber-50 text-amber-800");
+}
+}
+
+function toggleSaveStudyNote(noteId) {
+var ids = getSavedStudyNoteIds();
+var index = ids.indexOf(noteId);
+if (index === -1) ids.unshift(noteId); else ids.splice(index, 1);
+saveStudyNoteIds(ids);
+refreshSavedStudyNoteButtons();
+filterMainStudyNotes();
+}
+
+function toggleSavedNotesFilter() {
+savedNotesOnly = !savedNotesOnly;
+refreshSavedStudyNoteButtons();
+filterMainStudyNotes();
+var container = document.getElementById("studyNotesContainer");
+if (container) container.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function applyNotesSort() {
+var container = document.getElementById("studyNotesContainer");
+var select = document.getElementById("notesSortSelect");
+if (!container || !select) return;
+var cards = Array.prototype.slice.call(container.querySelectorAll(".main-note-card"));
+var mode = select.value;
+if (mode === "az") {
+cards.sort(function(a,b) {
+var at = (a.querySelector("h3") ? a.querySelector("h3").innerText : "").toLowerCase();
+var bt = (b.querySelector("h3") ? b.querySelector("h3").innerText : "").toLowerCase();
+return at.localeCompare(bt);
+});
+} else if (mode === "free") {
+cards.sort(function(a,b) { return (parseFloat(a.getAttribute("data-price") || "0") - parseFloat(b.getAttribute("data-price") || "0")); });
+} else if (mode === "popular") {
+cards.sort(function(a,b) {
+var av = parseInt((a.innerText.match(/([0-9,]+)\\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
+var bv = parseInt((b.innerText.match(/([0-9,]+)\\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
+return bv-av;
+});
+}
+for (var i=0;i<cards.length;i++) container.appendChild(cards[i]);
+}
+
+function enhanceStudyNoteCards() {
+var cards = document.querySelectorAll("#studyNotesContainer .main-note-card");
+for (var i=0;i<cards.length;i++) {
+var card = cards[i];
+var noteId = card.getAttribute("data-note-id");
+if (!noteId || card.querySelector(".save-study-note-btn")) continue;
+var btn = document.createElement("button");
+btn.type = "button";
+btn.setAttribute("data-save-note-id", noteId);
+btn.className = "save-study-note-btn text-[11px] font-extrabold px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600";
+btn.onclick = (function(id) { return function() { toggleSaveStudyNote(id); }; })(noteId);
+var head = card.querySelector("h3");
+if (head && head.parentElement) head.parentElement.insertBefore(btn, head);
+else card.insertBefore(btn, card.firstChild);
+}
+refreshSavedStudyNoteButtons();
+}
+
 function filterMainStudyNotes() {
 var qInput = document.getElementById("mainNotesSearch");
 var query = qInput ? qInput.value.toLowerCase().trim() : "";
@@ -4350,6 +4450,7 @@ var catMatch = (currentActiveCategory === "all") || (cats.indexOf(currentActiveC
 var subMatch = (currentActiveSub === "all-sub") || (subs.indexOf(currentActiveSub) !== -1);
 var langMatch = (currentActiveLang === "all-lang") || (langs.indexOf(currentActiveLang) !== -1);
 var queryMatch = true;
+var savedMatch = !savedNotesOnly || getSavedStudyNoteIds().indexOf(noteId) !== -1;
 
 if (query.length > 0) {
 var words = query.split(/\s+/);
@@ -4362,7 +4463,7 @@ break;
 }
 }
 
-if (catMatch && subMatch && langMatch && queryMatch) {
+if (catMatch && subMatch && langMatch && queryMatch && savedMatch) {
 c.style.display = "flex";
 visibleCount++;
 } else {
@@ -4374,6 +4475,8 @@ var st = document.getElementById("searchStatusText");
 if (st) st.innerText = "📚 Available Study Notes (" + visibleCount + ")";
 var noBox = document.getElementById("noNotesFoundBox");
 if (noBox) noBox.style.display = (visibleCount === 0) ? "block" : "none";
+enhanceStudyNoteCards();
+applyNotesSort();
 }
 
 function triggerManualSearch() {
@@ -4693,6 +4796,7 @@ document.getElementById("legal-modal").classList.add("hidden");
 
 window.addEventListener("DOMContentLoaded", function() {
 renderTypingHistory();
+enhanceStudyNoteCards();
 getUniqueBrowserUserId();
 deletePdfBufferFromCache("latest");
 injectBscMscNetGateUI();
