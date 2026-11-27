@@ -40,7 +40,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234338ca'/%3E%3Cstop offset='100%25' y2='100%25' stop-color='%237e22ce'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M18 14h20l10 10v26a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z' fill='%23ffffff'/%3E%3Cpath d='M38 14v10h10z' fill='%23c7d2fe'/%3E%3Crect x='20' y='28' width='16' height='3.5' rx='1.75' fill='%234338ca'/%3E%3Crect x='20' y='35' width='22' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Crect x='20' y='41' width='18' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='46' cy='46' r='11' fill='%23fbbf24'/%3E%3Cpath d='M46 39l2 4.5 4.5 2-4.5 2-2 4.5-2-4.5-4.5-2 4.5-2z' fill='%230f172a'/%3E%3C/svg%3E">
 
 <!-- Google AdSense Verification Script -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9375037798816963" crossorigin="anonymous"></script>
+<!-- AdSense loader is activated only after the visitor accepts optional advertising cookies. -->
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1398,6 +1398,7 @@ Withdraw to UPI
 <a href="/copyright-policy.html" class="hover:text-white transition">Copyright Policy</a>
 <a href="/disclaimer.html" class="hover:text-white transition">Disclaimer</a>
 <a href="/contact.html" class="hover:text-white transition">Contact Us</a>
+<button type="button" onclick="openCookieSettings()" class="hover:text-white transition">Cookie Settings</button>
 </div>
 <p class="text-[11px] text-slate-500">© 2026 FreeCVResume.co.in • All Rights Reserved.</p>
 </div>
@@ -5068,5 +5069,73 @@ syncNotesFromSupabase();
 })();
 </script>
 
+<style>
+#cookie-consent{position:fixed;inset:auto 12px 12px;z-index:10050;max-width:760px;margin:0 auto;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:18px;box-shadow:0 18px 60px rgba(15,23,42,.24);padding:18px}
+#cookie-consent[hidden],#cookie-settings[hidden]{display:none}
+#cookie-consent button,#cookie-settings button{min-height:42px;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px}
+@media(max-width:640px){#cookie-consent{inset:auto 8px 8px;padding:14px}#cookie-consent .cookie-actions{display:grid;grid-template-columns:1fr 1fr}}
+</style>
+<section id="cookie-consent" role="dialog" aria-modal="true" aria-labelledby="cookie-title" hidden>
+ <h2 id="cookie-title" style="font-size:17px;font-weight:800;margin:0 0 8px">Your privacy choices</h2>
+ <p style="font-size:13px;line-height:1.55;color:#475569;margin:0 0 14px">We use essential browser storage to operate this website. If you agree, Google AdSense may use advertising cookies and similar technologies to deliver and measure ads. You can reject optional advertising cookies or change your choice later in Cookie Settings. Read our <a href="/privacy-policy.html" style="color:#4338ca;text-decoration:underline">Privacy Policy</a> and <a href="/cookie-policy.html" style="color:#4338ca;text-decoration:underline">Cookie Policy</a>.</p>
+ <div class="cookie-actions" style="display:flex;flex-wrap:wrap;gap:8px">
+  <button type="button" onclick="saveCookieChoice(true)" style="background:#4338ca;color:#fff">Accept advertising cookies</button>
+  <button type="button" onclick="saveCookieChoice(false)" style="background:#e2e8f0;color:#0f172a">Reject optional cookies</button>
+  <button type="button" onclick="openCookieSettings()" style="background:#fff;border:1px solid #cbd5e1;color:#334155">Cookie settings</button>
+ </div>
+</section>
+<section id="cookie-settings" role="dialog" aria-modal="true" aria-labelledby="cookie-settings-title" hidden style="position:fixed;inset:0;z-index:10060;background:rgba(15,23,42,.65);padding:16px;display:flex;align-items:center;justify-content:center">
+ <div style="background:#fff;color:#0f172a;width:min(100%,480px);padding:22px;border-radius:18px;max-height:85vh;overflow:auto">
+  <h2 id="cookie-settings-title" style="font-size:18px;font-weight:800;margin:0 0 10px">Cookie settings</h2>
+  <p style="font-size:13px;line-height:1.55;color:#475569">Essential storage is required for core site features and cannot be switched off here. Advertising cookies are optional. If enabled, the Google AdSense script may load.</p>
+  <p id="cookie-current-choice" style="font-size:12px;color:#64748b;margin:12px 0">Current choice: not set</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+   <button type="button" onclick="saveCookieChoice(true)" style="background:#4338ca;color:#fff">Allow advertising cookies</button>
+   <button type="button" onclick="saveCookieChoice(false)" style="background:#e2e8f0;color:#0f172a">Reject advertising cookies</button>
+   <button type="button" onclick="closeCookieSettings()" style="background:#fff;border:1px solid #cbd5e1;color:#334155">Close</button>
+  </div>
+  <p style="font-size:11px;color:#64748b;margin-top:14px">This site-level preference control is not a Google-certified CMP and does not by itself satisfy the IAB TCF requirement for personalized ads in the EEA, UK or Switzerland. Configure Google Privacy &amp; Messaging or another Google-certified CMP in your AdSense account before serving personalized ads in those regions.</p>
+ </div>
+</section>
+<script>
+(function(){
+ var KEY="fcv_cookie_choice_v1";
+ function getChoice(){try{return localStorage.getItem(KEY)}catch(e){return null}}
+ function loadAds(){
+  if(window.__fcvAdsLoaded)return;
+  window.__fcvAdsLoaded=true;
+  var sc=document.createElement("script");
+  sc.async=true;
+  sc.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9375037798816963";
+  sc.crossOrigin="anonymous";
+  document.head.appendChild(sc);
+ }
+ window.saveCookieChoice=function(allow){
+  try{localStorage.setItem(KEY,allow?"accepted":"rejected")}catch(e){}
+  var banner=document.getElementById("cookie-consent");
+  var settings=document.getElementById("cookie-settings");
+  if(banner)banner.hidden=true;
+  if(settings)settings.hidden=true;
+  if(allow)loadAds();
+  var label=document.getElementById("cookie-current-choice");
+  if(label)label.textContent="Current choice: "+(allow?"Advertising cookies allowed":"Optional advertising cookies rejected");
+ };
+ window.openCookieSettings=function(){
+  var panel=document.getElementById("cookie-settings");
+  var banner=document.getElementById("cookie-consent");
+  if(banner)banner.hidden=true;
+  if(panel)panel.hidden=false;
+  var label=document.getElementById("cookie-current-choice");
+  if(label){var c=getChoice();label.textContent="Current choice: "+(c==="accepted"?"Advertising cookies allowed":c==="rejected"?"Optional advertising cookies rejected":"not set")}
+ };
+ window.closeCookieSettings=function(){var panel=document.getElementById("cookie-settings");if(panel)panel.hidden=true};
+ document.addEventListener("DOMContentLoaded",function(){
+  var choice=getChoice();
+  if(choice==="accepted")loadAds();
+  else if(choice==="rejected")return;
+  else {var banner=document.getElementById("cookie-consent");if(banner)banner.hidden=false}
+ });
+})();
+</script>
 </body>
 </html>
