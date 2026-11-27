@@ -957,7 +957,8 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <section id="tab-resizer" class="tab-content hidden">
 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 <div class="space-y-4">
-<h2 class="text-lg font-extrabold text-slate-900">SSC / Railway / JEE / NEET Photo (Name & Date) Resizer (20KB-50KB)</h2>
+<h2 class="text-lg font-extrabold text-slate-900">SSC / Railway / JEE / NEET Photo & Signature Resizer</h2>
+<p class="text-[11px] text-slate-500">Photo target: 20–50 KB · Signature target: 10–20 KB. Final dimensions and file rules vary by exam notification—downloaded file ko official instructions se match karein.</p>
 <select id="p-type" onchange="drawExamPhoto()" class="w-full text-xs font-bold border rounded-xl px-3 py-2.5 bg-slate-50">
 <option value="photo">Passport Photo (3.5cm x 4.5cm) - 20KB to 50KB</option>
 <option value="sign">Signature (4.0cm x 2.0cm) - 10KB to 20KB</option>
@@ -4684,7 +4685,10 @@ ctx.fillStyle = "#ffffff";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 if (uploadedExamImg) {
-ctx.drawImage(uploadedExamImg, 0, 0, canvas.width, canvas.height);
+var fitScale = Math.min(canvas.width / uploadedExamImg.width, canvas.height / uploadedExamImg.height);
+var fitW = uploadedExamImg.width * fitScale;
+var fitH = uploadedExamImg.height * fitScale;
+ctx.drawImage(uploadedExamImg, (canvas.width - fitW) / 2, (canvas.height - fitH) / 2, fitW, fitH);
 } else {
 ctx.fillStyle = "#94a3b8";
 ctx.font = "bold 16px sans-serif";
@@ -4713,19 +4717,72 @@ ctx.fillText((pName || pDate).toUpperCase(), canvas.width / 2, canvas.height - 1
 }
 
 var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
-var dataUrl = canvas.toDataURL("image/jpeg", qual);
-var kb = Math.round((dataUrl.length * 3 / 4) / 1024);
 var kbEl = document.getElementById("p-kb");
-if (kbEl) kbEl.innerText = "Ready File Size: ~" + kb + " KB (Exam Valid)";
+if (kbEl) {
+if (!uploadedExamImg) {
+kbEl.innerText = "Photo / Signature upload karein";
+} else {
+canvas.toBlob(function(blob) {
+if (!blob) { kbEl.innerText = "Preview size calculate nahi ho paaya."; return; }
+var kb = blob.size / 1024;
+var isSign = document.getElementById("p-type").value === "sign";
+var minKb = isSign ? 10 : 20;
+var maxKb = isSign ? 20 : 50;
+kbEl.innerText = "Estimated JPG: " + kb.toFixed(1) + " KB · Target: " + minKb + "–" + maxKb + " KB" + (kb > maxKb ? " · Quality kam karein" : (kb < minKb ? " · File target se chhoti hai" : " · Size range mein hai"));
+}, "image/jpeg", qual);
+}
+}
 }
 
-function saveExamPhoto() {
+function createExamPhotoBlob(canvas, maxBytes, preferredQuality) {
+return new Promise(function(resolve) {
+var low = 0.2, high = Math.min(0.95, Math.max(0.2, preferredQuality)), best = null, tries = 0;
+function test(q) {
+canvas.toBlob(function(blob) {
+tries++;
+if (!blob) { resolve(null); return; }
+if (blob.size <= maxBytes) {
+best = blob;
+if (tries < 7 && high - low > 0.025) { low = q; test((low + high) / 2); }
+else resolve(best);
+} else if (tries < 7 && high - low > 0.025) {
+high = q;
+test((low + high) / 2);
+} else {
+resolve(best || blob);
+}
+}, "image/jpeg", q);
+}
+test(high);
+});
+}
+
+async function saveExamPhoto() {
 var canvas = document.getElementById("p-canvas");
-var qual = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+var status = document.getElementById("p-kb");
+if (!uploadedExamImg) {
+if (status) status.innerText = "Pehle apni photo ya signature upload karein.";
+return;
+}
+var isSign = document.getElementById("p-type").value === "sign";
+var maxBytes = (isSign ? 20 : 50) * 1024;
+var preferred = parseInt(document.getElementById("p-qual").value || "82", 10) / 100;
+if (status) status.innerText = "JPG compress ho rahi hai...";
+var blob = await createExamPhotoBlob(canvas, maxBytes, preferred);
+if (!blob) {
+if (status) status.innerText = "Image export nahi ho paaya. Dobara try karein.";
+return;
+}
+var kb = blob.size / 1024;
 var link = document.createElement("a");
-link.download = "Exam_Photo_FreeCVResume.jpg";
-link.href = canvas.toDataURL("image/jpeg", qual);
+var url = URL.createObjectURL(blob);
+link.download = isSign ? "Exam_Signature_FreeCVResume.jpg" : "Exam_Photo_FreeCVResume.jpg";
+link.href = url;
+document.body.appendChild(link);
 link.click();
+document.body.removeChild(link);
+setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
+if (status) status.innerText = "Downloaded: " + kb.toFixed(1) + " KB. Official exam portal ki size/dimension conditions bhi check karein.";
 }
 
 // =========================================================================
