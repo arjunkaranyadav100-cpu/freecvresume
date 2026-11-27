@@ -2287,6 +2287,9 @@ listHtml += '<div class="bg-slate-50 hover:bg-indigo-50/40 border border-slate-2
 '<button type="button" data-open-note="' + item.id + '" onclick="openCustomNoteReader(this.getAttribute("data-open-note"))" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-book-open"></i> Open PDF' +
 '</button>' +
+'<button type="button" data-edit-note="' + item.id + '" onclick="editCreatorNote(this.getAttribute("data-edit-note"))" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
+'<i class="fa-solid fa-pen"></i> Edit' +
+'</button>' +
 '<button type="button" data-del-note="' + item.id + '" onclick="deleteCreatorNote(this.getAttribute("data-del-note"))" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-extrabold px-3 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1">' +
 '<i class="fa-solid fa-trash-can"></i> Delete PDF' +
 '</button>' +
@@ -2313,6 +2316,35 @@ var map = getDeletedNoteIdsMap();
 map[noteId] = true;
 localStorage.setItem("fcv_deleted_note_ids_v5", JSON.stringify(map));
 } catch (e) {}
+}
+
+function editCreatorNote(noteId) {
+if (!noteId) return;
+var list = getCustomNotesList();
+var note = null;
+for (var i = 0; i < list.length; i++) {
+if (String(list[i].id) === String(noteId)) { note = list[i]; break; }
+}
+if (!note) { alert("PDF note nahi mila."); return; }
+var acc = getActiveCreatorAccount();
+if (!isNoteOwnedByCreator(note, acc)) { alert("Aap sirf apne uploaded notes edit kar sakte hain."); return; }
+var title = prompt("PDF ka title badlein:", note.title || "");
+if (title === null) return;
+title = title.trim();
+if (!title) { alert("Title khaali nahi ho sakta."); return; }
+var badge = prompt("Category label / Badge badlein:", note.badge || "STUDY NOTES");
+if (badge === null) return;
+var desc = prompt("Description / note text badlein:", note.content || "");
+if (desc === null) return;
+note.title = sanitizeNoteText(title).cleanText || title;
+note.badge = sanitizeNoteText(badge.trim()).cleanText || "STUDY NOTES";
+note.content = sanitizeNoteText(desc).cleanText || desc;
+saveCustomNotesList(list);
+renderCustomNotesCards();
+renderCreatorDashboard();
+updateDynamicSEOForNotes();
+filterMainStudyNotes();
+alert("Note details update ho gaye. Original PDF file ko replace nahi kiya gaya hai.");
 }
 
 async function deleteCreatorNote(noteId) {
@@ -3835,8 +3867,9 @@ var snippet = item.content.length > 220 ? item.content.slice(0, 220) + "..." : i
 var ratingVal = item.rating || 4.9;
 var salesCount = item.sales || 0;
 
-var ownerDeleteBtnHTML = isOwner
-? '<button type="button" class="custom-del-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 text-xs font-extrabold px-3 py-3.5 rounded-xl transition cursor-pointer shrink-0" title="Delete Your PDF Note"><i class="fa-solid fa-trash-can"></i></button>'
+var ownerManageBtnsHTML = isOwner
+? '<button type="button" class="custom-edit-btn bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white border border-amber-200 text-xs font-extrabold px-3 py-3.5 rounded-xl transition cursor-pointer shrink-0" title="Edit Your PDF Note"><i class="fa-solid fa-pen"></i></button>' +
+  '<button type="button" class="custom-del-btn bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 text-xs font-extrabold px-3 py-3.5 rounded-xl transition cursor-pointer shrink-0" title="Delete Your PDF Note"><i class="fa-solid fa-trash-can"></i></button>'
 : '';
 
 card.innerHTML = '<div>' +
@@ -3857,13 +3890,17 @@ priceBadgeHTML +
 '<button type="button" class="custom-open-btn flex-1 ' + (isPaid ? 'bg-amber-500 hover:bg-amber-600 text-slate-950' : 'bg-indigo-600 hover:bg-indigo-700 text-white') + ' text-center text-xs sm:text-sm font-extrabold py-3.5 px-3 rounded-xl shadow transition cursor-pointer">' +
 (isPaid ? '🔓 Read Sample & Unlock Full Note (₹' + item.price + ')' : '📖 Read Online & Download Clean PDF') +
 '</button>' +
-ownerDeleteBtnHTML +
+ownerManageBtnsHTML +
 '</div>' +
 '</div>';
 
 var btn = card.querySelector(".custom-open-btn");
 if (btn) {
 btn.onclick = function() { openCustomNoteReader(item.id); };
+}
+var editBtn = card.querySelector(".custom-edit-btn");
+if (editBtn) {
+editBtn.onclick = function() { editCreatorNote(item.id); };
 }
 var delBtn = card.querySelector(".custom-del-btn");
 if (delBtn) {
