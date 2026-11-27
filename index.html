@@ -4104,13 +4104,11 @@ if (stEl) stEl.innerText = statusMsg;
 if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
 if (pdfBuf && pdfBuf.byteLength > 200) {
 await savePdfBufferToCache(note.id, pdfBuf);
-if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
-if (note.title) await savePdfBufferToCache(note.title, pdfBuf);
-if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
+if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
 }
 }
 }
-if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
+if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
 if (pdfBuf && pdfBuf.byteLength > 200) {
 canvasContainer.classList.remove("hidden");
 if (printAreaBox) printAreaBox.classList.add("hidden");
@@ -4209,7 +4207,8 @@ function resetReaderZoom() {
 }
 function goToReaderPage() {
   var input=document.getElementById("readerPageJump");
-  var pageNum=Math.max(1,parseInt(input && input.value || "1",10));
+  var rawPage=parseInt(input && input.value || "1",10);
+  var pageNum=Number.isFinite(rawPage)?Math.max(1,rawPage):1;
   var pages=document.querySelectorAll("#readerCanvasContainer .pdf-rendered-page");
   if(!pages.length) {
     var printArea=document.getElementById("clean-note-print-area");
@@ -4295,7 +4294,8 @@ return false;
 
 async function downloadSanitizedNotePDF() {
 if (!activeReaderNote) return;
-if (activeReaderNote.price > 0 && !activeReaderNote.purchased) {
+var downloadNote = activeReaderNote;
+if (downloadNote.price > 0 && !downloadNote.purchased) {
 await unlockPaidNoteNow();
 return;
 }
@@ -4303,24 +4303,21 @@ var dlBtn = document.getElementById("readerDownloadBtn");
 var oldBtnHtml = dlBtn ? dlBtn.innerHTML : "";
 if (dlBtn) dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Downloading PDF...';
 
-var cleanFile = (activeReaderNote.title || "Study_Note").replace(/[^a-zA-Z0-9\u0900-\u097F]+/g, "_").slice(0, 45);
+var cleanFile = (downloadNote.title || "Study_Note").replace(/[^a-zA-Z0-9\u0900-\u097F]+/g, "_").slice(0, 45);
 
 try {
 // 1. Memory-Safe Direct PDF File Download from IndexedDB or Memory (Zero RAM Crash, Instant Download!)
-var isCustom = String(activeReaderNote.id || "").indexOf("custom-note") !== -1;
+var isCustom = String(downloadNote.id || "").indexOf("custom-note") !== -1;
 var savedPdfBuf = null;
 if (isCustom) {
-savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.id);
-if (!savedPdfBuf && activeReaderNote.title) {
-savedPdfBuf = await loadPdfBufferFromCache(activeReaderNote.title);
-}
-if (!savedPdfBuf) {
-savedPdfBuf = await fetchPdfBufferFromCloud(activeReaderNote, null);
-if (savedPdfBuf && savedPdfBuf.byteLength > 200) {
-await savePdfBufferToCache(activeReaderNote.id, savedPdfBuf);
-if (activeReaderNote.title) await savePdfBufferToCache(activeReaderNote.title, savedPdfBuf);
+savedPdfBuf = await loadPdfBufferFromCache(downloadNote.id);
+if (!savedPdfBuf && activeReaderNote === downloadNote) {
+savedPdfBuf = await fetchPdfBufferFromCloud(downloadNote, null);
+if (savedPdfBuf && savedPdfBuf.byteLength > 200 && activeReaderNote === downloadNote) {
+await savePdfBufferToCache(downloadNote.id, savedPdfBuf);
 }
 }
+if (activeReaderNote !== downloadNote) return;
 }
 
 if (savedPdfBuf && savedPdfBuf.byteLength > 0) {
@@ -4340,9 +4337,9 @@ return;
 }
 
 // 2. If Note has a Supabase Storage or External PDF URL, download directly
-if (activeReaderNote.url && activeReaderNote.url.indexOf("http") === 0) {
+if (downloadNote.url && downloadNote.url.indexOf("http") === 0) {
 var extLink = document.createElement("a");
-extLink.href = activeReaderNote.url;
+extLink.href = downloadNote.url;
 extLink.target = "_blank";
 extLink.download = cleanFile + "_FreeCVResume.pdf";
 document.body.appendChild(extLink);
@@ -4353,6 +4350,7 @@ return;
 }
 
 // 3. If Cropped Page Images are rendered in readerCanvasContainer, build PDF page-by-page via jsPDF (NO html2canvas crash!)
+if (activeReaderNote !== downloadNote) return;
 var renderedImgs = document.querySelectorAll("#readerCanvasContainer img.pdf-rendered-page");
 if (renderedImgs && renderedImgs.length > 0 && window.jspdf && window.jspdf.jsPDF) {
 var doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
