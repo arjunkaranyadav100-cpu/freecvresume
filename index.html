@@ -539,6 +539,14 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
   </div>
   <p id="adminModerationMessage" class="text-xs text-slate-600">Loading pending notes…</p>
   <div id="adminModerationList" class="space-y-2"></div>
+<div id="adminPayoutPanel" class="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-3">
+  <div class="flex items-center justify-between gap-2">
+    <div><h3 class="font-black text-emerald-900">💸 Admin Payout Management</h3><p class="text-xs text-emerald-800">Review payout records and record verified manual settlement.</p></div>
+    <button type="button" onclick="loadAdminPayouts()" class="rounded-lg bg-emerald-700 text-white text-xs font-bold px-3 py-2">Refresh</button>
+  </div>
+  <p id="adminPayoutMessage" class="text-xs text-slate-600">Loading payout records…</p>
+  <div id="adminPayoutList" class="space-y-2"></div>
+</div>
 </div>
 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 pb-4">
 <div>
@@ -2260,6 +2268,44 @@ if (!nEmail && String(note.id || "").indexOf("custom-note") === 0) return true;
 return false;
 }
 
+async function loadAdminPayouts() {
+var panel=document.getElementById("adminPayoutPanel"),list=document.getElementById("adminPayoutList"),msg=document.getElementById("adminPayoutMessage");
+var acc=getActiveCreatorAccount();
+if(!panel||!list||!msg||!acc||acc.role!=="admin")return;
+msg.textContent="Loading payout records…";list.innerHTML="";
+try{
+var result=await sbClient.from("payout_requests").select("id,creator_id,upi,amount,status,created_at,payout_reference,processed_at").order("created_at",{ascending:false}).limit(100);
+if(result.error)throw result.error;
+var rows=result.data||[];
+var pending=rows.filter(function(x){return x.status==="pending";}).length;
+msg.textContent=rows.length+" records • "+pending+" pending • latest 100";
+if(!rows.length){msg.textContent="No payout records yet. Withdrawals are currently disabled for creators.";return;}
+rows.forEach(function(item){
+var card=document.createElement("div");card.className="rounded-xl border border-emerald-100 bg-white p-3 space-y-2";
+var title=document.createElement("p");title.className="font-bold text-sm text-slate-900";title.textContent="₹"+Number(item.amount||0).toFixed(2)+" • "+String(item.status||"pending").toUpperCase();
+var meta=document.createElement("p");meta.className="text-xs text-slate-600";meta.textContent="Creator ID: "+(item.creator_id||"Not linked")+" • UPI: "+(item.upi||"Not provided");
+var date=document.createElement("p");date.className="text-[11px] text-slate-500";date.textContent="Requested: "+(item.created_at?new Date(item.created_at).toLocaleString():"Unknown")+(item.payout_reference?" • Ref: "+item.payout_reference:"");
+card.appendChild(title);card.appendChild(meta);card.appendChild(date);
+if(item.status!=="paid"){
+var actions=document.createElement("div");actions.className="flex flex-wrap gap-2";
+function act(label,cls,status){var b=document.createElement("button");b.type="button";b.className="rounded-lg px-3 py-2 text-xs font-bold text-white "+cls;b.textContent=label;b.addEventListener("click",function(){updateAdminPayout(item,status);});actions.appendChild(b);}
+act("Mark Approved","bg-blue-600","approved");act("Mark Paid","bg-emerald-700","paid");act("Reject","bg-rose-700","rejected");
+card.appendChild(actions);
+}
+list.appendChild(card);
+});
+}catch(err){msg.textContent="Could not load payout records: "+(err.message||"Please retry");}
+}
+async function updateAdminPayout(item,status){
+var acc=getActiveCreatorAccount();if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+var reference="";
+if(status==="paid"){reference=prompt("Verified bank/UPI transaction reference ID:","");if(reference===null)return;if(!reference.trim()){alert("Payment reference is required before marking Paid.");return;}}
+if(!confirm("Update payout #"+item.id+" to "+status.toUpperCase()+"?"))return;
+var patch={status:status,payout_reference:reference||null,processed_at:new Date().toISOString()};
+var result=await sbClient.from("payout_requests").update(patch).eq("id",item.id);
+if(result.error){alert("Payout update failed: "+result.error.message);return;}
+await loadAdminPayouts();alert("Payout record updated. This only records status; it does not send money.");
+}
 async function loadAdminModeration() {
 var panel=document.getElementById("adminModerationPanel"), list=document.getElementById("adminModerationList"), msg=document.getElementById("adminModerationMessage");
 if(!panel||!list||!msg)return;
@@ -2355,7 +2401,7 @@ if (walletBtnHero) walletBtnHero.style.display = "flex";
 if (heroGrid) heroGrid.className = "max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-3";
 if (dashSec) dashSec.style.display = "block";
 renderCreatorDashboard();
-if (acc.role === "admin") loadAdminModeration();
+if (acc.role === "admin") { loadAdminModeration(); loadAdminPayouts(); }
 } else {
 if (topTxt) topTxt.innerText = "Creator Login / Sign Up";
 if (logoutBtn) logoutBtn.style.display = "none";
