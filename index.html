@@ -1296,7 +1296,7 @@ Remove top/bottom PDF watermark (Header/Footer)
 <p class="text-xs text-indigo-100 max-w-lg mx-auto">You are viewing a free sample preview above. Pay just <strong id="paywallPriceText" class="text-amber-300 text-sm">₹29</strong> to unlock the complete note and download the watermark-free PDF instantly.</p>
 <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
 <button type="button" onclick="unlockPaidNoteNow()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg cursor-pointer">
-⚡ Pay via UPI & Instant Unlock (<span id="paywallBtnPrice">₹29</span>)
+🔒 Secure checkout coming soon (<span id="paywallBtnPrice">₹29</span>)
 </button>
 </div>
 </div>
@@ -4224,44 +4224,23 @@ document.getElementById("onPageReaderModal").style.display = "none";
 }
 
 async function unlockPaidNoteNow() {
-if (!activeReaderNote) return;
-var price = activeReaderNote.price || 29;
-var confirmPay = confirm("Pay ₹" + price + " via UPI to unlock full '" + activeReaderNote.title + "' PDF Notes immediately?");
-if (!confirmPay) return;
-
-activeReaderNote.purchased = true;
-activeReaderNote.sales = (activeReaderNote.sales || 0) + 1;
-
-var list = getCustomNotesList();
-for (var i = 0; i < list.length; i++) {
-if (list[i].id === activeReaderNote.id) {
-list[i].purchased = true;
-list[i].sales = (list[i].sales || 0) + 1;
-break;
+if (!activeReaderNote) return false;
+var msg = "Secure checkout is not connected yet. No money has been charged and this note has not been unlocked. Please try again after the marketplace payment system is enabled.";
+alert(msg);
+var payBtn = document.querySelector('#onPageReaderModal button[onclick="unlockPaidNoteNow()"]');
+if (payBtn) {
+  payBtn.disabled = true;
+  payBtn.innerText = "Secure checkout coming soon";
+  payBtn.classList.remove("bg-emerald-500","hover:bg-emerald-600");
+  payBtn.classList.add("bg-slate-400","cursor-not-allowed");
 }
-}
-saveCustomNotesList(list);
-
-var w = getWalletData();
-w.sales = (w.sales || 0) + 1;
-w.salesEarnings = +( (w.salesEarnings || 0) + (price * 0.85) ).toFixed(2);
-saveWalletData(w);
-
-if (sbClient && activeReaderNote.upi) {
-try {
-await sbClient.from("study_notes").update({ sales: activeReaderNote.sales }).eq("id", activeReaderNote.id);
-} catch (err) {}
-}
-
-renderCustomNotesCards();
-launchOnPageReader(activeReaderNote);
-alert("🎉 Payment Successful! The full note is now unlocked for reading & Clean PDF download.");
+return false;
 }
 
 async function downloadSanitizedNotePDF() {
 if (!activeReaderNote) return;
 if (activeReaderNote.price > 0 && !activeReaderNote.purchased) {
-unlockPaidNoteNow();
+await unlockPaidNoteNow();
 return;
 }
 var dlBtn = document.getElementById("readerDownloadBtn");
