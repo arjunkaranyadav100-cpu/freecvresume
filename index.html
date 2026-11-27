@@ -3506,7 +3506,10 @@ var pct = Math.round(((c + 1) / totalChunks) * 100);
 if (showToastFlag) {
 showCloudSyncToast("☁️ Syncing PDF to Cloud (" + pct + "%) — Page data uploading for all devices...", false);
 }
+var chunkUserResult = await sbClient.auth.getUser();
 var chunkRow = {
+creator_id: chunkUserResult.data && chunkUserResult.data.user ? chunkUserResult.data.user.id : null,
+moderation_status: "approved",
 id: "pdfchunk_" + slug + "_" + c,
 title: "PDF_CHUNK",
 category: "_chunk",
@@ -3871,6 +3874,8 @@ try {
 var noteUpsertResult = await Promise.race([
 sbClient.from("study_notes").upsert([{
 id: newNote.id,
+creator_id: (sbClient.auth && (await sbClient.auth.getUser()).data.user) ? (await sbClient.auth.getUser()).data.user.id : null,
+moderation_status: "pending",
 title: newNote.title,
 category: newNote.category,
 subject: newNote.subject,
