@@ -53,6 +53,7 @@
 body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 [contenteditable="true"]:hover { outline: 1px dashed #4f46e5; background: #f5f3ff; cursor: text; }
 [contenteditable="true"]:focus { outline: 2px solid #4f46e5; background: #ffffff; }
+@media (max-width: 640px) { #resume-paper { padding: 18px !important; font-size: 11px; } #resume-paper h1 { font-size: 22px !important; } }
 #resume-paper {
 width: 100%;
 max-width: 740px;
@@ -184,7 +185,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <button type="button" onclick="setTemplate('modern')" id="t-btn-modern" class="p-3 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-left font-bold text-xs transition cursor-pointer">1. Modern ATS Blue</button>
 <button type="button" onclick="setTemplate('dark')" id="t-btn-dark" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">2. Executive Dark Header</button>
 <button type="button" onclick="setTemplate('classic')" id="t-btn-classic" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">3. Classic Corporate Print</button>
-<button type="button" onclick="setTemplate('biodata')" id="t-btn-biodata" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">4. Official Bio-Data Frame</button>
+<button type="button" onclick="setTemplate('biodata')" id="t-btn-biodata" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">4. Official Bio-Data Frame</button><button type="button" onclick="setTemplate('ats-minimal')" id="t-btn-ats-minimal" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">5. ATS Minimal</button><button type="button" onclick="setTemplate('ats-clean')" id="t-btn-ats-clean" class="p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer">6. ATS Clean</button>
 </div>
 </div>
 
@@ -247,7 +248,7 @@ html, body { height: auto !important; overflow: visible !important; }
 <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Experience
 </button>
 </div>
-<textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed">• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
+<textarea id="f-exp" oninput="updateCV()" rows="5" class="w-full text-xs border rounded-lg p-2 leading-relaxed"><div class="flex gap-2 mb-2"><button type="button" onclick="addResumeBullet('f-exp')" class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">+ Add experience point</button><button type="button" onclick="removeResumeBullet('f-exp')" class="text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-1 rounded">− Remove last point</button></div>• Operations & Billing Executive: Managed daily inward/outward inventory audits, HHT barcode scanning, and order fulfillment within strict SLA timelines.
 • POS Billing & MIS Management: Processed daily customer invoices with accurate billing and reconciliation practices and maintained stock reconciliation reports on MS Excel.
 • Quality & Team Coordination: Monitored quality compliance, minimized operational losses, and assisted team members with standard operating procedures (SOPs).</textarea>
 </div>
@@ -273,7 +274,7 @@ html, body { height: auto !important; overflow: visible !important; }
 </div>
 
 <div>
-<label class="text-[11px] font-bold text-slate-600">Personal Details</label>
+<label class="text-[11px] font-bold text-slate-600">Personal Details</label><div class="bg-slate-50 border rounded-xl p-3 space-y-2"><div class="flex justify-between items-center"><label class="text-xs font-bold text-slate-700">Projects (Optional)</label><div class="flex gap-2"><button type="button" onclick="addResumeBullet('f-projects')" class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">+ Add</button><button type="button" onclick="removeResumeBullet('f-projects')" class="text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-1 rounded">− Remove</button></div></div><textarea id="f-projects" oninput="updateCV()" rows="3" placeholder="Project name, your role, tools used, outcome..." class="w-full text-xs border rounded-lg p-2 leading-relaxed"></textarea></div>
 <input type="text" id="f-personal" oninput="updateCV()" value="Date of Birth: DD/MM/YYYY | Languages Known: Hindi & English | Nationality: Indian" class="w-full text-xs border rounded-lg px-2.5 py-2">
 </div>
 
@@ -289,7 +290,7 @@ html, body { height: auto !important; overflow: visible !important; }
 
 <!-- Right Live Editable A4 Paper -->
 <div class="lg:col-span-7 bg-slate-200 p-3 sm:p-6 rounded-2xl overflow-x-auto">
-<div class="flex justify-between items-center mb-2">
+<div class="flex justify-between items-center mb-2"><button type="button" onclick="toggleResumeMobilePreview()" class="lg:hidden text-xs font-bold bg-indigo-600 text-white px-3 py-2 rounded-lg">Toggle Mobile Preview</button>
 <span class="text-xs font-bold text-slate-600"><i class="fa-solid fa-pen-to-square mr-1"></i> Niche Resume ke kisi bhi text par click karke seedha edit bhi kar sakte hain:</span>
 <button type="button" onclick="downloadPDF(this)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow cursor-pointer">Save Free PDF</button>
 </div>
@@ -330,6 +331,7 @@ html, body { height: auto !important; overflow: visible !important; }
 • High School (10th Standard) – State / Central Board | Year: 2020 | Marks: 80% (8.0 CGPA)</div>
 </div>
 
+<div id="resume-project-section" class="hidden"><h2 id="sec-h6" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Projects</h2><div id="out-projects" class="text-xs leading-relaxed text-slate-800 whitespace-pre-line"></div></div>
 <div>
 <h2 id="sec-h5" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Personal Dossier</h2>
 <p id="out-personal" contenteditable="true" class="text-xs leading-relaxed text-slate-800">Date of Birth: DD/MM/YYYY | Languages Known: Hindi & English | Nationality: Indian</p>
@@ -926,7 +928,7 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <p id="ty-text" class="bg-slate-50 p-4 rounded-xl border text-sm leading-relaxed select-none font-medium text-slate-800">Success in competitive examinations requires consistent daily practice, time management, and high accuracy. Digital literacy and fast typing speed have become essential skills for modern administrative roles across India.</p>
 
 <textarea id="ty-input" oninput="runTyping()" placeholder="Yahan type karna shuru karein..." spellcheck="false" autocapitalize="off" class="w-full h-36 border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none rounded-xl p-3 text-sm leading-relaxed"></textarea>
-<div id="ty-result" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900"></div>
+<div id="ty-result" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900"></div><div class="rounded-xl border border-slate-200 bg-white p-3"><div class="flex justify-between items-center"><strong class="text-xs">Recent Results (this device)</strong><button type="button" onclick="clearTypingHistory()" class="text-[10px] text-rose-600 font-bold">Clear history</button></div><div id="ty-history" class="text-[11px] text-slate-500 mt-2">No completed tests yet.</div></div>
 <p class="text-[11px] text-slate-500">हिंदी अभ्यास Unicode में है और मोबाइल हिंदी कीबोर्ड से टाइप किया जा सकता है। Mangal एक Unicode फ़ॉन्ट है; Kruti Dev अलग legacy encoding है, इसलिए उसे सही तरह चलाने के लिए अलग desktop/font support चाहिए—उसे गलत तरीके से चालू नहीं दिखाया गया है।</p>
 </div>
 </section>
@@ -1315,7 +1317,24 @@ if (activeBtn) activeBtn.className = "tab-btn flex-1 px-3.5 py-2 text-xs font-bo
 // =========================================================================
 // FULL AI RESUME BUILDER LOGIC (ALL 10 ROLES + CYCLING AI REWRITES)
 // =========================================================================
-function updateCV() {
+function toggleResumeMobilePreview() {
+var paper=document.getElementById("resume-paper");
+if(!paper) return;
+paper.scrollIntoView({behavior:"smooth",block:"start"});
+paper.classList.toggle("ring-2");
+paper.classList.toggle("ring-indigo-500");
+}
+function updateCV() {function addResumeBullet(id) {
+var el=document.getElementById(id); if(!el) return;
+var lines=el.value.trim(); el.value=(lines ? lines+"\n" : "")+"• ";
+el.focus(); updateCV();
+}
+function removeResumeBullet(id) {
+var el=document.getElementById(id); if(!el) return;
+var lines=el.value.split("\n"); if(lines.length) lines.pop();
+el.value=lines.join("\n"); updateCV();
+}
+
 var name = document.getElementById("f-name").value || "YOUR FULL NAME";
 var role = document.getElementById("f-role").value || "";
 var phone = document.getElementById("f-phone").value || "";
@@ -1331,6 +1350,9 @@ document.getElementById("out-exp").innerText = document.getElementById("f-exp").
 applyEduScores();
 document.getElementById("out-skills").innerText = document.getElementById("f-skills").value;
 document.getElementById("out-personal").innerText = document.getElementById("f-personal").value;
+var projectText = document.getElementById("f-projects").value.trim();
+document.getElementById("out-projects").innerText = projectText;
+document.getElementById("resume-project-section").classList.toggle("hidden", !projectText);
 }
 
 function applyEduScores() {
@@ -1479,7 +1501,7 @@ flashBtn(btn, "All Upgraded!");
 }
 
 function setTemplate(type) {
-var tps = ["modern", "dark", "classic", "biodata"];
+var tps = ["modern", "dark", "classic", "biodata", "ats-minimal", "ats-clean"];
 for (var i = 0; i < tps.length; i++) {
 var btn = document.getElementById("t-btn-" + tps[i]);
 if (btn) btn.className = "p-3 rounded-xl border-2 border-slate-200 text-left font-bold text-xs transition cursor-pointer";
@@ -1490,6 +1512,12 @@ if (activeBtn) activeBtn.className = "p-3 rounded-xl border-2 border-indigo-600 
 var paper = document.getElementById("resume-paper");
 var header = document.getElementById("cv-header");
 paper.className = "p-8 shadow-xl rounded-sm space-y-5 bg-white";
+paper.style.fontFamily = "";
+paper.style.border = "";
+paper.style.padding = "";
+paper.style.boxShadow = "";
+paper.style.maxWidth = "";
+paper.style.margin = "0 auto";
 header.className = "pb-4 flex justify-between items-center gap-4 border-b-4 border-indigo-600";
 
 var headings = [
@@ -1497,7 +1525,8 @@ document.getElementById("sec-h1"),
 document.getElementById("sec-h2"),
 document.getElementById("sec-h3"),
 document.getElementById("sec-h4"),
-document.getElementById("sec-h5")
+document.getElementById("sec-h5"),
+document.getElementById("sec-h6")
 ];
 
 if (type === "dark") {
@@ -1524,6 +1553,17 @@ document.getElementById("out-role").className = "text-sm font-bold text-slate-70
 document.getElementById("out-contact").className = "text-xs text-slate-600 mt-1";
 for (var h = 0; h < headings.length; h++) {
 if (headings[h]) headings[h].className = "text-xs font-extrabold uppercase bg-slate-200 px-2.5 py-1.5 mb-2 text-slate-900 border-l-4 border-slate-800";
+}
+} else if (type === "ats-minimal" || type === "ats-clean") {
+paper.style.boxShadow = "none";
+paper.style.border = type === "ats-clean" ? "1px solid #cbd5e1" : "none";
+paper.style.padding = type === "ats-clean" ? "32px" : "28px";
+header.className = "pb-3 flex flex-col gap-1 border-b-2 border-slate-700";
+document.getElementById("out-name").className = "text-2xl font-bold uppercase text-slate-900";
+document.getElementById("out-role").className = "text-sm font-semibold text-slate-700 mt-1";
+document.getElementById("out-contact").className = "text-xs text-slate-600 mt-1";
+for (var h = 0; h < headings.length; h++) {
+if (headings[h]) headings[h].className = "text-xs font-bold uppercase tracking-wide text-slate-900 border-b border-slate-300 pb-1 mb-2 bg-transparent px-0 rounded-none";
 }
 } else {
 document.getElementById("out-name").className = "text-2xl sm:text-3xl font-extrabold uppercase text-slate-900";
@@ -4486,6 +4526,9 @@ if (result) {
 var net = document.getElementById("ty-wpm").innerText;
 var acc = document.getElementById("ty-acc").innerText;
 var errors = document.getElementById("ty-errors").innerText;
+var record = {date:new Date().toLocaleString(),language:(document.getElementById("ty-language").value==="hi"?"Hindi":"English"),duration:document.getElementById("ty-duration").value+" min",netWpm:net,accuracy:acc,errors:errors};
+try { var history=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]"); history.unshift(record); localStorage.setItem("fcv_typing_history_v1",JSON.stringify(history.slice(0,10))); } catch(e) {}
+renderTypingHistory();
 result.innerText = "Test complete! Net WPM: " + net + " | Accuracy: " + acc + " | Errors: " + errors;
 result.classList.remove("hidden");
 }
@@ -4531,7 +4574,19 @@ if (typed.length >= target.length) finishTypingTest();
 // =========================================================================
 // LEGAL MODALS & INITIALIZATION
 // =========================================================================
-function openLegalModal(type) {
+function openLegalModal(type) {function renderTypingHistory() {
+var box=document.getElementById("ty-history"); if(!box) return;
+try {
+var h=JSON.parse(localStorage.getItem("fcv_typing_history_v1")||"[]");
+box.innerHTML=h.length?h.map(function(r){return "<div class='py-1 border-b border-slate-100'>"+r.date+" · "+r.language+" · "+r.duration+" · <b>"+r.netWpm+" WPM</b> · "+r.accuracy+" · "+r.errors+" errors</div>";}).join(""):"No completed tests yet.";
+} catch(e) { box.textContent="History unavailable in this browser."; }
+}
+function clearTypingHistory() {
+if(!confirm("Clear typing history stored on this device?")) return;
+try{localStorage.removeItem("fcv_typing_history_v1");}catch(e){}
+renderTypingHistory();
+}
+
 var box = document.getElementById("legal-modal-content");
 var map = {
 about: "<h3 class='text-base font-black text-slate-900'>About FreeCVResume.co.in</h3><p>FreeCVResume.co.in is India's dedicated educational & career utility portal offering a 100% Free AI ATS Resume Builder, Exam Photo Resizer, Typing Test, and an open Study Notes Marketplace for IIT JEE, NEET UG, B.Sc, M.Sc, CSIR-UGC NET/JRF, GATE, SSC & Railway aspirants.</p>",
