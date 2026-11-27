@@ -4564,54 +4564,46 @@ catBtns[ci].className = "note-cat-btn bg-white text-slate-700 border border-slat
 if (catBtns.length) catBtns[0].className = "note-cat-btn bg-indigo-600 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow cursor-pointer";
 filterMainStudyNotes();
 }
+function normalizeStudySearchText(value) {
+return String(value||"").toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^\\p{L}\\p{N}]+/gu," ").trim();
+}
+function hasStudyFilterToken(value, token) {
+return String(value||"").toLowerCase().split(/\\s+/).filter(Boolean).indexOf(String(token||"").toLowerCase())!==-1;
+}
 function filterMainStudyNotes() {
 var qInput = document.getElementById("mainNotesSearch");
-var query = qInput ? qInput.value.toLowerCase().trim() : "";
+var query = normalizeStudySearchText(qInput ? qInput.value : "");
+var terms = query ? query.split(/\\s+/).filter(Boolean) : [];
 var clearBtn = document.getElementById("clearSearchBtn");
 if (clearBtn) clearBtn.style.display = query.length > 0 ? "block" : "none";
-
-var cards = document.querySelectorAll(".main-note-card");
+var cards = document.querySelectorAll("#studyNotesContainer .main-note-card");
 var visibleCount = 0;
-
+var savedIds = savedNotesOnly ? getSavedStudyNoteIds() : [];
 for (var i = 0; i < cards.length; i++) {
 var c = cards[i];
-var cats = (c.getAttribute("data-categories") || "all").toLowerCase();
-var subs = (c.getAttribute("data-subject") || "all-sub").toLowerCase();
-var langs = (c.getAttribute("data-lang") || "all-lang").toLowerCase();
-var kw = (c.getAttribute("data-keywords") || "").toLowerCase();
-var text = (c.innerText || "").toLowerCase();
+var cats = c.getAttribute("data-categories") || "all";
+var subs = c.getAttribute("data-subject") || "all-sub";
+var langs = c.getAttribute("data-lang") || "all-lang";
+var kw = c.getAttribute("data-keywords") || "";
 var noteId = c.getAttribute("data-note-id") || "";
-var fullNoteBody = (builtinNotesData[noteId] && builtinNotesData[noteId].content) ? builtinNotesData[noteId].content.toLowerCase() : "";
-
-var catMatch = (currentActiveCategory === "all") || (cats.indexOf(currentActiveCategory) !== -1);
-var subMatch = (currentActiveSub === "all-sub") || (subs.indexOf(currentActiveSub) !== -1);
-var langMatch = (currentActiveLang === "all-lang") || (langs.indexOf(currentActiveLang) !== -1);
+var fullNoteBody = (builtinNotesData[noteId] && builtinNotesData[noteId].content) ? builtinNotesData[noteId].content : "";
+var searchable = normalizeStudySearchText([kw,c.innerText,fullNoteBody,c.getAttribute("data-creator"),c.getAttribute("data-price")].join(" "));
+var catMatch = currentActiveCategory === "all" || hasStudyFilterToken(cats,currentActiveCategory);
+var subMatch = currentActiveSub === "all-sub" || hasStudyFilterToken(subs,currentActiveSub);
+var langMatch = currentActiveLang === "all-lang" || hasStudyFilterToken(langs,currentActiveLang);
+var savedMatch = !savedNotesOnly || savedIds.indexOf(noteId) !== -1;
 var queryMatch = true;
-var savedMatch = !savedNotesOnly || getSavedStudyNoteIds().indexOf(noteId) !== -1;
-
-if (query.length > 0) {
-var words = query.split(/\s+/);
-for (var w = 0; w < words.length; w++) {
-var term = words[w];
-if (kw.indexOf(term) === -1 && text.indexOf(term) === -1 && fullNoteBody.indexOf(term) === -1) {
-queryMatch = false;
-break;
+for (var w = 0; w < terms.length; w++) {
+if (searchable.indexOf(terms[w]) === -1) { queryMatch = false; break; }
 }
-}
-}
-
 if (catMatch && subMatch && langMatch && queryMatch && savedMatch) {
-c.style.display = "flex";
-visibleCount++;
-} else {
-c.style.display = "none";
+c.style.display = "flex"; visibleCount++;
+} else { c.style.display = "none"; }
 }
-}
-
 var st = document.getElementById("searchStatusText");
 if (st) st.innerText = "📚 Available Study Notes (" + visibleCount + ")";
 var noBox = document.getElementById("noNotesFoundBox");
-if (noBox) noBox.style.display = (visibleCount === 0) ? "block" : "none";
+if (noBox) noBox.style.display = visibleCount === 0 ? "block" : "none";
 enhanceStudyNoteCards();
 applyNotesSort();
 }
