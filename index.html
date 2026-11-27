@@ -220,14 +220,20 @@ html, body { height: auto !important; overflow: visible !important; }
 </div>
 </div>
 
-<div class="grid grid-cols-2 gap-2.5">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
 <div>
 <label class="text-[11px] font-bold text-slate-600">City & State</label>
 <input type="text" id="f-addr" oninput="updateCV()" value="City, State" placeholder="Ex: New Delhi, India" class="w-full text-xs border rounded-lg px-2.5 py-2">
 </div>
-<div>
-<label class="text-[11px] font-bold text-slate-600">Photo Lagayein (Optional)</label>
-<input type="file" accept="image/*" onchange="loadCVPhoto(event)" class="w-full text-[10px] border rounded-lg p-1.5">
+<div class="rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 space-y-2">
+<label for="f-photo-upload" class="block text-[11px] font-extrabold text-slate-700">📷 Resume Photo (Optional)</label>
+<input type="file" id="f-photo-upload" accept="image/jpeg,image/png,image/webp" onchange="loadCVPhoto(event)" class="block w-full text-[11px] text-slate-700 file:mr-2 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:font-bold file:text-white">
+<p class="text-[10px] text-slate-500">JPG, PNG ya WEBP · Maximum 5 MB</p>
+<div class="flex items-center gap-2">
+<img id="photo-upload-thumb" alt="Selected resume photo preview" class="hidden h-14 w-12 rounded-lg border border-slate-300 object-cover bg-white">
+<span id="photo-upload-status" class="min-w-0 flex-1 text-[10px] text-slate-600">Photo select karne par resume mein dikh jayegi.</span>
+<button type="button" id="remove-photo-btn" onclick="removeCVPhoto()" class="hidden shrink-0 rounded-lg border border-rose-200 bg-white px-2 py-1 text-[10px] font-bold text-rose-700">Remove</button>
+</div>
 </div>
 </div>
 
@@ -1586,15 +1592,58 @@ if (headings[h]) headings[h].className = "text-xs font-extrabold uppercase track
 }
 
 function loadCVPhoto(e) {
-var file = e.target.files[0];
+var input = e && e.target;
+var file = input && input.files ? input.files[0] : null;
+var status = document.getElementById("photo-upload-status");
+var thumb = document.getElementById("photo-upload-thumb");
+var removeBtn = document.getElementById("remove-photo-btn");
 if (!file) return;
+if (!/^image\/(jpeg|png|webp)$/i.test(file.type || "")) {
+if (status) status.innerText = "Sirf JPG, PNG ya WEBP photo select karein.";
+input.value = "";
+return;
+}
+if (file.size > 5 * 1024 * 1024) {
+if (status) status.innerText = "Photo 5 MB se chhoti honi chahiye. Kripya compress karke dobara upload karein.";
+input.value = "";
+return;
+}
 var reader = new FileReader();
+reader.onerror = function() {
+if (status) status.innerText = "Photo read nahi ho payi. Dobara try karein.";
+input.value = "";
+};
 reader.onload = function(ev) {
+var preview = new Image();
+preview.onerror = function() {
+if (status) status.innerText = "Yeh valid image file nahi lag rahi. Dusri photo try karein.";
+input.value = "";
+};
+preview.onload = function() {
 var img = document.getElementById("out-photo");
+if (!img) return;
 img.src = ev.target.result;
 img.classList.remove("hidden");
+if (thumb) { thumb.src = ev.target.result; thumb.classList.remove("hidden"); }
+if (status) status.innerText = file.name + " · Photo resume mein add ho gayi.";
+if (removeBtn) removeBtn.classList.remove("hidden");
+};
+preview.src = ev.target.result;
 };
 reader.readAsDataURL(file);
+}
+
+function removeCVPhoto() {
+var img = document.getElementById("out-photo");
+var thumb = document.getElementById("photo-upload-thumb");
+var input = document.getElementById("f-photo-upload");
+var status = document.getElementById("photo-upload-status");
+var removeBtn = document.getElementById("remove-photo-btn");
+if (img) { img.removeAttribute("src"); img.classList.add("hidden"); }
+if (thumb) { thumb.removeAttribute("src"); thumb.classList.add("hidden"); }
+if (input) input.value = "";
+if (status) status.innerText = "Photo select karne par resume mein dikh jayegi.";
+if (removeBtn) removeBtn.classList.add("hidden");
 }
 
 function updateResumeProgressUI(pct, labelText) {
