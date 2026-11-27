@@ -3766,6 +3766,7 @@ card.setAttribute("data-note-id", item.id);
 card.setAttribute("data-categories", catAttr);
 card.setAttribute("data-subject", item.subject || "gk-gs");
 card.setAttribute("data-lang", (item.language || "english") + " bilingual");
+card.setAttribute("data-creator", item.creator || "FreeCV Creator");
 card.setAttribute("data-price", String(item.price));
 card.setAttribute("data-keywords", allKeywords);
 
@@ -4894,14 +4895,29 @@ syncNotesFromSupabase();
 <div id="noteDetailModal" class="note-detail-backdrop" role="dialog" aria-modal="true" aria-labelledby="noteDetailTitle">
   <div class="note-detail-dialog p-5 sm:p-6" tabindex="-1">
     <div class="flex items-start justify-between gap-3">
-      <div><p class="text-[10px] uppercase tracking-wider font-black text-indigo-600">Note details</p><h3 id="noteDetailTitle" class="text-lg sm:text-xl font-black text-slate-950 mt-1">Study note</h3></div>
+      <div><p class="text-[10px] uppercase tracking-wider font-black text-indigo-600">Marketplace • Note overview</p><h3 id="noteDetailTitle" class="text-lg sm:text-xl font-black text-slate-950 mt-1">Study note</h3></div>
       <button type="button" onclick="closeNoteDetailModal()" aria-label="Close details" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-black">✕</button>
     </div>
-    <div class="flex flex-wrap gap-2 mt-4">
-      <span id="noteDetailPrice" class="rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3 py-1.5">FREE</span>
-      <span id="noteDetailCreator" class="rounded-full bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5">Creator</span>
+    <div class="grid grid-cols-1 sm:grid-cols-[112px_1fr] gap-4 mt-4">
+      <div id="noteDetailCover" class="min-h-[132px] rounded-2xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-800 text-white p-3 flex flex-col justify-between shadow-inner">
+        <span class="text-3xl">📘</span><span id="noteDetailCoverCategory" class="text-[10px] font-black uppercase tracking-wider">STUDY NOTES</span>
+      </div>
+      <div class="min-w-0 flex flex-col justify-center gap-2">
+        <div class="flex flex-wrap gap-2">
+          <span id="noteDetailPrice" class="rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3 py-1.5">FREE</span>
+          <span id="noteDetailCreator" class="rounded-full bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5">Creator</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="rounded-xl bg-slate-50 p-2"><p class="text-[10px] text-slate-500 font-bold">SUBJECT / EXAM</p><p id="noteDetailSubject" class="text-xs text-slate-800 font-extrabold mt-1">Study material</p></div>
+          <div class="rounded-xl bg-slate-50 p-2"><p class="text-[10px] text-slate-500 font-bold">LANGUAGE</p><p id="noteDetailLanguage" class="text-xs text-slate-800 font-extrabold mt-1">As listed</p></div>
+        </div>
+        <p id="noteDetailStats" class="text-[11px] text-slate-500 font-semibold">Marketplace study material</p>
+      </div>
     </div>
-    <p id="noteDetailDescription" class="text-sm leading-relaxed text-slate-600 mt-4"></p>
+    <div class="mt-4 rounded-2xl bg-slate-50 border border-slate-100 p-4">
+      <p class="text-[10px] uppercase tracking-wider font-black text-slate-500 mb-2">About this note</p>
+      <p id="noteDetailDescription" class="text-sm leading-relaxed text-slate-600"></p>
+    </div>
     <div class="border-t border-slate-100 mt-5 pt-4 flex flex-col sm:flex-row gap-2">
       <button id="noteDetailPrimaryAction" type="button" class="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm px-4 py-3">Read online</button>
       <button type="button" onclick="closeNoteDetailModal()" class="rounded-xl bg-slate-100 text-slate-700 font-bold text-sm px-4 py-3">Back to marketplace</button>
@@ -4920,15 +4936,23 @@ syncNotesFromSupabase();
   window.openNoteDetailModal = function(card){
     if(!card) return;
     var title=textOf(card.querySelector("h3")) || "Study note";
-    var creator=card.getAttribute("data-creator") || textOf(card.querySelector(".creator-name")) || "FreeCV Study Hub";
+    var creator=card.getAttribute("data-creator") || textOf(card.querySelector(".creator-name")) || textOf(card.querySelector(".text-xs.text-slate-500")) || "FreeCV Study Hub";
     var price=Number(card.getAttribute("data-price") || 0);
     var desc=textOf(card.querySelector("p")) || "Open this study note to view its available material and reading options.";
+    var category=(card.getAttribute("data-categories") || "Study notes").split(" ").filter(function(x){return x && x!=="all" && x!=="free" && x!=="paid";})[0] || "Study notes";
+    var subject=(card.getAttribute("data-subject") || "Study material").replace(/-/g," ").toUpperCase();
+    var language=(card.getAttribute("data-lang") || "As listed").replace(/\benglish\b/i,"English").replace(/\bhindi\b/i,"Hindi").replace(/\bbilingual\b/i,"Bilingual").replace(/\s+/g," / ");
+    var stats=textOf(card.querySelector(".text-amber-600")) + (textOf(card.querySelector('[id^="views-"]')) ? " • " + textOf(card.querySelector('[id^="views-"]')) : "");
     var modal=document.getElementById("noteDetailModal");
     if(!modal) return;
     document.getElementById("noteDetailTitle").textContent=title;
     document.getElementById("noteDetailCreator").textContent="By "+creator;
     document.getElementById("noteDetailPrice").textContent=price>0 ? "PREMIUM • ₹"+price.toFixed(2) : "FREE • Read online";
     document.getElementById("noteDetailPrice").className=price>0 ? "rounded-full bg-violet-50 text-violet-800 text-xs font-extrabold px-3 py-1.5" : "rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3 py-1.5";
+    document.getElementById("noteDetailCoverCategory").textContent=category.replace(/-/g," ").toUpperCase();
+    document.getElementById("noteDetailSubject").textContent=subject;
+    document.getElementById("noteDetailLanguage").textContent=language;
+    document.getElementById("noteDetailStats").textContent=stats || "Study material listed on FreeCV Marketplace";
     document.getElementById("noteDetailDescription").textContent=desc;
     var action=document.getElementById("noteDetailPrimaryAction");
     action.disabled=price>0;
