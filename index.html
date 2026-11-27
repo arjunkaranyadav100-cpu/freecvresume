@@ -1073,8 +1073,8 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 </div>
 
 <div>
-<label class="block font-bold text-slate-700 mb-1">Email ID or Mobile Number *</label>
-<input type="text" id="authCreatorEmail" required placeholder="e.g., creator@email.com or 9876543210" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
+<label class="block font-bold text-slate-700 mb-1">Email ID *</label>
+<input type="email" id="authCreatorEmail" required autocomplete="email" placeholder="e.g., creator@email.com" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
 </div>
 
 <div id="authUpiField">
@@ -1083,8 +1083,8 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 </div>
 
 <div>
-<label class="block font-bold text-slate-700 mb-1">Account Password / 4-Digit PIN *</label>
-<input type="password" id="authCreatorPass" required placeholder="Enter Password or PIN" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
+<label class="block font-bold text-slate-700 mb-1">Account Password (minimum 6 characters) *</label>
+<input type="password" id="authCreatorPass" required minlength="6" autocomplete="current-password" placeholder="Enter Password" class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
 </div>
 
 <p id="creatorAuthMsg" class="text-[11px] font-bold text-emerald-700 hidden"></p>
@@ -1810,7 +1810,7 @@ function extractResumeSection(raw, labels, stopLabels) {
  function findHeading(list, fromIndex) {
   var best = null;
   list.forEach(function(label) {
-   var escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+   var escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\s+");
    var re = new RegExp("\\b" + escaped + "\\b", "ig");
    re.lastIndex = Math.max(0, fromIndex || 0);
    var m = re.exec(source);
@@ -2133,7 +2133,7 @@ msg.className = "text-[11px] font-bold text-red-600";
 msg.innerText = "Supabase connection unavailable. Please refresh and try again.";
 return;
 }
-if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 msg.className = "text-[11px] font-bold text-red-600";
 msg.innerText = "Valid email address enter karein. Mobile number se login ab supported nahi hai.";
 return;
@@ -4738,7 +4738,7 @@ cards.sort(function(a,b) { return (parseFloat(a.getAttribute("data-price") || "0
 } else if (mode === "popular") {
 cards.sort(function(a,b) {
 var av = parseInt((a.innerText.match(/([0-9,]+)\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
-var bv = parseInt((b.innerText.match(/([0-9,]+)\\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
+var bv = parseInt((b.innerText.match(/([0-9,]+)\s*Views/i) || [,"0"])[1].replace(/,/g,""),10);
 return bv-av;
 });
 }
@@ -5237,6 +5237,7 @@ deletePdfBufferFromCache("latest");
 injectBscMscNetGateUI();
 renderCustomNotesCards();
 updateCreatorAuthUI();
+restoreCreatorSession();
 updateDynamicSEOForNotes();
 updateWalletUI();
 filterMainStudyNotes();
