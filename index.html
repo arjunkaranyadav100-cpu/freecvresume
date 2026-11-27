@@ -1224,7 +1224,7 @@ Remove top/bottom PDF watermark (Header/Footer)
 <div class="flex flex-wrap items-center gap-2 mb-1">
 <span id="readerBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2.5 py-0.5 rounded-md">IIT JEE</span>
 <span id="readerPriceTag" class="bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full">FREE NOTE</span>
-<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">🛡️ Coaching/Link Sanitized</span>
+<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">Original document view</span>
 </div>
 <h2 id="readerTitle" class="text-base sm:text-xl font-black text-slate-900">Note Title</h2>
 <p id="readerMeta" class="text-[11px] text-slate-500 font-semibold mt-0.5">By Educator • Views: 0</p>
@@ -1243,10 +1243,25 @@ Remove top/bottom PDF watermark (Header/Footer)
 </button>
 </div>
 
+<!-- Reader navigation and display controls -->
+<div id="readerToolbar" class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-100 border border-slate-200 p-2 mb-3">
+  <div class="flex items-center gap-2">
+    <button type="button" onclick="changeReaderZoom(-10)" class="w-10 h-10 rounded-lg bg-white border border-slate-200 font-black text-slate-700" aria-label="Zoom out">A−</button>
+    <span id="readerZoomLabel" class="text-[11px] font-extrabold text-slate-600 min-w-[42px] text-center">100%</span>
+    <button type="button" onclick="changeReaderZoom(10)" class="w-10 h-10 rounded-lg bg-white border border-slate-200 font-black text-slate-700" aria-label="Zoom in">A+</button>
+    <button type="button" onclick="resetReaderZoom()" class="h-10 px-3 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700">Fit width</button>
+  </div>
+  <div class="flex items-center gap-2">
+    <label for="readerPageJump" class="text-[11px] font-bold text-slate-600">Page</label>
+    <input id="readerPageJump" type="number" min="1" inputmode="numeric" placeholder="1" class="w-16 h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm font-bold" />
+    <button type="button" onclick="goToReaderPage()" class="h-10 px-3 rounded-lg bg-indigo-600 text-white text-[11px] font-extrabold">Go</button>
+  </div>
+</div>
+
 <!-- Scrollable Reader Body -->
 <div class="flex-1 overflow-y-auto space-y-4 pr-1" id="readerScrollBody">
 
-<!-- Visual Sanitized PDF Pages Container (if PDF uploaded with cropped headers/footers) -->
+<!-- Original PDF pages are displayed without removing ownership or copyright marks. -->
 <div id="readerCanvasContainer" class="space-y-4 hidden"></div>
 
 <!-- Clean Printable & Google-Indexable Note Paper -->
@@ -3982,7 +3997,7 @@ if (printAreaBox) printAreaBox.classList.add("hidden");
 
 var infoMsg = document.createElement("div");
 infoMsg.className = "bg-indigo-50 border border-indigo-200 text-indigo-900 p-2.5 rounded-xl text-xs font-bold mb-2 text-center";
-infoMsg.innerHTML = '<i class="fa-solid fa-scissors mr-1 text-indigo-600"></i> Auto-Watermark Cropper Active: Rendering ' + totalP + ' Clean Pages (Memory-Safe Mode)';
+infoMsg.innerHTML = '<i class="fa-solid fa-scissors mr-1 text-indigo-600"></i> Original PDF: Rendering ' + totalP + ' Pages (Memory-Safe Mode)';
 container.appendChild(infoMsg);
 
 // Reuse a SINGLE offscreen canvas pair for all pages so mobile Chrome never runs out of RAM ("Aw, Snap!")
@@ -4003,10 +4018,9 @@ tempCanvas.width = fullW;
 tempCanvas.height = fullH;
 await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
 
-// Crop top 9.6% (removes coaching/teacher header bars) and bottom 7.4% watermarks automatically
-var cropY = Math.floor(fullH * 0.096);
-var cropH = Math.floor(fullH * 0.83);
-
+// Preserve the complete original page, including creator attribution and copyright notices.
+var cropY = 0;
+var cropH = fullH;
 finalCanvas.width = fullW;
 finalCanvas.height = cropH;
 finalCtx.fillStyle = "#ffffff";
@@ -4037,6 +4051,9 @@ if (pdfDoc.cleanup) pdfDoc.cleanup();
 }
 
 async function launchOnPageReader(note) {
+readerZoomPercent = 100;
+updateReaderZoom();
+var pageJumpInput = document.getElementById("readerPageJump"); if (pageJumpInput) pageJumpInput.value = "1";
 activeReaderNote = note;
 document.getElementById("onPageReaderModal").style.display = "flex";
 document.getElementById("readerBadge").innerText = note.badge || "STUDY NOTE";
@@ -4148,6 +4165,48 @@ if (adShareTimer) clearTimeout(adShareTimer);
 var timerTxt = document.getElementById("readerAdTimerText");
 if (timerTxt) timerTxt.innerText = "📊 Views may be counted for note analytics. AdSense earnings are not paid per view; creator revenue can be calculated only from verified AdSense reports after account approval.";
 }
+
+var readerZoomPercent = 100;
+function updateReaderZoom() {
+  var container=document.getElementById("readerCanvasContainer");
+  var label=document.getElementById("readerZoomLabel");
+  if(label) label.innerText=readerZoomPercent+"%";
+  if(container) {
+    var imgs=container.querySelectorAll(".pdf-rendered-page");
+    for(var i=0;i<imgs.length;i++){
+      imgs[i].style.width=readerZoomPercent+"%";
+      imgs[i].style.maxWidth="none";
+      imgs[i].style.marginLeft="0";
+    }
+  }
+}
+function changeReaderZoom(delta) {
+  readerZoomPercent=Math.max(60,Math.min(160,readerZoomPercent+delta));
+  updateReaderZoom();
+}
+function resetReaderZoom() {
+  readerZoomPercent=100;
+  updateReaderZoom();
+  var body=document.getElementById("readerScrollBody");
+  if(body) body.scrollTo({top:0,behavior:"smooth"});
+}
+function goToReaderPage() {
+  var input=document.getElementById("readerPageJump");
+  var pageNum=Math.max(1,parseInt(input && input.value || "1",10));
+  var pages=document.querySelectorAll("#readerCanvasContainer .pdf-rendered-page");
+  if(!pages.length) {
+    var printArea=document.getElementById("clean-note-print-area");
+    if(printArea) printArea.scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  var target=pages[Math.min(pageNum,pages.length)-1];
+  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+  if(input) input.value=String(Math.min(pageNum,pages.length));
+}
+document.addEventListener("DOMContentLoaded",function(){
+  var jump=document.getElementById("readerPageJump");
+  if(jump) jump.addEventListener("keydown",function(e){if(e.key==="Enter") goToReaderPage();});
+});
 
 function closeOnPageReader() {
 if (adShareTimer) clearTimeout(adShareTimer);
