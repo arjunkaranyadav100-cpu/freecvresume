@@ -3907,6 +3907,7 @@ launchOnPageReader(found);
 
 var pdfMemoryCacheMap = {};
 var currentRenderJobId = 0;
+var activeReaderRequestId = 0;
 
 function clonePdfArrayBuffer(buf) {
 if (!buf) return null;
@@ -4061,7 +4062,7 @@ if (pdfDoc.cleanup) pdfDoc.cleanup();
 }
 
 async function launchOnPageReader(note) {
-var readerRequestId = ++currentRenderJobId;
+var readerRequestId = ++activeReaderRequestId;
 readerZoomPercent = 100;
 updateReaderZoom();
 var pageJumpInput = document.getElementById("readerPageJump"); if (pageJumpInput) pageJumpInput.value = "1";
@@ -4087,9 +4088,7 @@ var isCustom = String(note.id || "").indexOf("custom-note") !== -1;
 var pdfBuf = null;
 if (isCustom) {
 pdfBuf = await loadPdfBufferFromCache(note.id);
-if (!pdfBuf && note.title) {
-pdfBuf = await loadPdfBufferFromCache(note.title);
-}
+
 if (!pdfBuf) {
 canvasContainer.classList.remove("hidden");
 if (printAreaBox) printAreaBox.classList.add("hidden");
@@ -4098,11 +4097,11 @@ canvasContainer.innerHTML = '<div id="cloudPdfLoadingBox" class="bg-indigo-50 bo
 '<span id="cloudPdfLoadingText">Loading Original PDF Pages from Cloud Server...</span>' +
 '</div>';
 pdfBuf = await fetchPdfBufferFromCloud(note, function(statusMsg) {
-if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
+if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
 var stEl = document.getElementById("cloudPdfLoadingText");
 if (stEl) stEl.innerText = statusMsg;
 });
-if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
+if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
 if (pdfBuf && pdfBuf.byteLength > 200) {
 await savePdfBufferToCache(note.id, pdfBuf);
 if (readerRequestId !== currentRenderJobId || activeReaderNote !== note) return;
@@ -4272,6 +4271,8 @@ body.dataset.progressBound="1";
 body.addEventListener("scroll",function(){ updateReaderProgress(); },{passive:true});
 })();
 function closeOnPageReader() {
+activeReaderRequestId++;
+
 currentRenderJobId++;
 activeReaderNote = null;
 if (adShareTimer) clearTimeout(adShareTimer);
