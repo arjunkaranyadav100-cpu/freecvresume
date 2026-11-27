@@ -1,7 +1,5 @@
 -- FreeCVResume secure creator authentication foundation
--- Run this entire file in Supabase Dashboard -> SQL Editor.
--- This creates a profile linked to Supabase Auth. It does NOT change or delete
--- existing creator_wallets / study_notes data.
+-- Creates profiles linked to Supabase Auth. Existing creator_wallets / study_notes data is untouched.
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -13,21 +11,29 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
--- Users can read their own profile; admins can read all profiles.
+-- SECURITY DEFINER avoids recursive RLS evaluation when checking admin role.
+create or replace function public.is_profile_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid() and p.role = 'admin'
+  );
+$$;
+
+revoke all on function public.is_profile_admin() from public, anon;
+grant execute on function public.is_profile_admin() to authenticated;
+
 drop policy if exists "Profiles: read own or admin" on public.profiles;
 create policy "Profiles: read own or admin"
 on public.profiles for select
 to authenticated
-using (
-  auth.uid() = id
-  or exists (
-    select 1 from public.profiles as admin_profile
-    where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-  )
-);
+using (auth.uid() = id or public.is_profile_admin());
 
--- Users may update only their display name. Role is deliberately not granted.
 revoke all on public.profiles from anon, authenticated;
 grant select on public.profiles to authenticated;
 grant update (display_name) on public.profiles to authenticated;
@@ -39,7 +45,6 @@ to authenticated
 using (auth.uid() = id)
 with check (auth.uid() = id);
 
--- Create a creator profile automatically after Supabase Auth signup.
 create or replace function public.handle_new_auth_user()
 returns trigger
 language plpgsql
@@ -63,10 +68,9 @@ create trigger on_auth_user_created_profile
 after insert on auth.users
 for each row execute procedure public.handle_new_auth_user();
 
--- IMPORTANT: After creating your own account with Supabase Auth, replace
--- YOUR_ADMIN_EMAIL below with that exact verified email and run this
--- statement separately in the SQL Editor. Never expose the service_role key
--- in index.html or any browser code.
+-- After creating your own Supabase Auth account, replace YOUR_ADMIN_EMAIL
+-- with its exact verified email and run this statement separately:
 -- update public.profiles
 -- set role = 'admin', updated_at = now()
 -- where id = (select id from auth.users where email = 'YOUR_ADMIN_EMAIL');
+-- Never expose the service_role key in browser code.
