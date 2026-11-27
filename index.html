@@ -4005,7 +4005,6 @@ if (sbClient && acc && acc.id) {
       .eq("creator_id", acc.id)
       .neq("category", "_chunk")
       .limit(100);
-    if (creatorPdfHash) duplicateQuery = duplicateQuery.eq("pdf_sha256", creatorPdfHash);
     var duplicateCheck = await duplicateQuery;
     if (duplicateCheck.error) throw duplicateCheck.error;
     var duplicateRows = duplicateCheck.data || [];
