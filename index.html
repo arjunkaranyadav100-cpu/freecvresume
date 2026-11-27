@@ -1089,17 +1089,23 @@ Complete Static GK Master Notes for SSC CGL, CHSL, MTS & Railway Exams
 <div class="bg-indigo-50/70 border-2 border-dashed border-indigo-300 rounded-xl p-4">
 <label class="block font-extrabold text-indigo-950 mb-1">📄 Step 1: Select Your PDF or Word/Text File (Auto Text Extract & Clean) *</label>
 <input type="file" id="upNotePdfFile" accept=".pdf,.docx,.txt" onchange="processUploadedNoteFile(event)" class="w-full text-xs bg-white border border-indigo-200 rounded-lg p-2 cursor-pointer">
-<div class="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-600">
-<label class="flex items-center gap-1 font-bold text-emerald-800 cursor-pointer">
-<input type="checkbox" id="upAutoRemoveCoaching" checked onchange="reRunSanitizerPreview()">
-Preserve all original text, author names, links and attribution
+<div class="mt-3 rounded-xl border border-indigo-200 bg-indigo-50/70 p-3 space-y-2 text-[11px]">
+<p class="font-extrabold text-slate-800">Optional OCR cleanup (original PDF file will remain unchanged)</p>
+<label class="flex items-start gap-2 font-bold text-slate-700 cursor-pointer">
+<input type="checkbox" id="upRightsConfirm" onchange="reRunSanitizerPreview()" class="mt-0.5">
+I confirm I own this PDF or have permission from the rights holder to edit its extracted text.
 </label>
-<label class="flex items-center gap-1 font-bold text-indigo-800 cursor-pointer">
-<input type="checkbox" id="upCropHeaderFooter" checked>
-Preserve original PDF header, footer and watermarks
+<label class="flex items-start gap-2 text-slate-700 cursor-pointer">
+<input type="checkbox" id="upAutoRemoveCoaching" onchange="reRunSanitizerPreview()" class="mt-0.5">
+Remove selected names, links or promotional text from the OCR text only
 </label>
+<label class="flex items-start gap-2 text-slate-700 cursor-pointer">
+<input type="checkbox" id="upCropHeaderFooter" onchange="reRunSanitizerPreview()" class="mt-0.5">
+Ignore the top and bottom 7% of each page during OCR (may omit content near page edges)
+</label>
+<input type="text" id="upCustomRemoveWords" oninput="reRunSanitizerPreview()" placeholder="Optional exact words/names to remove from OCR text, comma-separated" class="w-full border border-indigo-200 bg-white rounded-lg px-2.5 py-2 text-xs" disabled>
+<p class="text-[10px] text-slate-500">These options affect extracted/searchable text only. They do not erase a watermark or change the original uploaded PDF.</p>
 </div>
-<input type="text" id="upCustomRemoveWords" oninput="reRunSanitizerPreview()" placeholder="Optional notes about this PDF (do not remove author or copyright details)..." class="w-full mt-2 border border-indigo-200 bg-white rounded-lg px-2.5 py-1.5 text-xs">
 <!-- Live PDF Upload & Scanning Percentage Progress Bar -->
 <div id="pdfUploadProgressWrap" class="mt-3 hidden bg-white p-3 rounded-xl border border-indigo-200 shadow-xs">
 <div class="flex justify-between items-center text-[11px] font-extrabold text-indigo-900 mb-1.5">
@@ -2356,6 +2362,19 @@ return false;
 
 function sanitizeNoteText(rawText) {
 if (!rawText) return { cleanText: "", removedCount: 0 };
+var text = String(rawText);
+var removedCount = 0;
+var rights = document.getElementById("upRightsConfirm");
+var removeSelected = document.getElementById("upAutoRemoveCoaching");
+var customInput = document.getElementById("upCustomRemoveWords");
+var enabled = !!(rights && rights.checked && removeSelected && removeSelected.checked);
+if (enabled && customInput && customInput.value.trim()) {
+  var terms = customInput.value.split(",");
+  for (var i = 0; i < terms.length; i++) {
+    var term = terms[i].trim();
+    if (term.length < 2) continue;
+    var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\function sanitizeNoteText(rawText) {
+if (!rawText) return { cleanText: "", removedCount: 0 };
 // Preserve source material and attribution. Never strip names, links, phone numbers,
 // coaching references, creator marks, copyright notices, or watermarks automatically.
 // Only normalize excess whitespace for readability; creators must have rights to upload.
@@ -2365,6 +2384,16 @@ var text = String(rawText)
   .replace(/\\n{3,}/g, "\\n\\n")
   .trim();
 return { cleanText: text, removedCount: 0 };
+}");
+    var re = new RegExp(escaped, "gi");
+    text = text.replace(re, function(match) { removedCount++; return ""; });
+  }
+}
+text = text.replace(/[\\t\\f\\v ]+/g, " ")
+  .replace(/\\r\\n?/g, "\\n")
+  .replace(/\\n{3,}/g, "\\n\\n")
+  .trim();
+return { cleanText: text, removedCount: removedCount };
 }
 function reRunSanitizerPreview() {
 if (!rawUploadedNoteText) return;
@@ -3623,7 +3652,7 @@ sales: 0,
 rating: 4.9,
 purchased: false,
 hasLocalPdf: !!pdfBufferForThisNote,
-cropHeaderFooter: false
+cropHeaderFooter: !!(document.getElementById("upRightsConfirm") && document.getElementById("upRightsConfirm").checked && document.getElementById("upCropHeaderFooter") && document.getElementById("upCropHeaderFooter").checked)
 };
 
 var list = getCustomNotesList();
