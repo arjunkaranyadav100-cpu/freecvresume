@@ -184,8 +184,8 @@ overflow: visible !important; color: #111827 !important;
 </div>
 
 <div class="bg-white/10 border border-white/20 rounded-xl p-4">
-<h2 class="text-sm font-bold mb-1"><i class="fa-solid fa-robot text-emerald-300 mr-1"></i> Advanced AI Pro Writer (1-Click Standard Auto-Fill)</h2>
-<p class="text-xs text-indigo-100 mb-3">Job Profile chunein—AI high-level ATS Summary, Experience aur Skills khud likh dega:</p>
+<h2 class="text-sm font-bold mb-1"><i class="fa-solid fa-robot text-emerald-300 mr-1"></i> Role-Based Resume Suggestions (Editable Templates)</h2>
+<p class="text-xs text-indigo-100 mb-3">Job Profile chunein—Selected job role ke liye sample Summary, Experience aur Skills bhare jayenge. Har line ko apne asli experience ke hisaab se edit karein:</p>
 <div class="flex flex-col sm:flex-row gap-2">
 <select id="ai-role" class="flex-1 bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 border border-white/20">
 <option value="warehouse">Store Operations / Billing / Inventory / Q-Commerce</option>
@@ -200,7 +200,7 @@ overflow: visible !important; color: #111827 !important;
 <option value="biodata">Official Job & Marriage Bio-Data Format</option>
 </select>
 <button type="button" onclick="applyAIPreset(this)" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow cursor-pointer">
-<i class="fa-solid fa-bolt mr-1"></i> AI Auto-Fill Pro
+<i class="fa-solid fa-bolt mr-1"></i> Insert Sample Content
 </button>
 </div>
 </div>
@@ -225,7 +225,7 @@ overflow: visible !important; color: #111827 !important;
 <div class="flex justify-between items-center border-b pb-2.5">
 <h3 class="font-extrabold text-sm text-slate-800">Details Modify Karein</h3>
 <button type="button" onclick="aiUpgradeAll(this)" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm cursor-pointer">
-<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Upgrade All Sections
+<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Improve Sample Wording
 </button>
 </div>
 
@@ -272,7 +272,7 @@ overflow: visible !important; color: #111827 !important;
 <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> AI Standard Summary
 </button>
 </div>
-<textarea id="f-summary" oninput="updateCV()" rows="3" class="w-full text-xs border rounded-lg p-2 leading-relaxed">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining 99.9% accuracy, streamlining workflows, and delivering fast service in dynamic corporate environments.</textarea>
+<textarea id="f-summary" oninput="updateCV()" rows="3" class="w-full text-xs border rounded-lg p-2 leading-relaxed">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining accurate records, streamlining workflows, and delivering fast service in dynamic corporate environments.</textarea>
 </div>
 
 <div>
@@ -341,7 +341,7 @@ overflow: visible !important; color: #111827 !important;
 
 <div>
 <h2 id="sec-h1" class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded mb-2">Professional Summary</h2>
-<p id="out-summary" contenteditable="true" class="text-xs leading-relaxed text-slate-800">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining 99.9% accuracy, streamlining workflows, and delivering fast service in dynamic corporate environments.</p>
+<p id="out-summary" contenteditable="true" class="text-xs leading-relaxed text-slate-800">Result-oriented professional with proven expertise in daily operations, inventory management, billing, and MIS reporting. Recognized for maintaining accuracy, streamlining workflows, and delivering fast service in dynamic corporate environments.</p>
 </div>
 
 <div>
@@ -1509,7 +1509,7 @@ if (out) out.innerText = rows.join("\n");
 var presets = {
 warehouse: {
 role: "Senior Store Operations, Inventory & Billing Executive",
-sum: "Results-driven Operations & Supply Chain Professional with comprehensive expertise in high-velocity fulfillment, POS billing, inward/outward stock auditing, and SLA-driven dispatch execution. Proven track record of maintaining 99.9% inventory accuracy and minimizing shrinkage.",
+sum: "Results-driven Operations & Supply Chain Professional with comprehensive expertise in high-velocity fulfillment, POS billing, inward/outward stock auditing, and SLA-driven dispatch execution. Proven track record of maintaining accurate inventory records and minimizing shrinkage.",
 exp: "• Store Operations & Inventory Associate: Directed end-to-end fulfillment workflows including HHT barcode scanning, rapid picking/packing, and quality checks.\n• POS Billing & Reconciliation: Processed 300+ daily customer invoices with accurate billing and reconciliation practices and maintained stock sheets in MS Excel.\n• Audit & SLA Compliance: Executed daily cycle counts, FIFO stock rotation, and achieved on-time dispatch coordination.",
 sk: "• Core Operations: POS Billing & Invoicing, Inventory & Stock Audit, Rapid Order Fulfillment, FIFO & Shrinkage Control\n• Software & Tools: Advanced MS Excel (VLOOKUP, Pivot Tables, MIS), ERP/WMS Portals, HHT Barcode Scanners\n• Professional Skills: SLA Time Management, Team Supervision, Quality Assurance (QC), Fast Problem Solving"
 },
@@ -1580,13 +1580,13 @@ document.getElementById("f-exp").value = p.exp;
 document.getElementById("f-skills").value = p.sk;
 if (key === "biodata") setTemplate("biodata");
 updateCV();
-flashBtn(btn, "AI Auto-Filled!");
+flashBtn(btn, "Sample Content Added!");
 }
 
 function aiRewriteSummary(btn) {
 var role = document.getElementById("f-role").value || "Operations & Administration Professional";
 var summaries = [
-"Accomplished and detail-oriented " + role + " with a proven track record in streamlining daily workflows, maintaining 99.9% operational accuracy, and delivering exceptional service within strict SLA timelines.",
+"Accomplished and detail-oriented " + role + " with a proven track record in streamlining daily workflows, maintaining accurate operations, and delivering exceptional service within strict SLA timelines.",
 "Dynamic and results-driven " + role + " skilled in end-to-end process execution, inventory & record management, MIS reporting, and cross-functional team coordination in fast-paced environments.",
 "Dedicated and performance-focused " + role + " combining strong analytical abilities with hands-on expertise in computerized billing, documentation, and stakeholder coordination.",
 "Highly organized " + role + " with comprehensive knowledge of modern office operations, quality compliance, real-time stock auditing, and digital documentation."
@@ -1600,7 +1600,7 @@ flashBtn(btn, "Updated!");
 function aiRewriteExp(btn) {
 var role = document.getElementById("f-role").value || "Operations Associate";
 var exps = [
-"• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving 99.9% accuracy and 100% SLA compliance.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to reduce turnaround time by 20% and upheld strict quality standards.",
+"• " + role + " (Core Operations): Spearheaded daily operational workflows, POS billing, and inventory audits, consistently achieving 99.9% accuracy and SLA-focused execution.\n• MIS Reporting & Documentation: Prepared daily and weekly performance reports using MS Excel (VLOOKUP, Pivot Tables) and maintained error-free digital records.\n• Process Improvement: Collaborated with cross-functional teams to improve turnaround time and upheld strict quality standards.",
 "• Senior Associate – " + role + ": Managed high-volume daily transactions, inward/outward stock verification, HHT barcode scanning, and customer invoicing with accurate billing and reconciliation practices.\n• Audit & Quality Control: Conducted regular physical stock counts, resolved billing mismatches, and implemented FIFO standards to minimize shrinkage.\n• Training & Coordination: Assisted management in daily scheduling, vendor coordination, and onboarding new team members.",
 "• Executive – " + role + ": Executed end-to-end back-office and floor operations including data entry, invoice processing, and client query resolution.\n• Database & Record Management: Digitized official records, verified compliance documents, and generated automated daily dispatch summaries.\n• Key Achievement: Recognized for high productivity, punctuality, and maintaining seamless operations during peak hours."
 ];
