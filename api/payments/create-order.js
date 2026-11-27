@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
 
     // Only an admin-published catalog row is purchasable. Never accept price/creator from the browser.
     const products = await supabaseAdmin(
-      "marketplace_products?select=id,title,amount_paise,currency,active& id=eq." + encodeURIComponent(noteId) + "&active=eq.true&limit=1"
+      "marketplace_products?select=id,title,amount_paise,currency,active&id=eq." + encodeURIComponent(noteId) + "&active=eq.true&limit=1"
     );
     if (!Array.isArray(products) || !products.length) return json(res, 404, { error: "This note is not enabled for secure checkout yet." });
     const product = products[0];
