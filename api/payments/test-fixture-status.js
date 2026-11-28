@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
     return json(res, 200, {
       note: { id: notes[0].id, title: notes[0].title, private_pdf_present: !!notes[0].storage_path, moderation_status: notes[0].moderation_status },
       orders: orders.map(o => ({ order_id: o.razorpay_order_id, status: o.status, amount_paise: o.amount_paise, paid_at: o.paid_at })),
-      webhook_events: matchedEvents.map(e => e.event_type),
+      webhook_events: matchedEvents,
       entitlement_count: entitlements.length,
       ledger_entries: ledger.length
     });
