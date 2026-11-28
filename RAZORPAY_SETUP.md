@@ -37,14 +37,15 @@ Use Razorpay Test Mode keys first. Never commit secrets to GitHub.
 ## API endpoints
 - POST `/api/payments/create-order` with JSON `{"note_id":"..." }` and Supabase Auth Bearer token.
 - POST `/api/payments/verify` with Razorpay Checkout response fields and same Bearer token.
-- POST `/api/payments/webhook` (Razorpay server-to-server).
+- POST `/api/payments/publish-product` with `{ "note_id": "..." }` and an Admin Supabase Auth Bearer token, after the paid PDF has been uploaded privately.
+- POST `/api/payments/webhook` (Razorpay server-to-server). Captured events grant entitlements; failed events mark still-created orders as failed.
 
 The create-order endpoint reads price and creator from the server-controlled `marketplace_products` table. Browser-supplied prices are ignored. The PDF must remain locked unless the server verifies a captured payment and grants an entitlement.
 
 ## Important limitations before launch
 - Frontend checkout now uses the real Supabase Auth access token, creates a server-priced Razorpay order, verifies the captured payment server-side, and checks the entitlement again before unlocking the reader. Paid PDF rendering is hidden unless the server confirms an entitlement.
 - Existing creator accounts/notes still include localStorage-based flows; do not use those for paid access or creator payout.
-- The private PDF storage / authenticated download-delivery endpoint is not yet implemented. Keep every product's `delivery_ready=false` and `active=false`; checkout will reject it until this is completed.
+- Private paid-PDF upload and authenticated download endpoints are implemented. Admins can publish an approved paid note through `POST /api/payments/publish-product`; the endpoint verifies the exact private PDF object before setting `active=true` and `delivery_ready=true`. Notes without a verified private PDF remain unavailable for checkout.
 - Captured payments are recorded as pending ledger entries. Creator/platform shares remain zero and no payout amount is calculated until actual Razorpay settlement fees, taxes, refunds, chargebacks and the approved revenue-share policy are reconciled. Do not pay creators from gross captured amounts.
 - Refund/chargeback reversal, admin product publishing, creator KYC, payout approval, secure PDF delivery, and end-to-end Test Mode verification remain required.
 - Do not enable live sales or payouts until all controls and legal/provider approvals are complete.
