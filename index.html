@@ -538,7 +538,16 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
     <button type="button" onclick="loadAdminModeration()" class="rounded-lg bg-rose-700 text-white text-xs font-bold px-3 py-2">Refresh</button>
   </div>
   <p id="adminModerationMessage" class="text-xs text-slate-600">Loading pending notes…</p>
-  <div id="adminModerationList" class="space-y-2"></div>
+  <div id="paymentTestFixturePanel" class="mt-3 rounded-xl border border-indigo-300 bg-indigo-50 p-3 space-y-2">
+  <div class="font-black text-indigo-900 text-sm">🧪 Preview-only Payment Test</div>
+  <p class="text-xs text-indigo-800">Creates a hidden ₹1 test note, private PDF and two Razorpay Test Mode orders (one success, one failure). Nothing is published to Production.</p>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" id="btnStartPaymentTestFixture" onclick="startRazorpayPreviewTest()" class="rounded-lg bg-indigo-700 text-white text-xs font-bold px-3 py-2">Run ₹1 Test (Success + Failure)</button>
+    <button type="button" id="btnCleanupPaymentTestFixture" onclick="cleanupRazorpayPreviewTest()" style="display:none" class="rounded-lg bg-rose-700 text-white text-xs font-bold px-3 py-2">Clean Up Test Data</button>
+  </div>
+  <p id="paymentTestFixtureStatus" class="text-xs text-indigo-900" aria-live="polite">No test fixture created.</p>
+</div>
+<div id="adminModerationList" class="space-y-2"></div>
 <div id="adminPayoutPanel" class="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-3">
   <div class="flex items-center justify-between gap-2">
     <div><h3 class="font-black text-emerald-900">💸 Admin Payout Management</h3><p class="text-xs text-emerald-800">Review payout records and record verified manual settlement.</p></div>
@@ -2422,6 +2431,165 @@ if(result.error){alert("Moderation failed: "+result.error.message);return;}
 await loadAdminModeration();await syncNotesFromSupabase();
 alert(status==="approved"?"Note approved and visible to students.":status==="rejected"?"Note rejected and hidden from public.":"Note moved back to pending review.");
 }
+async function loadPaymentTestCheckoutScript() {
+if (window.Razorpay) return;
+await new Promise(function(resolve,reject) {
+var existing=document.querySelector('script[data-razorpay-checkout="1"]');
+if(existing){existing.addEventListener("load",resolve,{once:true});existing.addEventListener("error",reject,{once:true});return;}
+var script=document.createElement("script");
+script.src="https://checkout.razorpay.com/v1/checkout.js";
+script.dataset.razorpayCheckout="1";
+script.onload=resolve;
+script.onerror=function(){reject(new Error("Razorpay Checkout load nahi ho paya."));};
+document.head.appendChild(script);
+});
+if(!window.Razorpay)throw new Error("Razorpay Checkout is unavailable.");
+}
+
+async function readPaymentTestFixtureStatus(noteId, accessToken) {
+var response=await fetch("/api/payments/test-fixture-status?note_id="+encodeURIComponent(noteId),{
+headers:{"Authorization":"Bearer "+accessToken}
+});
+var data=await response.json();
+if(!response.ok)throw new Error(data.error||"Test status could not be checked.");
+return data;
+}
+
+async function waitForPaymentTestWebhook(noteId,orderId,eventName,accessToken) {
+for(var attempt=0;attempt<25;attempt++){
+await new Promise(function(resolve){setTimeout(resolve,1000);});
+var state=await readPaymentTestFixtureStatus(noteId,accessToken);
+var order=(state.orders||[]).find(function(item){return item.order_id===orderId;});
+if(eventName==="payment.captured"&&order&&order.status==="paid"&&(state.webhook_events||[]).indexOf(eventName)>=0&&state.entitlement_count>0)return state;
+if(eventName==="payment.failed"&&order&&order.status==="failed"&&(state.webhook_events||[]).indexOf(eventName)>=0)return state;
+}
+return readPaymentTestFixtureStatus(noteId,accessToken);
+}
+
+async function runOnePaymentTestOrder(fixture,order,accessToken,statusEl) {
+return await new Promise(function(resolve,reject){
+var settled=false;
+function finish(value){if(settled)return;settled=true;resolve(value);}
+function fail(error){if(settled)return;settled=true;reject(error instanceof Error?error:new Error(String(error||"Checkout failed.")));}
+var checkout=new window.Razorpay({
+key:fixture.key_id,
+amount:order.amount,
+currency:order.currency,
+name:"FreeCVResume Test",
+description:order.payment_case==="captured"?"₹1 Test - Success webhook":"₹1 Test - Failure webhook",
+order_id:order.order_id,
+handler:async function(paymentResponse){
+try{
+statusEl.textContent="Payment response received. Server-side verification is running…";
+var verifyResponse=await fetch("/api/payments/verify-test-fixture",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
+body:JSON.stringify(Object.assign({note_id:fixture.note_id},paymentResponse))
+});
+var verifyData=await verifyResponse.json();
+if(!verifyResponse.ok||verifyData.verified!==true)throw new Error(verifyData.error||"Captured test payment verification failed.");
+var webhookState=await waitForPaymentTestWebhook(fixture.note_id,order.order_id,"payment.captured",accessToken);
+var capturedSeen=(webhookState.webhook_events||[]).indexOf("payment.captured")>=0;
+finish({payment_case:"captured",verified:true,webhook_received:capturedSeen,order_status:(webhookState.orders||[]).find(function(o){return o.order_id===order.order_id;})?.status||"unknown",entitlement_count:webhookState.entitlement_count||0});
+}catch(error){fail(error);}
+},
+modal:{ondismiss:function(){if(!settled)fail(new Error("Checkout was closed before a payment result was received."));}},
+theme:{color:"#4f46e5"}
+});
+checkout.on("payment.failed",async function(failure){
+try{
+statusEl.textContent="Failure response received. Waiting for payment.failed webhook…";
+var webhookState=await waitForPaymentTestWebhook(fixture.note_id,order.order_id,"payment.failed",accessToken);
+var failedOrder=(webhookState.orders||[]).find(function(o){return o.order_id===order.order_id;});
+finish({payment_case:"failed",webhook_received:(webhookState.webhook_events||[]).indexOf("payment.failed")>=0,order_status:failedOrder?failedOrder.status:"unknown"});
+}catch(error){fail(error);}
+});
+checkout.open();
+});
+}
+
+async function startRazorpayPreviewTest() {
+var statusEl=document.getElementById("paymentTestFixtureStatus");
+var runBtn=document.getElementById("btnStartPaymentTestFixture");
+var cleanBtn=document.getElementById("btnCleanupPaymentTestFixture");
+var acc=getActiveCreatorAccount();
+if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+if(!sbClient){alert("Supabase connection is unavailable. Refresh and sign in again.");return;}
+if(!confirm("Preview-only test: create a hidden ₹1 note and run two simulated Test Mode payments (one success, one failure)? No real money will be charged."))return;
+runBtn.disabled=true;
+if(cleanBtn)cleanBtn.style.display="none";
+try{
+var sessionResult=await sbClient.auth.getSession();
+var session=sessionResult&&sessionResult.data&&sessionResult.data.session;
+if(!session||!session.access_token)throw new Error("Admin session is missing or expired.");
+var accessToken=session.access_token;
+statusEl.textContent="Checking admin access and creating hidden private test fixture…";
+var createResponse=await fetch("/api/payments/create-test-fixture",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
+body:JSON.stringify({})
+});
+var fixture=await createResponse.json();
+if(!createResponse.ok||fixture.created!==true)throw new Error(fixture.error||"Test fixture could not be created.");
+window.__fcvTestFixtureNoteId=fixture.note_id;
+try{localStorage.setItem("fcv_test_fixture_note_id_v1",fixture.note_id);}catch(e){}
+statusEl.textContent="Private PDF verified. First ₹1 Test Mode order is ready. Choose the success path in Razorpay Checkout.";
+await loadPaymentTestCheckoutScript();
+var successOrder=(fixture.orders||[]).find(function(o){return o.payment_case==="captured";});
+var failureOrder=(fixture.orders||[]).find(function(o){return o.payment_case==="failed";});
+if(!successOrder||!failureOrder)throw new Error("Two test orders were not returned.");
+var successResult=await runOnePaymentTestOrder(fixture,successOrder,accessToken,statusEl);
+if(!successResult.verified||!successResult.webhook_received||successResult.order_status!=="paid"||successResult.entitlement_count<1) {
+throw new Error("Success payment was not fully verified by the webhook and entitlement checks.");
+}
+statusEl.textContent="Success test passed. Now run the second ₹1 order and choose Failure in the mock bank screen.";
+var failureResult=await runOnePaymentTestOrder(fixture,failureOrder,accessToken,statusEl);
+if(!failureResult.webhook_received||failureResult.order_status!=="failed") {
+throw new Error("Failure event was not confirmed by the payment.failed webhook.");
+}
+statusEl.textContent="Both Test Mode checks passed: payment.captured → paid + entitlement; payment.failed → failed order. Hidden fixture retained until cleanup.";
+if(cleanBtn)cleanBtn.style.display="inline-block";
+alert("Dono Razorpay Test Mode checks successful. Temporary test data abhi retained hai; cleanup button se sab hata denge.");
+}catch(error){
+statusEl.textContent="Test stopped: "+(error.message||"Unknown error")+". Test fixture, if created, is retained for inspection and cleanup.";
+if(cleanBtn&&window.__fcvTestFixtureNoteId)cleanBtn.style.display="inline-block";
+alert("Payment test: "+(error.message||"Please inspect the status."));
+}finally{
+runBtn.disabled=false;
+}
+}
+
+async function cleanupRazorpayPreviewTest() {
+var statusEl=document.getElementById("paymentTestFixtureStatus");
+var cleanBtn=document.getElementById("btnCleanupPaymentTestFixture");
+if(!sbClient){alert("Admin session required to clean test data.");return;}
+var noteId=window.__fcvTestFixtureNoteId||"";
+try{noteId=noteId||localStorage.getItem("fcv_test_fixture_note_id_v1")||"";}catch(e){}
+if(!noteId){alert("No temporary test fixture ID is available.");return;}
+if(!confirm("Permanently remove the hidden test note, private PDF, test buyer, product, orders, entitlements, ledger rows and webhook event records?"))return;
+cleanBtn.disabled=true;
+try{
+var sessionResult=await sbClient.auth.getSession();
+var session=sessionResult&&sessionResult.data&&sessionResult.data.session;
+if(!session||!session.access_token)throw new Error("Admin session is missing or expired.");
+var response=await fetch("/api/payments/cleanup-test-fixture",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},
+body:JSON.stringify({note_id:noteId})
+});
+var data=await response.json();
+if(!response.ok||data.cleaned!==true)throw new Error(data.error||"Cleanup did not complete.");
+window.__fcvTestFixtureNoteId="";
+try{localStorage.removeItem("fcv_test_fixture_note_id_v1");}catch(e){}
+statusEl.textContent="Temporary fixture cleaned: note, private PDF, product, orders, entitlements, ledger, webhook events and test buyer removed. Razorpay Test Mode transaction history remains in its Test dashboard.";
+cleanBtn.style.display="none";
+alert("Test fixture cleanup successful.");
+}catch(error){
+statusEl.textContent="Cleanup incomplete: "+(error.message||"Please retry.");
+alert("Cleanup error: "+(error.message||"Please retry."));
+}finally{cleanBtn.disabled=false;}
+}
+
 async function publishPaidNoteForCheckout(noteId) {
 var acc=getActiveCreatorAccount();
 if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
