@@ -1,4 +1,4 @@
-const { json, env, getBearer, supabaseUser, supabaseAdmin } = require("../_lib/razorpay");
+const { json, env, getBearer, supabaseUser, supabaseAdmin, verifyPrivatePdfSignature } = require("../_lib/razorpay");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
@@ -6,7 +6,7 @@ module.exports = async function handler(req, res) {
     const token = getBearer(req);
     if (!token) return json(res, 401, { error: "Admin sign-in is required." });
     const user = await supabaseUser(token);
-    if (!user || !user.id) return json(res, 401, { error: "Your session is invalid or expired." });
+    if (!user || !user.id) return json(res, 401, { error: "Admin session is invalid or expired." });
 
     // The admin role is read from the protected server-side profile row, never from browser data.
     const profiles = await supabaseAdmin(
@@ -57,8 +57,17 @@ module.exports = async function handler(req, res) {
       return json(res, 409, { error: "The private PDF could not be verified. Upload it again before publishing." });
     }
     const storageInfo = await storageResponse.json();
-    if (storageInfo.contentType && storageInfo.contentType !== "application/pdf") {
+    const storedMimeType = String(
+      storageInfo.contentType ||
+      storageInfo.mimetype ||
+      (storageInfo.metadata && storageInfo.metadata.mimetype) ||
+      ""
+    ).toLowerCase();
+    if (storedMimeType && storedMimeType !== "application/pdf") {
       return json(res, 415, { error: "Only a verified application/pdf file can be published." });
+    }
+    if (!(await verifyPrivatePdfSignature(expectedPath))) {
+      return json(res, 415, { error: "Stored file is not a valid PDF. The file must begin with the %PDF- signature." });
     }
 
     const products = await supabaseAdmin("marketplace_products?on_conflict=id", {
@@ -77,6 +86,7 @@ module.exports = async function handler(req, res) {
     });
     return json(res, 200, {
       published: true,
+      pdf_signature_verified: true,
       product: Array.isArray(products) ? products[0] || null : products
     });
   } catch (error) {
