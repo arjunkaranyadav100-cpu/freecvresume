@@ -80,7 +80,17 @@ startBtn.disabled=true;cleanupBtn.classList.add("hidden");checksEl.innerHTML="";
 startBtn.addEventListener("click",function(){runTests(false);},false);
 cleanupBtn.addEventListener("click",async function(){if(!fixtureId){fail("No fixture ID is available to clean.");return;}if(!confirm("Remove the temporary test note, private PDF, product, orders, entitlements, ledger, webhook events and buyer account?"))return;cleanupBtn.disabled=true;try{var r=await fetch(apiUrl("/api/payments/cleanup-test-fixtures"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:JSON.stringify({note_id:fixtureId})});var d=await parseResponse(r);if(d.cleaned!==true)throw new Error("Cleanup endpoint did not confirm cleanup.");fixtureId="";buyerToken="";cleanupBtn.classList.add("hidden");check("All temporary app/database records cleaned",true);status("Cleanup complete. Razorpay Test Mode transaction history remains in the provider dashboard.");}catch(e){status("Cleanup incomplete: "+(e.message||"Unknown error"));}finally{cleanupBtn.disabled=false;}});
 init().then(function(){
-if(adminReady&&new URLSearchParams(window.location.search).get("start")==="1"){
+var params=new URLSearchParams(window.location.search);
+if(!adminReady)return;
+if(params.get("cleanup")==="1"){
+status("Cleaning previously created temporary Preview test fixtures…");
+fetch(apiUrl("/api/payments/cleanup-test-fixtures"),{method:"POST",headers:{Authorization:"Bearer "+adminToken,"Content-Type":"application/json"},body:"{}"}).then(parseResponse).then(function(result){
+check("Previous temporary fixtures removed: "+(result.fixtures||0),true);
+status("Previous Preview test fixtures cleaned. Ready for a fresh run.");
+}).catch(function(e){fail(e);});
+return;
+}
+if(params.get("start")==="1"){
 var autoKey="fcv_preview_test_autostarted_v1";
 if(!sessionStorage.getItem(autoKey)){sessionStorage.setItem(autoKey,"1");runTests(true);}
 else status("A test run has already started in this browser tab. Continue the open checkout or use cleanup.");
