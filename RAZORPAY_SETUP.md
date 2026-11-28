@@ -15,7 +15,7 @@ Use Razorpay Test Mode keys first. Never commit secrets to GitHub.
 
 ## Supabase
 1. Review and run `supabase/migrations/202611270001_marketplace_payments.sql` in Supabase SQL Editor.
-2. Populate `marketplace_products` only from an admin-controlled publishing workflow. `id` must match the note ID used by the site; amount is in paise (₹10 = 1000); creator_user_id must be a Supabase Auth UUID.
+2. Populate `marketplace_products` only from an admin-controlled publishing workflow. `id` must match the note ID used by the site; amount is in paise (₹10 = 1000); creator_user_id must be a Supabase Auth UUID. Keep `active=false` and `delivery_ready=false` until the PDF is in private storage and an authenticated server-side delivery endpoint checks the buyer's entitlement. The create-order API refuses products unless both flags are true.
 3. The current localStorage creator login is NOT accepted by these payment APIs. Buyers must sign in with Supabase Auth and send its access token as a Bearer token.
 4. Do not activate product rows until secure PDF storage/entitlement checks prevent direct public-URL sharing.
 
@@ -34,8 +34,9 @@ Use Razorpay Test Mode keys first. Never commit secrets to GitHub.
 The create-order endpoint reads price and creator from the server-controlled `marketplace_products` table. Browser-supplied prices are ignored. The PDF must remain locked unless the server verifies a captured payment and grants an entitlement.
 
 ## Important limitations before launch
-- Frontend Supabase Auth integration and checkout UI are not yet wired.
+- Frontend checkout now uses the real Supabase Auth access token, creates a server-priced Razorpay order, verifies the captured payment server-side, and checks the entitlement again before unlocking the reader. Paid PDF rendering is hidden unless the server confirms an entitlement.
 - Existing creator accounts/notes still include localStorage-based flows; do not use those for paid access or creator payout.
+- The private PDF storage / authenticated download-delivery endpoint is not yet implemented. Keep every product's `delivery_ready=false` and `active=false`; checkout will reject it until this is completed.
 - Captured payments are recorded as pending ledger entries. Creator/platform shares remain zero and no payout amount is calculated until actual Razorpay settlement fees, taxes, refunds, chargebacks and the approved revenue-share policy are reconciled. Do not pay creators from gross captured amounts.
 - Refund/chargeback reversal, admin product publishing, creator KYC, payout approval, secure PDF delivery, and end-to-end Test Mode verification remain required.
 - Do not enable live sales or payouts until all controls and legal/provider approvals are complete.
