@@ -2460,8 +2460,9 @@ for(var attempt=0;attempt<25;attempt++){
 await new Promise(function(resolve){setTimeout(resolve,1000);});
 var state=await readPaymentTestFixtureStatus(noteId,accessToken);
 var order=(state.orders||[]).find(function(item){return item.order_id===orderId;});
-if(eventName==="payment.captured"&&order&&order.status==="paid"&&(state.webhook_events||[]).indexOf(eventName)>=0&&state.entitlement_count>0)return state;
-if(eventName==="payment.failed"&&order&&order.status==="failed"&&(state.webhook_events||[]).indexOf(eventName)>=0)return state;
+var eventReceived=(state.webhook_events||[]).some(function(event){return event.event_type===eventName&&event.order_id===orderId;});
+if(eventName==="payment.captured"&&order&&order.status==="paid"&&eventReceived&&state.entitlement_count>0)return state;
+if(eventName==="payment.failed"&&order&&order.status==="failed"&&eventReceived)return state;
 }
 return readPaymentTestFixtureStatus(noteId,accessToken);
 }
