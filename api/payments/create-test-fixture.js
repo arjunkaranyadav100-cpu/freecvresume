@@ -107,31 +107,14 @@ module.exports = async function handler(req, res) {
     if (!Array.isArray(productRows) || !productRows.length) throw new Error("Temporary checkout product could not be prepared.");
     productCreated = true;
 
-    const orders = [];
-    for (const paymentCase of ["captured", "failed"]) {
-      const receipt = "fcvtest_" + tag + "_" + paymentCase;
-      const razorpayResponse = await fetch("https://api.razorpay.com/v1/orders", {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + Buffer.from(keyId + ":" + env("RAZORPAY_KEY_SECRET")).toString("base64"),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: 100, currency: "INR", receipt, notes: { note_id: noteId, test_fixture: "true", payment_case: paymentCase } })
-      });
-      const razorpayOrder = await razorpayResponse.json();
-      if (!razorpayResponse.ok || !razorpayOrder.id) throw new Error("Razorpay Test Mode could not create a fixture order.");
-      const dbOrder = await supabaseAdmin("rpc/create_marketplace_order", {
-        method: "POST",
-        body: JSON.stringify({
-          p_razorpay_order_id: razorpayOrder.id,
-          p_note_id: noteId,
-          p_buyer_user_id: buyerId,
-          p_amount_paise: 100,
-          p_currency: "INR"
-        })
-      });
-      orderIds.push(razorpayOrder.id);
-      orders.push({ payment_case: paymentCase, order_id: razorpayOrder.id, amount: 100, currency: "INR" });
+    const buyerLoginResponse = await fetch(supabaseUrl + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: { apikey: env("SUPABASE_ANON_KEY"), "Content-Type": "application/json" },
+      body: JSON.stringify({ email: buyerEmail, password: buyerPassword })
+    });
+    const buyerSession = await buyerLoginResponse.json();
+    if (!buyerLoginResponse.ok || !buyerSession.access_token || !buyerSession.user || buyerSession.user.id !== buyerId) {
+      throw new Error("Temporary buyer session could not be established.");
     }
 
     return json(res, 200, {
@@ -141,8 +124,7 @@ module.exports = async function handler(req, res) {
       title,
       amount_rupees: 1,
       private_pdf_verified: true,
-      orders,
-      key_id: keyId
+      buyer_access_token: buyerSession.access_token
     });
   } catch (error) {
     try {
