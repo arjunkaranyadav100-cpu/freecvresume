@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FreeCV Preview Payment Test</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:32px auto;padding:24px;background:#fff;border:1px solid #d1d5db;border-radius:18px;box-shadow:0 8px 28px #1111}
+h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin:22px 0 8px}.muted{color:#4b5563;font-size:13px}
+.status{margin:18px 0;padding:14px;border-radius:10px;background:#eef2ff;color:#312e81;white-space:pre-wrap;min-height:56px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{border:0;border-radius:9px;padding:12px 16px;color:white;font-weight:700;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}.primary{background:#4338ca}.danger{background:#b91c1c}.hidden{display:none}
+.good{color:#047857}.bad{color:#b91c1c}code{background:#f3f4f6;padding:2px 5px;border-radius:4px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<main>
+  <h1>🧪 FreeCV Razorpay Test Mode</h1>
+  <p class="muted">Preview-only private test. The note is hidden from public notes. Two INR 1.00 Test Mode orders will run: one success and one failure. No real money is charged.</p>
+  <div class="status" id="status">Checking Preview admin session…</div>
+  <div class="row">
+    <button class="primary" id="start" disabled>Run ₹1 Success + Failure Tests</button>
+    <button class="danger hidden" id="cleanup">Clean Up Temporary Test Data</button>
+    <button class="primary" id="webhook-self-test" type="button" disabled>Run Webhook Self-Test (No Payment)</button>
+  </div>
+  <h2>Checks</h2>
+  <div id="checks" class="muted">Waiting for admin session check.</div>
+</main>
+<script>
+(function(){
+"use strict";
+var currentHost=String(window.location.hostname||"").toLowerCase();
+var productionHosts=["www.freecvresume.co.in","freecvresume.co.in","free-resume-maker-notes-4.vercel.app","free-resume-maker-notes-4-ak7-086a.vercel.app","free-resume-maker-notes-4-git-main-ak7-086a.vercel.app"];
+if(productionHosts.indexOf(currentHost)!==-1){
+document.getElementById("status").textContent="This test page is available only on the Preview deployment.";
+document.getElementById("start").disabled=true;
+document.getElementById("cleanup").classList.add("hidden");
+return;
+}
+var SUPABASE_URL="https://uwdxigjbfljrssjqvfou.supabase.co";
+var SUPABASE_ANON_KEY="sb_publishable_kKq5y_Rt1ikt7TI_PiOzeg_xtDAJzRG";
+var client=null,adminToken="",buyerToken="",fixtureId="",razorpayLoaded=false,adminReady=false;
+var statusEl=document.getElementById("status"),checksEl=document.getElementById("checks");
+var startBtn=document.getElementById("start"),cleanupBtn=document.getElementById("cleanup");
+var webhookSelfTestBtn=document.getElementById("webhook-self-test");
+function apiUrl(path){
+var target=new URL(path,window.location.href);
+var current=new URLSearchParams(window.location.search);
+var bypass=current.get("x-vercel-protection-bypass");
+if(bypass)target.searchParams.set("x-vercel-protection-bypass",bypass);
+return target.pathname+target.search;
+}
+function status(t){statusEl.textContent=t;}
+function check(t,ok){var p=document.createElement("div");p.className=ok?"good":"bad";p.textContent=(ok?"✓ ":"✗ ")+t;checksEl.appendChild(p);}
+function safeMessage(value){
+if(typeof value==="string")return value;
+if(value&&typeof value==="object"){
+if(typeof value.message==="string")return value.message;
+if(typeof value.error==="string")return value.error;
+try{return JSON.stringify(value,function(k,v){if(/token|secret|password|authorization|api.?key/i.test(k))return "[redacted]";return v;});}catch(e){return String(value);}
+}
+return String(value||"Unknown error");
+}
+function fail(message){var detail=safeMessage(message);status("Stopped: "+detail);check(detail,false);startBtn.disabled=false;if(fixtureId)cleanupBtn.classList.remove("hidden");}
+async function parseResponse(response){var data={};try{data=await response.json();}catch(e){}if(!response.ok){var detail=data.error;if(detail&&typeof detail==="object")detail=detail.message||detail.details||detail.hint||JSON.stringify(detail);throw new Error(String(detail||("HTTP "+response.status)));}return data;}
+async function loadRazorpay(){if(window.Razorpay)return;await new Promise(function(resolve,reject){var s=document.createElement("script");s.src="https://checkout.razorpay.com/v1/checkout.js";s.onload=resolve;s.onerror=function(){reject(new Error("Razorpay Checkout could not load."));};document.head.appendChild(s);});if(!window.Razorpay)throw new Error("Razorpay Checkout unavailable.");}
+async function getFixtureStatus(){var r=await fetch(apiUrl("/api/payments/test-fixture-status?note_id="+encodeURIComponent(fixtureId)),{headers:{Authorization:"Bearer "+adminToken}});return parseResponse(r);}
+async function waitForEvent(orderId,eventType,maxAttempts){for(var i=0;i<(maxAttempts||45);i++){await new Promise(function(resolve){setTimeout(resolve,1000);});var st=await getFixtureStatus();var o=(st.orders||[]).find(function(x){return x.order_id===orderId;});var ev=(st.webhook_events||[]).some(function(x){return x.order_id===orderId&&x.event_type===eventType;});if(eventType==="payment.captured"&&o&&o.status==="paid"&&ev&&st.entitlement_count>0)return st;if(eventType==="payment.failed"&&o&&o.status==="failed"&&ev)return st;}return getFixtureStatus();}
+async function runWebhookSelfTest(){
+if(!adminReady||!webhookSelfTestBtn)return;
+webhookSelfTestBtn.disabled=true;
+status("Running an internal Preview webhook check. No payment will be created…");
+try{
+var r=await fetch(apiUrl("/api/payments/test-fixture-status?mode=webhook-self-test"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:"{}"});
+var d=await parseResponse(r);
+if(d.ok!==true||d.signature_verification!=="passed"||d.webhook_handler!=="passed"||d.supabase_event_rpc!=="passed"||d.diagnostic_row_created!==true||d.diagnostic_row_cleaned!==true){
+throw new Error(d.error||"Webhook self-test did not pass all checks.");
+}
+check("Preview webhook secret + signature verification passed",true);
+check("Webhook handler + Supabase event RPC passed",true);
+check("Temporary diagnostic event removed; no payment created",true);
+status("Internal Preview webhook test passed. Razorpay's external delivery is still a separate check.");
+}catch(e){fail(e.message||"Webhook self-test failed.");}
+finally{webhookSelfTestBtn.disabled=false;}
+}
+async function createFixture(){var r=await fetch(apiUrl("/api/payments/create-test-fixture"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:"{}"});return parseResponse(r);}
+async function createOrder(){var r=await fetch(apiUrl("/api/payments/create-order"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+buyerToken},body:JSON.stringify({note_id:fixtureId})});return parseResponse(r);}
+async function runCheckout(order,kind){
+return await new Promise(function(resolve,reject){
+var settled=false,checkout=null;
+function done(v){if(settled)return;settled=true;resolve(v);}
+function error(e){if(settled)return;settled=true;reject(e instanceof Error?e:new Error(String(e||"Checkout failed.")));}
+checkout=new window.Razorpay({key:order.key_id,amount:order.amount,currency:order.currency,name:"FreeCVResume Test",description:kind==="success"?"₹1 test payment — success":"₹1 test payment — failure",order_id:order.order_id,prefill:{name:"FreeCV Temporary Test Buyer",email:"test-buyer@example.com",contact:"+919000090000",method:"netbanking"},handler:async function(payload){try{status("Payment response received. Verifying via the normal buyer API…");var r=await fetch(apiUrl("/api/payments/verify"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+buyerToken},body:JSON.stringify(payload)});var verified=await parseResponse(r);if(verified.verified!==true)throw new Error("Normal payment verification did not return verified=true.");var er=await fetch(apiUrl("/api/payments/entitlement?note_id="+encodeURIComponent(fixtureId)),{headers:{Authorization:"Bearer "+buyerToken}});var ent=await parseResponse(er);if(ent.entitled!==true)throw new Error("Buyer entitlement was not granted.");var dr=await fetch(apiUrl("/api/payments/private-download?note_id="+encodeURIComponent(fixtureId)),{headers:{Authorization:"Bearer "+buyerToken}});var dl=await parseResponse(dr);if(!dl.url)throw new Error("Private PDF link was not issued.");var pdf=await fetch(dl.url,{headers:{Range:"bytes=0-4"}});if(!pdf.ok)throw new Error("Private PDF signed URL could not be fetched.");var bytes=new Uint8Array(await pdf.arrayBuffer());var signature=String.fromCharCode.apply(null,Array.from(bytes.slice(0,5)));if(signature!=="%PDF-")throw new Error("Private download did not return a PDF signature.");check("payment.captured: standard verification passed",true);check("Buyer entitlement granted",true);check("Private PDF download verified (%PDF-)",true);status("Payment verified + private PDF passed. Checking Razorpay payment.captured webhook for up to 8 seconds…");var st=await waitForEvent(order.order_id,"payment.captured",8);var received=(st.webhook_events||[]).some(function(x){return x.order_id===order.order_id&&x.event_type==="payment.captured";});var row=(st.orders||[]).find(function(x){return x.order_id===order.order_id;});if(received&&row&&row.status==="paid"){check("payment.captured webhook received for this order",true);check("Order database status is paid",true);}else{check("Payment verification, entitlement and private PDF passed; external webhook is still unconfirmed",true);status("Payment and private PDF passed. Razorpay webhook delivery is still unconfirmed; this is tracked separately. Do not repeat the payment.");}done({ok:true,order_id:order.order_id,webhook_confirmed:received&&!!row&&row.status==="paid"});}catch(e){error(e);}},modal:{ondismiss:function(){if(!settled)error(new Error("Checkout dismissed before a result."));}},theme:{color:"#4338ca"}});
+checkout.on("payment.failed",async function(){try{if(checkout)checkout.close();status("Failure response received. Waiting for payment.failed webhook…");var st=await waitForEvent(order.order_id,"payment.failed",8);var ev=(st.webhook_events||[]).some(function(x){return x.order_id===order.order_id&&x.event_type==="payment.failed";});var row=(st.orders||[]).find(function(x){return x.order_id===order.order_id;});if(ev&&row&&row.status==="failed"){check("payment.failed webhook received for this order",true);check("Order database status is failed",true);}else{check("Failure checkout callback received; external webhook and final failed status remain unconfirmed",true);}done({ok:true,order_id:order.order_id,webhook_confirmed:!!ev&&!!row&&row.status==="failed"});}catch(e){error(e);}});
+checkout.open();
+});
+}
+async function init(){try{if(!window.supabase||!window.supabase.createClient)throw new Error("Supabase SDK failed to load.");client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);var sr=await client.auth.getSession();var session=sr.data&&sr.data.session;if(!session||!session.access_token)throw new Error("No saved Admin session on this Preview origin. Please use the stable Preview login.");adminToken=session.access_token;var userRes=await client.auth.getUser();var user=userRes.data&&userRes.data.user;if(!user)throw new Error("Admin session user could not be verified.");var pr=await client.from("profiles").select("id,display_name,role").eq("id",user.id).maybeSingle();if(pr.error)throw pr.error;if(!pr.data||pr.data.role!=="admin")throw new Error("This account does not have the Supabase admin role.");checksEl.innerHTML="";check("Preview admin authenticated: "+(pr.data.display_name||user.email),true);status("Admin verified. Test Mode fixture is ready to create.");startBtn.disabled=false;adminReady=true;webhookSelfTestBtn.disabled=false;}catch(e){fail(e);}}
+async function runTests(autoStart){
+if(!adminReady||startBtn.disabled)return;
+if(!autoStart&&!confirm("Create one hidden ₹1 note and private PDF, then run one Success checkout in Razorpay Test Mode? Only one ₹1 Test Mode payment will be attempted."))return;
+startBtn.disabled=true;cleanupBtn.classList.add("hidden");checksEl.innerHTML="";try{status("Creating hidden Preview test fixture and temporary buyer…");var f=await createFixture();if(f.created!==true||!f.note_id||!f.buyer_access_token)throw new Error("Fixture API did not return the expected test fixture.");fixtureId=f.note_id;buyerToken=f.buyer_access_token;check("Hidden ₹1 note + private PDF created",f.private_pdf_verified===true);check("Temporary isolated buyer session created",true);status("Creating standard buyer checkout order for Success test…");var successOrder=await createOrder();if(successOrder.amount!==100||successOrder.currency!=="INR")throw new Error("Success order was not INR 1.00.");await loadRazorpay();status("First checkout opened. Choose Success in Razorpay's mock bank screen.");var success=await runCheckout(successOrder,"success");check("Success scenario complete",success.ok);status(success.webhook_confirmed?"Single Success checkout passed, including external payment.captured webhook. No second checkout will be opened. Temporary fixture remains until cleanup.":"Single Success checkout passed: payment verification, entitlement and private PDF delivery are confirmed. External payment.captured webhook remains unconfirmed and is tracked separately. No second checkout will be opened; do not repeat successful payments.");cleanupBtn.classList.remove("hidden");}catch(e){fail(e.message||"Test failed.");}
+}
+startBtn.addEventListener("click",function(){runTests(false);},false);
+webhookSelfTestBtn.addEventListener("click",runWebhookSelfTest,false);
+cleanupBtn.addEventListener("click",async function(){if(!fixtureId){fail("No fixture ID is available to clean.");return;}if(!confirm("Remove the temporary test note, private PDF, product, orders, entitlements, ledger, webhook events and buyer account?"))return;cleanupBtn.disabled=true;try{var r=await fetch(apiUrl("/api/payments/cleanup-test-fixtures"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:JSON.stringify({note_id:fixtureId})});var d=await parseResponse(r);if(d.cleaned!==true)throw new Error("Cleanup endpoint did not confirm cleanup.");fixtureId="";buyerToken="";cleanupBtn.classList.add("hidden");check("All temporary app/database records cleaned",true);status("Cleanup complete. Razorpay Test Mode transaction history remains in the provider dashboard.");}catch(e){status("Cleanup incomplete: "+(e.message||"Unknown error"));}finally{cleanupBtn.disabled=false;}});
+init().then(function(){
+var params=new URLSearchParams(window.location.search);
+if(!adminReady)return;
+if(params.get("cleanup")==="1"){
+status("Cleaning previously created temporary Preview test fixtures…");
+fetch(apiUrl("/api/payments/cleanup-test-fixtures"),{method:"POST",headers:{Authorization:"Bearer "+adminToken,"Content-Type":"application/json"},body:"{}"}).then(parseResponse).then(function(result){
+check("Previous temporary fixtures removed: "+(result.fixtures||0),true);
+status("Previous Preview test fixtures cleaned. Ready for a fresh run.");
+}).catch(function(e){fail(e);});
+return;
+}
+if(params.get("diag")==="1"){
+runWebhookSelfTest();
+return;
+}
+if(params.get("start")==="1"){
+var autoKey="fcv_preview_test_autostarted_v1_"+(params.get("run")||"default");
+if(!sessionStorage.getItem(autoKey)){sessionStorage.setItem(autoKey,"1");runTests(true);}
+else status("A test run has already started in this browser tab. Continue the open checkout or use cleanup.");
+}
+});
+})();
+</script>
+</body>
+</html>
