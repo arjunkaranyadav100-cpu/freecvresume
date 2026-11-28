@@ -4022,14 +4022,16 @@ if (onProgressText) onProgressText(attempt ? "⏳ Cloud response incomplete; ret
 var qRes = await sbClient
 .from("study_notes")
 .select("id,content,views")
-.like("id", "pdfchunk_" + chunkKey + "_%");
+.like("id", "pdfchunk_" + chunkKey + "_%")
+.eq("creator", noteObj.id);
 
 var rows = (qRes && !qRes.error && qRes.data) ? qRes.data.slice() : [];
 if (rows.length === 0 && noteObj.id && chunkKey !== noteObj.id) {
 var qRes2 = await sbClient
 .from("study_notes")
 .select("id,content,views")
-.like("id", "pdfchunk_" + noteObj.id + "_%");
+.like("id", "pdfchunk_" + noteObj.id + "_%")
+.eq("creator", noteObj.id);
 if (qRes2 && !qRes2.error && qRes2.data) rows = qRes2.data.slice();
 }
 
@@ -4078,7 +4080,8 @@ if (!item || !item.id || String(item.id).indexOf("custom-note") !== 0) continue;
 // Check if this device has the PDF binary in local IndexedDB
 var localBuf = await loadPdfBufferFromCache(item.id);
 if (!localBuf && item.title) {
-localBuf = await loadPdfBufferFromCache(item.title);
+var sameTitleCount = list.filter(function(other) { return other && other.title === item.title; }).length;
+if (sameTitleCount === 1) localBuf = await loadPdfBufferFromCache(item.title);
 }
 if (localBuf && localBuf.byteLength > 200) {
 // Check if cloud already has this note's PDF synced
@@ -4255,13 +4258,13 @@ cropHeaderFooter: !!(document.getElementById("upRightsConfirm") && document.getE
 };
 
 if (sbClient && authUser) {
-var duplicateCheck = await sbClient.from("study_notes").select("id,content,pdf_sha256")
+var duplicateCheck = await sbClient.from("study_notes").select("id,content,pdf_sha256,storage_path,url")
 .eq("creator_id", authUser.id).neq("category", "_chunk").limit(100);
 if (duplicateCheck.error) throw new Error("Duplicate check failed: " + duplicateCheck.error.message);
 var duplicateRows = duplicateCheck.data || [];
 var sameNote = duplicateRows.find(function(row) {
 if (row.id === uniqueNoteId) return false;
-if (creatorPdfHash && row.pdf_sha256 === creatorPdfHash) return true;
+if (creatorPdfHash && row.pdf_sha256 === creatorPdfHash) return !!(row.storage_path || row.url);
 return !creatorPdfHash && String(row.content || "").trim() === String(cleanContent || "").trim();
 });
 if (sameNote) { alert("Aapne yehi PDF/Content pehle upload kiya hai. Duplicate upload rok diya gaya hai."); return; }
@@ -4304,10 +4307,7 @@ throw new Error("PDF upload ke liye Supabase cloud connection available nahi hai
 }
 
 if (pdfBufferForThisNote) {
-await Promise.all([
-savePdfBufferToCache(newNote.id, pdfBufferForThisNote),
-savePdfBufferToCache(newNote.title, pdfBufferForThisNote)
-]);
+await savePdfBufferToCache(newNote.id, pdfBufferForThisNote);
 }
 var finalList = getCustomNotesList();
 finalList.unshift(newNote);
