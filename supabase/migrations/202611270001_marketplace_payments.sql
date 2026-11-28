@@ -43,8 +43,10 @@ create table if not exists public.creator_ledger (
   entry_type text not null check (entry_type in ('sale_credit','refund_debit','adjustment')),
   gross_paise bigint not null,
   gateway_fee_paise bigint not null default 0,
-  creator_share_paise bigint not null,
-  platform_share_paise bigint not null,
+  creator_share_paise bigint not null default 0,
+  platform_share_paise bigint not null default 0,
+  net_paise bigint,
+  settlement_status text not null default 'pending' check (settlement_status in ('pending','reconciled','held')),
   created_at timestamptz not null default now(),
   unique (order_id, entry_type)
 );
@@ -105,7 +107,7 @@ create or replace function public.complete_marketplace_payment(
   p_razorpay_order_id text, p_razorpay_payment_id text,
   p_buyer_user_id uuid, p_amount_paise bigint
 ) returns jsonb language plpgsql security definer set search_path = public as $$
-declare o public.marketplace_orders%rowtype; net_paise bigint; creator_paise bigint; platform_paise bigint;
+declare o public.marketplace_orders%rowtype;
 begin
   select * into o from public.marketplace_orders where razorpay_order_id=p_razorpay_order_id for update;
   if not found or o.buyer_user_id <> p_buyer_user_id or o.amount_paise <> p_amount_paise then
@@ -116,13 +118,11 @@ begin
     paid_at=now(), updated_at=now() where id=o.id;
   insert into public.marketplace_entitlements(buyer_user_id,note_id,order_id)
     values(o.buyer_user_id,o.note_id,o.id) on conflict (buyer_user_id,note_id) do nothing;
-  -- Revenue share is 50/50 of net collected after actual gateway fees.
-  -- Gateway fee must be reconciled from provider settlement data before creator payout.
-  net_paise := o.amount_paise;
-  creator_paise := floor(net_paise * 0.50);
-  platform_paise := net_paise - creator_paise;
-  insert into public.creator_ledger(order_id,creator_user_id,entry_type,gross_paise,gateway_fee_paise,creator_share_paise,platform_share_paise)
-    values(o.id,o.creator_user_id,'sale_credit',o.amount_paise,0,creator_paise,platform_paise)
+  -- Keep proceeds pending until Razorpay settlement fees, taxes, refunds and
+  -- the creator/platform revenue-share policy are reconciled by an admin process.
+  -- No creator payout amount is calculated from gross capture here.
+  insert into public.creator_ledger(order_id,creator_user_id,entry_type,gross_paise,gateway_fee_paise,creator_share_paise,platform_share_paise,net_paise,settlement_status)
+    values(o.id,o.creator_user_id,'sale_credit',o.amount_paise,0,0,0,null,'pending')
     on conflict (order_id,entry_type) do nothing;
   return jsonb_build_object('verified',true,'order_id',o.id,'entitlement_granted',true);
 end; $$;
