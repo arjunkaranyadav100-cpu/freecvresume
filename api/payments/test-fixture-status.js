@@ -177,6 +177,12 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error("test fixture status:", error.message);
-    return json(res, 503, { error: "Could not read the test fixture status." });
+    const isWebhookSelfTest = req.method === "POST" && req.query.mode === "webhook-self-test";
+    const safeDetail = String(error && error.message || "Unknown error").slice(0, 240);
+    return json(res, 503, {
+      error: isWebhookSelfTest
+        ? "Preview webhook self-test failed: " + safeDetail
+        : "Could not read the test fixture status."
+    });
   }
 };
