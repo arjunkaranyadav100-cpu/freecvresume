@@ -542,8 +542,8 @@ class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-x
   <div class="font-black text-indigo-900 text-sm">🧪 Preview-only Payment Test</div>
   <p class="text-xs text-indigo-800">Creates a hidden ₹1 test note, private PDF and two Razorpay Test Mode orders (one success, one failure). Nothing is published to Production.</p>
   <div class="flex flex-wrap gap-2">
-    <button type="button" id="btnStartPaymentTestFixture" onclick="startRazorpayPreviewTest()" class="rounded-lg bg-indigo-700 text-white text-xs font-bold px-3 py-2">Run ₹1 Test (Success + Failure)</button>
-    <button type="button" id="btnCleanupPaymentTestFixture" onclick="cleanupRazorpayPreviewTest()" style="display:none" class="rounded-lg bg-rose-700 text-white text-xs font-bold px-3 py-2">Clean Up Test Data</button>
+    <button type="button" id="btnStartPaymentTestFixture"  class="rounded-lg bg-indigo-700 text-white text-xs font-bold px-3 py-2">Run ₹1 Test (Success + Failure)</button>
+    <button type="button" id="btnCleanupPaymentTestFixture"  style="display:none" class="rounded-lg bg-rose-700 text-white text-xs font-bold px-3 py-2">Clean Up Test Data</button>
   </div>
   <p id="paymentTestFixtureStatus" class="text-xs text-indigo-900" aria-live="polite">No test fixture created.</p>
 </div>
@@ -2614,6 +2614,28 @@ alert("Test fixture cleanup successful.");
 statusEl.textContent="Cleanup incomplete: "+(error.message||"Please retry.");
 alert("Cleanup error: "+(error.message||"Please retry."));
 }finally{cleanBtn.disabled=false;}
+}
+
+// Explicit global exports and delegated handlers keep the test controls working
+// even when the Admin Moderation panel is rendered dynamically.
+window.startRazorpayPreviewTest = startRazorpayPreviewTest;
+window.cleanupRazorpayPreviewTest = cleanupRazorpayPreviewTest;
+if (!window.__fcvPaymentTestDelegationInstalled) {
+  window.__fcvPaymentTestDelegationInstalled = true;
+  document.addEventListener("click", function(event) {
+    var start = event.target && event.target.closest ? event.target.closest("#btnStartPaymentTestFixture") : null;
+    if (start) {
+      event.preventDefault();
+      if (typeof window.startRazorpayPreviewTest === "function") window.startRazorpayPreviewTest();
+      else alert("Payment test script is not ready. Refresh and try once.");
+      return;
+    }
+    var cleanup = event.target && event.target.closest ? event.target.closest("#btnCleanupPaymentTestFixture") : null;
+    if (cleanup) {
+      event.preventDefault();
+      if (typeof window.cleanupRazorpayPreviewTest === "function") window.cleanupRazorpayPreviewTest();
+    }
+  });
 }
 
 async function publishPaidNoteForCheckout(noteId) {
