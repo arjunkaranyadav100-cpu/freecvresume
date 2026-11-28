@@ -4031,6 +4031,10 @@ var pdfBufferForThisNote = (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteL
 ? clonePdfArrayBuffer(lastUploadedPdfBuffer)
 : null;
 
+if (price > 0 && (!pdfBufferForThisNote || pdfBufferForThisNote.byteLength < 200)) {
+throw new Error("Paid note ke liye original PDF upload karna zaroori hai. External/public PDF link paid delivery ke liye allowed nahi hai.");
+}
+if (price > 0) extUrl = "";
 var creatorPdfHash = await getCreatorPdfSha256(pdfBufferForThisNote);
 var newNote = {
 id: uniqueNoteId,
