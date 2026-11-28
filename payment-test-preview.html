@@ -38,8 +38,17 @@ var statusEl=document.getElementById("status"),checksEl=document.getElementById(
 var startBtn=document.getElementById("start"),cleanupBtn=document.getElementById("cleanup");
 function status(t){statusEl.textContent=t;}
 function check(t,ok){var p=document.createElement("div");p.className=ok?"good":"bad";p.textContent=(ok?"✓ ":"✗ ")+t;checksEl.appendChild(p);}
-function fail(message){status("Stopped: "+message);check(message,false);startBtn.disabled=false;if(fixtureId)cleanupBtn.classList.remove("hidden");}
-async function parseResponse(response){var data={};try{data=await response.json();}catch(e){}if(!response.ok)throw new Error(data.error||("HTTP "+response.status));return data;}
+function safeMessage(value){
+if(typeof value==="string")return value;
+if(value&&typeof value==="object"){
+if(typeof value.message==="string")return value.message;
+if(typeof value.error==="string")return value.error;
+try{return JSON.stringify(value,function(k,v){if(/token|secret|password|authorization|api.?key/i.test(k))return "[redacted]";return v;});}catch(e){return String(value);}
+}
+return String(value||"Unknown error");
+}
+function fail(message){var detail=safeMessage(message);status("Stopped: "+detail);check(detail,false);startBtn.disabled=false;if(fixtureId)cleanupBtn.classList.remove("hidden");}
+async function parseResponse(response){var data={};try{data=await response.json();}catch(e){}if(!response.ok){var detail=data.error;if(detail&&typeof detail==="object")detail=detail.message||detail.details||detail.hint||JSON.stringify(detail);throw new Error(String(detail||("HTTP "+response.status)));}return data;}
 async function loadRazorpay(){if(window.Razorpay)return;await new Promise(function(resolve,reject){var s=document.createElement("script");s.src="https://checkout.razorpay.com/v1/checkout.js";s.onload=resolve;s.onerror=function(){reject(new Error("Razorpay Checkout could not load."));};document.head.appendChild(s);});if(!window.Razorpay)throw new Error("Razorpay Checkout unavailable.");}
 async function getFixtureStatus(){var r=await fetch("/api/payments/test-fixture-status?note_id="+encodeURIComponent(fixtureId),{headers:{Authorization:"Bearer "+adminToken}});return parseResponse(r);}
 async function waitForEvent(orderId,eventType){for(var i=0;i<45;i++){await new Promise(function(resolve){setTimeout(resolve,1000);});var st=await getFixtureStatus();var o=(st.orders||[]).find(function(x){return x.order_id===orderId;});var ev=(st.webhook_events||[]).some(function(x){return x.order_id===orderId&&x.event_type===eventType;});if(eventType==="payment.captured"&&o&&o.status==="paid"&&ev&&st.entitlement_count>0)return st;if(eventType==="payment.failed"&&o&&o.status==="failed"&&ev)return st;}return getFixtureStatus();}
@@ -55,7 +64,7 @@ checkout.on("payment.failed",async function(){try{if(checkout)checkout.close();s
 checkout.open();
 });
 }
-async function init(){try{if(!window.supabase||!window.supabase.createClient)throw new Error("Supabase SDK failed to load.");client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);var sr=await client.auth.getSession();var session=sr.data&&sr.data.session;if(!session||!session.access_token)throw new Error("No saved Admin session on this Preview origin. Please use the stable Preview login.");adminToken=session.access_token;var userRes=await client.auth.getUser();var user=userRes.data&&userRes.data.user;if(!user)throw new Error("Admin session user could not be verified.");var pr=await client.from("profiles").select("id,display_name,role").eq("id",user.id).maybeSingle();if(pr.error)throw pr.error;if(!pr.data||pr.data.role!=="admin")throw new Error("This account does not have the Supabase admin role.");check("Preview admin authenticated: "+(pr.data.display_name||user.email),true);status("Admin verified. Test Mode fixture is ready to create.");startBtn.disabled=false;adminReady=true;}catch(e){fail(e.message||"Admin session could not be verified.");}}
+async function init(){try{if(!window.supabase||!window.supabase.createClient)throw new Error("Supabase SDK failed to load.");client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);var sr=await client.auth.getSession();var session=sr.data&&sr.data.session;if(!session||!session.access_token)throw new Error("No saved Admin session on this Preview origin. Please use the stable Preview login.");adminToken=session.access_token;var userRes=await client.auth.getUser();var user=userRes.data&&userRes.data.user;if(!user)throw new Error("Admin session user could not be verified.");var pr=await client.from("profiles").select("id,display_name,role").eq("id",user.id).maybeSingle();if(pr.error)throw pr.error;if(!pr.data||pr.data.role!=="admin")throw new Error("This account does not have the Supabase admin role.");check("Preview admin authenticated: "+(pr.data.display_name||user.email),true);status("Admin verified. Test Mode fixture is ready to create.");startBtn.disabled=false;adminReady=true;}catch(e){fail(e);}}
 async function runTests(autoStart){
 if(!adminReady||startBtn.disabled)return;
 if(!autoStart&&!confirm("Create one hidden ₹1 note and private PDF, then run one success and one failure in Razorpay Test Mode? No real money will be charged."))return;
