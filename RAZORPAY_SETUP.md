@@ -36,6 +36,6 @@ The create-order endpoint reads price and creator from the server-controlled `ma
 ## Important limitations before launch
 - Frontend Supabase Auth integration and checkout UI are not yet wired.
 - Existing creator accounts/notes still include localStorage-based flows; do not use those for paid access or creator payout.
-- The ledger currently records a provisional 50/50 split on gross captured amount with gateway fee set to zero. Before payouts, reconcile actual Razorpay fees, taxes, refunds, chargebacks and Route settlement data; only then calculate distributable net revenue.
+- Captured payments are recorded as pending ledger entries. Creator/platform shares remain zero and no payout amount is calculated until actual Razorpay settlement fees, taxes, refunds, chargebacks and the approved revenue-share policy are reconciled. Do not pay creators from gross captured amounts.
 - Refund/chargeback reversal, admin product publishing, creator KYC, payout approval, secure PDF delivery, and end-to-end Test Mode verification remain required.
 - Do not enable live sales or payouts until all controls and legal/provider approvals are complete.
