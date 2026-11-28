@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const { json, env, supabaseAdmin, safeEqual } = require("../_lib/razorpay");
 
 module.exports = async function handler(req, res) {
@@ -13,6 +12,7 @@ module.exports = async function handler(req, res) {
     if (!eventId) return json(res, 400, { error: "Missing event ID." });
     const event = JSON.parse(raw.toString("utf8"));
     const payment = event.payload && event.payload.payment && event.payload.payment.entity;
+
     if (event.event === "payment.captured" && payment && payment.order_id && payment.currency === "INR" && Number.isSafeInteger(Number(payment.amount))) {
       await supabaseAdmin("rpc/complete_marketplace_payment_webhook", {
         method: "POST",
@@ -23,6 +23,20 @@ module.exports = async function handler(req, res) {
           p_amount_paise: Number(payment.amount)
         })
       });
+    } else if (event.event === "payment.failed" && payment && payment.order_id) {
+      // Record every failure event, but never downgrade an order already marked paid.
+      await supabaseAdmin("rpc/record_marketplace_webhook_event", {
+        method: "POST",
+        body: JSON.stringify({ p_event_id: eventId, p_event_type: event.event, p_payload: event })
+      });
+      await supabaseAdmin(
+        "marketplace_orders?razorpay_order_id=eq." + encodeURIComponent(payment.order_id) + "&status=eq.created",
+        {
+          method: "PATCH",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ status: "failed", updated_at: new Date().toISOString() })
+        }
+      );
     } else {
       await supabaseAdmin("rpc/record_marketplace_webhook_event", {
         method: "POST",
