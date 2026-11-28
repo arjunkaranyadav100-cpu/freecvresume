@@ -26,6 +26,14 @@ Use Razorpay Test Mode keys first. Never commit secrets to GitHub.
 4. Copy the webhook secret into Vercel. Do not confuse it with the API key secret.
 5. For multi-creator payouts, obtain Razorpay approval for Route/Linked Accounts and complete its onboarding. This foundation does not transfer creator money automatically.
 
+## Private paid-PDF delivery
+- Paid PDFs are stored only in the private `paid-notes-private` bucket (50 MiB maximum; PDF MIME type only).
+- `POST /api/payments/create-private-upload` issues a short-lived upload token only to the authenticated owner of a paid note.
+- `POST /api/payments/finish-private-upload` verifies the uploaded object and records its private storage path.
+- `GET /api/payments/private-download?note_id=...` checks the buyer's entitlement server-side and returns a 120-second signed URL.
+- Paid-note publishing requires an original PDF; the old public URL / database-chunk fallback is not used for paid PDFs.
+- Keep `delivery_ready=false` until the private upload and entitlement download flow has passed end-to-end tests.
+
 ## API endpoints
 - POST `/api/payments/create-order` with JSON `{"note_id":"..." }` and Supabase Auth Bearer token.
 - POST `/api/payments/verify` with Razorpay Checkout response fields and same Bearer token.
