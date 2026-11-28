@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
     if (!Array.isArray(grants) || !grants.length) return json(res, 403, { error: "Purchase access is required." });
     const notes = await supabaseAdmin("study_notes?select=storage_path&id=eq." + encodeURIComponent(noteId) + "&limit=1");
     const path = notes && notes[0] && notes[0].storage_path;
-    if (!path || !path.startsWith(" ") && path.indexOf(user.id + "/") !== 0 && !path) return json(res, 404, { error: "Private PDF is not available." });
+    if (!path || path.split("/").length !== 2 || !/^[0-9a-f-]{36}$/.test(path.split("/")[0]) || path.split("/")[1] !== noteId + ".pdf") return json(res, 404, { error: "Private PDF is not available." });
 
     const response = await fetch(env("SUPABASE_URL") + "/storage/v1/object/sign/paid-notes-private/" + path.split("/").map(encodeURIComponent).join("/"), {
       method: "POST",
