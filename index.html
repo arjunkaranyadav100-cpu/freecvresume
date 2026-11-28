@@ -3246,8 +3246,10 @@ if (btn) flashBtn(btn, "SEO Lines Added!");
 async function processUploadedNoteFile(e) {
 var file = e.target.files[0];
 if (!file) return;
+window.__fcvNoteFileProcessing = true;
+lastUploadedPdfBuffer = null;
 var st = document.getElementById("pdfSanitizeStatus");
-st.classList.remove("hidden");
+if (st) st.classList.remove("hidden");
 updateNoteUploadProgressUI(2, '<i class="fa-solid fa-spinner fa-spin mr-1 text-indigo-600"></i> Starting File Upload (2%)...');
 st.innerText = "⏳ Uploading & scanning PDF (2%)...";
 
@@ -3372,6 +3374,7 @@ totalPages
 rawUploadedNoteText = combinedText;
 reRunSanitizerPreview();
 updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% Complete — PDF Cleaned & Full SEO Lines Indexed!');
+window.__fcvNoteFileProcessing = false;
 } catch (err) {
 var fallbackSeo = generateSmartTopicSEOLines(titleIn ? titleIn.value : quickTitle, "upsc", "gk-gs", 1);
 rawUploadedNoteText = fallbackSeo;
@@ -3380,6 +3383,7 @@ var descEl = document.getElementById("upNoteDesc");
 if (descEl) descEl.value = fallbackSeo;
 updateNoteUploadProgressUI(100, '<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 100% Ready — File & SEO Lines Loaded!');
 st.innerText = "✅ 100% File loaded with complete SEO topics! Click Publish below.";
+window.__fcvNoteFileProcessing = false;
 }
 }
 
@@ -3867,26 +3871,24 @@ var activeCloudUploadsMap = {};
 
 async function uploadPdfBufferToCloud(noteObj, pdfBuffer, showToastFlag) {
 if (!sbClient || !noteObj || !noteObj.id || !pdfBuffer || pdfBuffer.byteLength === 0) return "";
-var slug = getNoteCloudSlug(noteObj.title);
-if (activeCloudUploadsMap[slug]) return "";
-activeCloudUploadsMap[slug] = true;
-
+var uploadKey = String(noteObj.id);
+if (activeCloudUploadsMap[uploadKey]) return "";
+activeCloudUploadsMap[uploadKey] = true;
 try {
-if (showToastFlag) {
-showCloudSyncToast("☁️ Uploading PDF '" + (noteObj.title || "").slice(0, 22) + "...' to Cloud for all devices...", false);
-}
+var header = new Uint8Array(pdfBuffer, 0, Math.min(5, pdfBuffer.byteLength));
+if (pdfBuffer.byteLength < 200 || header.length !== 5 || header[0] !== 37 || header[1] !== 80 || header[2] !== 68 || header[3] !== 70 || header[4] !== 45) throw new Error("Selected file is not a valid PDF.");
+if (showToastFlag) showCloudSyncToast("☁️ Uploading PDF '" + (noteObj.title || "").slice(0, 22) + "' to cloud storage...", false);
 
-// Paid PDFs must use the private bucket and authenticated server-issued upload ticket.
 if (Number(noteObj.price) > 0) {
 var authRes = await sbClient.auth.getSession();
 var accessToken = authRes && authRes.data && authRes.data.session ? authRes.data.session.access_token : "";
-if (!accessToken) throw new Error("Paid PDF upload ke liye Supabase account mein sign in karein.");
+if (!accessToken) throw new Error("Paid PDF upload ke liye website account mein sign in karein.");
 var ticketRes = await fetch("/api/payments/create-private-upload", {
 method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + accessToken },
 body: JSON.stringify({ note_id: noteObj.id })
 });
 var ticket = await ticketRes.json();
-if (!ticketRes.ok || !ticket.token || !ticket.path) throw new Error(ticket.error || "Private upload ticket nahi mila.");
+if (!ticketRes.ok || !ticket.token || !ticket.path) throw new Error(ticket.error || "Private PDF upload ticket nahi mila.");
 var signedUpload = await sbClient.storage.from("paid-notes-private").uploadToSignedUrl(
 ticket.path, ticket.token, new Blob([pdfBuffer], { type: "application/pdf" }),
 { contentType: "application/pdf", upsert: true }
@@ -3898,110 +3900,65 @@ body: JSON.stringify({ note_id: noteObj.id })
 });
 var finishData = await finishRes.json();
 if (!finishRes.ok || !finishData.saved) throw new Error(finishData.error || "Private PDF save verify nahi hua.");
-var privateMarker = "private-storage:" + ticket.path;
 noteObj.storage_path = ticket.path;
-noteObj.url = privateMarker;
-await sbClient.from("study_notes").update({ storage_path: ticket.path, url: "" }).eq("id", noteObj.id);
-var paidList = getCustomNotesList();
-for (var pi = 0; pi < paidList.length; pi++) if (paidList[pi].id === noteObj.id) { paidList[pi].storage_path = ticket.path; paidList[pi].url = privateMarker; }
-saveCustomNotesList(paidList);
-if (showToastFlag) showCloudSyncToast("✅ Paid PDF private storage mein secure save ho gaya.", true);
-delete activeCloudUploadsMap[slug];
-return privateMarker;
+noteObj.url = "private-storage:" + ticket.path;
+if (showToastFlag) showCloudSyncToast("✅ Paid PDF private storage mein save ho gaya.", true);
+return noteObj.url;
 }
 
-// 1. Try Supabase Storage bucket 'notes-pdfs' first (with 90s timeout for large 100+ page PDFs)
-var storagePath = "pdfs/" + slug + "_" + noteObj.id + ".pdf";
+var slug = getNoteCloudSlug(noteObj.title);
+var storagePath = "pdfs/" + slug + "_" + uploadKey + ".pdf";
 var upRes = await Promise.race([
 sbClient.storage.from("notes-pdfs").upload(storagePath, new Blob([pdfBuffer], { type: "application/pdf" }), { upsert: true }),
-new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "timeout" } }); }, 90000); })
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Cloud storage upload timed out after 90 seconds." } }); }, 90000); })
 ]);
-
 if (upRes && !upRes.error) {
 var pubObj = sbClient.storage.from("notes-pdfs").getPublicUrl(storagePath);
 if (pubObj && pubObj.data && pubObj.data.publicUrl) {
 var finalUrl = pubObj.data.publicUrl;
-await sbClient.from("study_notes").update({ url: finalUrl }).eq("id", noteObj.id);
-var list1 = getCustomNotesList();
-for (var m = 0; m < list1.length; m++) {
-if (list1[m].id === noteObj.id || getNoteCloudSlug(list1[m].title) === slug) {
-list1[m].url = finalUrl;
-}
-}
-saveCustomNotesList(list1);
-if (showToastFlag) {
-showCloudSyncToast("✅ PDF Synced to Cloud! Ab ye PDF har mobile/device par dikhega.", true);
-}
-delete activeCloudUploadsMap[slug];
+var urlUpdate = await sbClient.from("study_notes").update({ url: finalUrl }).eq("id", noteObj.id);
+if (urlUpdate && urlUpdate.error) throw urlUpdate.error;
+noteObj.url = finalUrl;
+if (showToastFlag) showCloudSyncToast("✅ PDF cloud par upload ho gaya.", true);
 return finalUrl;
 }
 }
 
-// 2. Fallback: If 'notes-pdfs' bucket does not exist or has RLS limits, save PDF in cloud chunks inside 'study_notes' table!
 var b64Full = await arrayBufferToBase64Async(pdfBuffer);
-if (!b64Full || b64Full.length < 50) {
-delete activeCloudUploadsMap[slug];
-return "";
-}
-
-var chunkSize = 650000; // ~480 KB per chunk row
-var totalChunks = Math.ceil(b64Full.length / chunkSize);
-
-// Clean any old chunks for this slug first
-try {
-await sbClient.from("study_notes").delete().like("id", "pdfchunk_" + slug + "_%");
-} catch (delErr) {}
-
+if (!b64Full || b64Full.length < 50) throw new Error("PDF ko cloud upload ke liye read nahi kiya ja saka.");
+var chunkKey = uploadKey.replace(/[^a-zA-Z0-9_-]/g, "_") + "_" + Date.now().toString(36);
+var totalChunks = Math.ceil(b64Full.length / 650000);
+var chunkAuth = await sbClient.auth.getUser();
+var chunkUserId = chunkAuth && chunkAuth.data && chunkAuth.data.user ? chunkAuth.data.user.id : "";
+if (!chunkUserId) throw new Error("PDF cloud upload ke liye website account mein sign in karein.");
 for (var c = 0; c < totalChunks; c++) {
-var part = b64Full.slice(c * chunkSize, (c + 1) * chunkSize);
+var part = b64Full.slice(c * 650000, (c + 1) * 650000);
 var pct = Math.round(((c + 1) / totalChunks) * 100);
-if (showToastFlag) {
-showCloudSyncToast("☁️ Syncing PDF to Cloud (" + pct + "%) — Page data uploading for all devices...", false);
-}
-var chunkUserResult = await sbClient.auth.getUser();
+if (showToastFlag) showCloudSyncToast("☁️ PDF cloud mein save ho raha hai (" + pct + "%)...", false);
 var chunkRow = {
-creator_id: chunkUserResult.data && chunkUserResult.data.user ? chunkUserResult.data.user.id : null,
-moderation_status: "approved",
-id: "pdfchunk_" + slug + "_" + c,
-title: "PDF_CHUNK",
-category: "_chunk",
-subject: "chunk",
-language: "en",
-badge: "CHUNK",
-price: 0,
-creator: noteObj.id,
-upi: "",
-content: part,
-url: String(totalChunks),
-views: c,
-sales: 0,
-rating: 5
+creator_id: chunkUserId, moderation_status: "approved",
+id: "pdfchunk_" + chunkKey + "_" + c,
+title: "PDF_CHUNK", category: "_chunk", subject: "chunk", language: "en", badge: "CHUNK",
+price: 0, creator: noteObj.id, upi: "", content: part, url: String(totalChunks),
+views: c, sales: 0, rating: 5
 };
-await sbClient.from("study_notes").upsert([chunkRow], { onConflict: "id" });
+var chunkWrite = await sbClient.from("study_notes").upsert([chunkRow], { onConflict: "id" });
+if (chunkWrite && chunkWrite.error) throw chunkWrite.error;
 }
-
-var chunkMarkerUrl = "sb-chunks:" + slug + ":" + totalChunks;
-await sbClient.from("study_notes").update({ url: chunkMarkerUrl }).eq("id", noteObj.id);
-
-var list2 = getCustomNotesList();
-for (var k = 0; k < list2.length; k++) {
-if (list2[k].id === noteObj.id || getNoteCloudSlug(list2[k].title) === slug) {
-list2[k].url = chunkMarkerUrl;
-}
-}
-saveCustomNotesList(list2);
-
-if (showToastFlag) {
-showCloudSyncToast("✅ 100% Cloud Synced! Ab ye PDF sabhi mobile/devices par khulega.", true);
-}
-delete activeCloudUploadsMap[slug];
+var chunkMarkerUrl = "sb-chunks:" + chunkKey + ":" + totalChunks;
+var markerUpdate = await sbClient.from("study_notes").update({ url: chunkMarkerUrl }).eq("id", noteObj.id);
+if (markerUpdate && markerUpdate.error) throw markerUpdate.error;
+noteObj.url = chunkMarkerUrl;
+if (showToastFlag) showCloudSyncToast("✅ PDF ke saare parts cloud par save ho gaye.", true);
 return chunkMarkerUrl;
 } catch (err) {
-delete activeCloudUploadsMap[slug];
+console.error("PDF cloud upload failed:", err);
+if (showToastFlag) showCloudSyncToast("⚠️ PDF upload nahi hua: " + (err && err.message ? err.message : "Please try again."), false);
 return "";
+} finally {
+delete activeCloudUploadsMap[uploadKey];
 }
 }
-
 async function fetchPdfBufferFromCloud(noteObj, onProgressText) {
 if (!noteObj) return null;
 var slug = getNoteCloudSlug(noteObj.title);
@@ -4051,8 +4008,10 @@ if (!sbClient) return null;
 
 // The cloud marker records the exact number of chunks expected for this PDF.
 var expectedChunks = 0;
+var chunkKey = slug;
 if (noteObj.url && String(noteObj.url).indexOf("sb-chunks:") === 0) {
 var markerParts = String(noteObj.url).split(":");
+chunkKey = markerParts[1] || slug;
 expectedChunks = parseInt(markerParts[2] || "0", 10) || 0;
 }
 
@@ -4063,10 +4022,10 @@ if (onProgressText) onProgressText(attempt ? "⏳ Cloud response incomplete; ret
 var qRes = await sbClient
 .from("study_notes")
 .select("id,content,views")
-.like("id", "pdfchunk_" + slug + "_%");
+.like("id", "pdfchunk_" + chunkKey + "_%");
 
 var rows = (qRes && !qRes.error && qRes.data) ? qRes.data.slice() : [];
-if (rows.length === 0 && noteObj.id) {
+if (rows.length === 0 && noteObj.id && chunkKey !== noteObj.id) {
 var qRes2 = await sbClient
 .from("study_notes")
 .select("id,content,views")
@@ -4237,15 +4196,16 @@ return Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).
 
 async function saveCustomNote(e) {
 e.preventDefault();
+var form = e.currentTarget || e.target;
 if (window.__fcvNotePublishLock) { alert("Note publish ho raha hai. Kripya wait karein."); return; }
+if (window.__fcvNoteFileProcessing) { alert("PDF abhi process ho raha hai. 100% progress aane ke baad Publish dabayein."); return; }
 window.__fcvNotePublishLock = true;
-var submitBtn = e.target.querySelector('button[type="submit"]');
+var submitBtn = form && form.querySelector ? form.querySelector('button[type="submit"]') : null;
 var origBtnText = submitBtn ? submitBtn.innerHTML : "☁️ Publish Clean Note & Start Earning";
 if (submitBtn) {
 submitBtn.disabled = true;
-submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Publishing Note...';
+submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving PDF & Publishing...';
 }
-
 try {
 var acc = getActiveCreatorAccount();
 var title = document.getElementById("upNoteTitle").value.trim() || "Study Note PDF";
@@ -4254,197 +4214,133 @@ var subject = document.getElementById("upNoteSubject") ? document.getElementById
 var language = document.getElementById("upNoteLang") ? document.getElementById("upNoteLang").value : "english";
 var badge = document.getElementById("upNoteBadge").value.trim() || "STUDY NOTES";
 var sellType = document.getElementById("upNoteSellType").value;
-var price = (sellType === "paid") ? parseInt(document.getElementById("upNotePrice").value || "29", 10) : 0;
+var price = sellType === "paid" ? parseInt(document.getElementById("upNotePrice").value || "29", 10) : 0;
+if (sellType === "paid" && (!Number.isSafeInteger(price) || price < 9 || price > 999)) throw new Error("Paid note ki price ₹9 se ₹999 ke beech rakhein.");
 var creator = document.getElementById("upCreatorName").value.trim() || (acc ? acc.name : "Verified Educator");
 var upi = document.getElementById("upCreatorUpi").value.trim() || (acc ? acc.upi : "");
 var descVal = document.getElementById("upNoteDesc").value.trim();
 var rawDesc = (fullSanitizedNoteContent && fullSanitizedNoteContent.length > descVal.length) ? fullSanitizedNoteContent : descVal;
 var extUrl = document.getElementById("upNoteUrl").value.trim();
-
 var sanitized = sanitizeNoteText(rawDesc);
 var cleanContent = sanitized.cleanText || rawDesc || title;
 var cleanTitle = sanitizeNoteText(title).cleanText || title;
+var fileInput = document.getElementById("upNotePdfFile");
+var selectedFile = fileInput && fileInput.files && fileInput.files.length ? fileInput.files[0] : null;
+var selectedExt = selectedFile ? String(selectedFile.name || "").split(".").pop().toLowerCase() : "";
+var pdfBufferForThisNote = (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteLength > 0) ? clonePdfArrayBuffer(lastUploadedPdfBuffer) : null;
+if (selectedExt === "pdf" && (!pdfBufferForThisNote || pdfBufferForThisNote.byteLength < 200)) throw new Error("PDF abhi poori tarah load nahi hua. PDF dobara select karein aur 100% progress aane ke baad Publish dabayein.");
+if (pdfBufferForThisNote) {
+var pdfHead = new Uint8Array(pdfBufferForThisNote, 0, Math.min(5, pdfBufferForThisNote.byteLength));
+if (pdfBufferForThisNote.byteLength < 200 || pdfHead.length !== 5 || pdfHead[0] !== 37 || pdfHead[1] !== 80 || pdfHead[2] !== 68 || pdfHead[3] !== 70 || pdfHead[4] !== 45) throw new Error("Selected file valid PDF nahi hai. Original PDF dobara upload karein.");
+}
+if (price > 0 && !pdfBufferForThisNote) throw new Error("Paid note ke liye original PDF upload karna zaroori hai. DOCX/TXT ya external link se paid delivery nahi hogi.");
+if (price > 0) extUrl = "";
+
+var authUser = null;
+if (sbClient && sbClient.auth && typeof sbClient.auth.getUser === "function") {
+var authResult = await sbClient.auth.getUser();
+if (!authResult.error && authResult.data && authResult.data.user) authUser = authResult.data.user;
+}
+if (pdfBufferForThisNote && !authUser) throw new Error("PDF ko sabhi devices par cloud mein upload karne ke liye website account mein sign in karein, phir dobara Publish karein.");
+if (price > 0 && (!sbClient || !authUser)) throw new Error("Paid note publish karne ke liye Supabase account mein sign in zaroori hai.");
 
 var uniqueNoteId = "custom-note-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6);
-var pdfBufferForThisNote = (lastUploadedPdfBuffer && lastUploadedPdfBuffer.byteLength > 0)
-? clonePdfArrayBuffer(lastUploadedPdfBuffer)
-: null;
-
-if (price > 0 && (!pdfBufferForThisNote || pdfBufferForThisNote.byteLength < 200)) {
-throw new Error("Paid note ke liye original PDF upload karna zaroori hai. External/public PDF link paid delivery ke liye allowed nahi hai.");
-}
-if (price > 0) extUrl = "";
 var creatorPdfHash = await getCreatorPdfSha256(pdfBufferForThisNote);
 var newNote = {
-id: uniqueNoteId,
-title: cleanTitle,
-category: category,
-subject: subject,
-language: language,
-badge: badge,
-price: price,
-creator: creator,
-creatorEmail: acc && acc.email ? acc.email : "",
-upi: upi,
-content: cleanContent,
-url: extUrl,
-views: 1,
-sales: 0,
-rating: 4.9,
-purchased: false,
-hasLocalPdf: !!pdfBufferForThisNote,
+id: uniqueNoteId, title: cleanTitle, category: category, subject: subject, language: language,
+badge: badge, price: price, creator: creator, creatorEmail: acc && acc.email ? acc.email : "",
+upi: upi, content: cleanContent, url: extUrl, views: 1, sales: 0, rating: 4.9,
+purchased: false, hasLocalPdf: !!pdfBufferForThisNote,
 cropHeaderFooter: !!(document.getElementById("upRightsConfirm") && document.getElementById("upRightsConfirm").checked && document.getElementById("upCropHeaderFooter") && document.getElementById("upCropHeaderFooter").checked)
 };
 
-// Duplicate protection is scoped to this authenticated creator only.
-// Other creators may upload notes on the same subject or with similar titles.
-if (sbClient && acc && acc.id) {
-  try {
-    var duplicateQuery = sbClient.from("study_notes")
-      .select("id,content,pdf_sha256")
-      .eq("creator_id", acc.id)
-      .neq("category", "_chunk")
-      .limit(100);
-    var duplicateCheck = await duplicateQuery;
-    if (duplicateCheck.error) throw duplicateCheck.error;
-    var duplicateRows = duplicateCheck.data || [];
-    var sameNote = duplicateRows.find(function(row) {
-      if (row.id === uniqueNoteId) return false;
-      if (creatorPdfHash && row.pdf_sha256 === creatorPdfHash) return true;
-      return !creatorPdfHash && String(row.content || "").trim() === String(cleanContent || "").trim();
-    });
-    if (sameNote) {
-      alert("Aapne yehi PDF/Content pehle upload kiya hai. Duplicate upload rok diya gaya hai.");
-      return;
-    }
-  } catch (duplicateErr) {
-    console.warn("Creator-scoped duplicate check could not complete:", duplicateErr);
-  }
+if (sbClient && authUser) {
+var duplicateCheck = await sbClient.from("study_notes").select("id,content,pdf_sha256")
+.eq("creator_id", authUser.id).neq("category", "_chunk").limit(100);
+if (duplicateCheck.error) throw new Error("Duplicate check failed: " + duplicateCheck.error.message);
+var duplicateRows = duplicateCheck.data || [];
+var sameNote = duplicateRows.find(function(row) {
+if (row.id === uniqueNoteId) return false;
+if (creatorPdfHash && row.pdf_sha256 === creatorPdfHash) return true;
+return !creatorPdfHash && String(row.content || "").trim() === String(cleanContent || "").trim();
+});
+if (sameNote) { alert("Aapne yehi PDF/Content pehle upload kiya hai. Duplicate upload rok diya gaya hai."); return; }
 }
-
 var list = getCustomNotesList();
-// Keep other creators' notes and same-title notes. Never delete by title alone.
-var filteredList = list.slice();
-var localDuplicate = filteredList.find(function(existing) {
+var localDuplicate = list.find(function(existing) {
 var sameCreator = String(existing.creatorEmail || "").toLowerCase() === String(newNote.creatorEmail || "").toLowerCase();
 var sameContent = String(existing.content || "").trim() === String(newNote.content || "").trim();
 return sameCreator && sameContent;
 });
-if (localDuplicate) {
-alert("Aapne yehi note pehle is device par upload kiya hai. Duplicate upload rok diya gaya hai.");
-return;
-}
-
-if (pdfBufferForThisNote) {
-await Promise.race([
-Promise.all([
-savePdfBufferToCache(newNote.id, pdfBufferForThisNote),
-savePdfBufferToCache(newNote.title, pdfBufferForThisNote)
-]),
-new Promise(function(r) { setTimeout(r, 1500); })
-]);
-}
-
-filteredList.unshift(newNote);
-saveCustomNotesList(filteredList);
-
-var w = getWalletData();
-if (upi) w.upi = upi;
-saveWalletData(w);
-
-lastUploadedPdfBuffer = null;
-rawUploadedNoteText = "";
-fullSanitizedNoteContent = "";
-lastLoadedPdfDoc = null;
-
-renderCustomNotesCards();
-renderCreatorDashboard();
-updateDynamicSEOForNotes();
-closeUploadNotesModal();
-e.target.reset();
-togglePriceInput();
-filterMainStudyNotes();
-
-if (submitBtn) {
-submitBtn.disabled = false;
-submitBtn.innerHTML = origBtnText;
-}
-
-if (cloudPublishStatus === "fully-synced") {
-alert("✅ Note publish ho gaya aur PDF cloud par sync ho gaya. Ab ise doosre devices par bhi khola ja sakta hai.");
-} else if (cloudPublishStatus === "metadata-synced") {
-alert("✅ Note listing cloud par save ho gayi. PDF file attach nahi thi; isliye cloud PDF sync ki zaroorat nahi padi.");
-} else if (cloudPublishStatus === "local-only" || cloudPublishStatus === "metadata-sync-failed" || cloudPublishStatus === "cloud-sync-failed") {
-alert("⚠️ Note is device par save ho gaya, lekin cloud sync confirm nahi ho saka. Is device ka local copy available rahega; doosre device par dikhne se pehle cloud sync fix karna hoga.");
-} else {
-alert("⚠️ Note is device par publish ho gaya, lekin PDF cloud sync nahi hua. Doosre device par PDF khulne se pehle dobara sync karna hoga.");
-}
+if (localDuplicate) { alert("Aapne yehi note pehle upload kiya hai. Duplicate upload rok diya gaya hai."); return; }
 
 var cloudPublishStatus = "local-only";
-if (sbClient) {
-try {
+if (sbClient && authUser) {
 var noteUpsertResult = await Promise.race([
 sbClient.from("study_notes").upsert([{
-id: newNote.id,
-creator_id: (sbClient.auth && (await sbClient.auth.getUser()).data.user) ? (await sbClient.auth.getUser()).data.user.id : null,
-moderation_status: "pending",
-pdf_sha256: creatorPdfHash || null,
-title: newNote.title,
-category: newNote.category,
-subject: newNote.subject,
-language: newNote.language,
-badge: newNote.badge,
-price: newNote.price,
-creator: newNote.creator,
-upi: newNote.upi,
-content: newNote.content,
-url: newNote.url || "",
-views: newNote.views || 1,
-sales: newNote.sales || 0,
-rating: 4.9
+id: newNote.id, creator_id: authUser.id, moderation_status: "pending", pdf_sha256: creatorPdfHash || null,
+title: newNote.title, category: newNote.category, subject: newNote.subject, language: newNote.language,
+badge: newNote.badge, price: newNote.price, creator: newNote.creator, upi: newNote.upi,
+content: newNote.content, url: newNote.url || "", views: newNote.views || 1, sales: newNote.sales || 0, rating: 4.9
 }], { onConflict: "id" }),
-new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Cloud metadata sync timed out" } }); }, 10000); })
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Cloud metadata sync timed out after 10 seconds." } }); }, 10000); })
 ]);
-if (noteUpsertResult && !noteUpsertResult.error) {
+if (!noteUpsertResult || noteUpsertResult.error) throw new Error(noteUpsertResult && noteUpsertResult.error ? noteUpsertResult.error.message : "Cloud metadata save failed.");
 cloudPublishStatus = "metadata-synced";
 if (upi) {
 var walletResult = await Promise.race([
 sbClient.from("creator_wallets").upsert([{ upi: upi, creator_name: creator }], { onConflict: "upi" }),
-new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Creator wallet sync timed out" } }); }, 5000); })
+new Promise(function(resolve) { setTimeout(function() { resolve({ error: { message: "Creator wallet sync timed out." } }); }, 5000); })
 ]);
 if (walletResult && walletResult.error) console.warn("Creator wallet cloud sync failed:", walletResult.error);
 }
 if (pdfBufferForThisNote) {
 var uploadedPdfUrl = await uploadPdfBufferToCloud(newNote, pdfBufferForThisNote, true);
-if (uploadedPdfUrl) cloudPublishStatus = "fully-synced";
-else cloudPublishStatus = "pdf-sync-failed";
-} else if (extUrl) {
+if (!uploadedPdfUrl) throw new Error("PDF cloud upload verify nahi ho saka. File isi form mein bani rahegi; dobara try karein.");
 cloudPublishStatus = "fully-synced";
+} else if (extUrl) cloudPublishStatus = "fully-synced";
+} else if (pdfBufferForThisNote) {
+throw new Error("PDF upload ke liye Supabase cloud connection available nahi hai. Please try again.");
 }
-} else {
-cloudPublishStatus = "metadata-sync-failed";
-console.warn("Study note cloud metadata sync failed:", noteUpsertResult && noteUpsertResult.error);
+
+if (pdfBufferForThisNote) {
+await Promise.all([
+savePdfBufferToCache(newNote.id, pdfBufferForThisNote),
+savePdfBufferToCache(newNote.title, pdfBufferForThisNote)
+]);
 }
-} catch (cloudErr) {
-cloudPublishStatus = "cloud-sync-failed";
-console.warn("Study note cloud sync failed:", cloudErr);
-}
-}
+var finalList = getCustomNotesList();
+finalList.unshift(newNote);
+saveCustomNotesList(finalList);
+var walletData = getWalletData();
+if (upi) walletData.upi = upi;
+saveWalletData(walletData);
+lastUploadedPdfBuffer = null;
+rawUploadedNoteText = "";
+fullSanitizedNoteContent = "";
+lastLoadedPdfDoc = null;
+renderCustomNotesCards();
+renderCreatorDashboard();
+updateDynamicSEOForNotes();
+if (form && form.reset) form.reset();
+togglePriceInput();
+filterMainStudyNotes();
+closeUploadNotesModal();
+
+if (cloudPublishStatus === "fully-synced") alert("✅ Note aur original PDF cloud par verify hokar save ho gaye. Ab doosre devices par bhi PDF khulna chahiye.");
+else if (cloudPublishStatus === "metadata-synced") alert("✅ Note listing cloud par save ho gayi. Is note ke saath PDF attach nahi thi.");
+else alert("⚠️ Note sirf is device par save hua. Cloud sync confirm nahi hua.");
 } catch (err) {
-if (submitBtn) {
-submitBtn.disabled = false;
-submitBtn.innerHTML = origBtnText;
-}
-alert("⚠️ Note publish karne mein error aaya: " + (err.message || "Please try again."));
+console.error("saveCustomNote failed:", err);
+alert("⚠️ Publish/Upload mein dikkat: " + (err && err.message ? err.message : "Please try again."));
 } finally {
 window.__fcvNotePublishLock = false;
 if (submitBtn) {
-  submitBtn.disabled = false;
-  if (submitBtn.innerHTML.indexOf("Publishing Note") >= 0) submitBtn.innerHTML = origBtnText;
+submitBtn.disabled = false;
+if (submitBtn.innerHTML.indexOf("Saving PDF") >= 0 || submitBtn.innerHTML.indexOf("Publishing Note") >= 0) submitBtn.innerHTML = origBtnText;
 }
 }
 }
-
 function renderCustomNotesCards() {
 var oldCards = document.querySelectorAll(".custom-uploaded-card");
 for (var i = 0; i < oldCards.length; i++) {
