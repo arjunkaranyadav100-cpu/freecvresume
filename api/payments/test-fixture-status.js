@@ -22,7 +22,11 @@ module.exports = async function handler(req, res) {
       const p = event.payload || {};
       const orderId = p.order_id || (p.payload && p.payload.payment && p.payload.payment.entity && p.payload.payment.entity.order_id);
       return orderMap.has(orderId);
-    }).map(event => ({ event_type: event.event_type, processed_at: event.processed_at || null }));
+    }).map(event => {
+      const p = event.payload || {};
+      const orderId = p.order_id || (p.payload && p.payload.payment && p.payload.payment.entity && p.payload.payment.entity.order_id);
+      return { event_type: event.event_type, order_id: orderId, processed_at: event.processed_at || null };
+    });
     return json(res, 200, {
       note: { id: notes[0].id, title: notes[0].title, private_pdf_present: !!notes[0].storage_path, moderation_status: notes[0].moderation_status },
       orders: orders.map(o => ({ order_id: o.razorpay_order_id, status: o.status, amount_paise: o.amount_paise, paid_at: o.paid_at })),
