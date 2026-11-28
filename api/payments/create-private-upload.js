@@ -10,7 +10,7 @@ module.exports = async function handler(req, res) {
     const noteId = String((req.body || {}).note_id || "").trim();
     if (!/^custom-note-[a-zA-Z0-9-]{8,100}$/.test(noteId)) return json(res, 400, { error: "Invalid note_id." });
 
-    const rows = await supabaseAdmin("study_notes?select=id,creator_id,price& id=eq." + encodeURIComponent(noteId) + "&limit=1".replace(" ", ""));
+    const rows = await supabaseAdmin("study_notes?select=id,creator_id,price&id=eq." + encodeURIComponent(noteId) + "&limit=1");
     if (!Array.isArray(rows) || !rows.length || rows[0].creator_id !== user.id) return json(res, 403, { error: "You can only upload a PDF for your own note." });
     if (Number(rows[0].price) <= 0) return json(res, 400, { error: "This endpoint is only for paid notes." });
 
