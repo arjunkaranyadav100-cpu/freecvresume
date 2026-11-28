@@ -1,6 +1,7 @@
 const { json, env, getBearer, supabaseUser, supabaseAdmin } = require("../_lib/razorpay");
 
 module.exports = async function handler(req, res) {
+  if (process.env.VERCEL_ENV !== "preview") return json(res, 404, { error: "Preview-only endpoint." });
   if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
   try {
     const token = getBearer(req);
