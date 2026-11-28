@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
       headers: { Authorization: "Basic " + Buffer.from(env("RAZORPAY_KEY_ID") + ":" + env("RAZORPAY_KEY_SECRET")).toString("base64") }
     });
     const payment = await paymentResponse.json();
-    if (!paymentResponse.ok || payment.order_id !== orderId || payment.status !== "captured") {
+    if (!paymentResponse.ok || payment.order_id !== orderId || payment.status !== "captured" || payment.currency !== "INR") {
       return json(res, 409, { error: "Payment is not captured. The PDF remains locked." });
     }
     if (String(payment.amount) === "" || !Number.isSafeInteger(Number(payment.amount))) return json(res, 400, { error: "Invalid captured amount." });
