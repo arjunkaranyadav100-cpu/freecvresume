@@ -74,7 +74,7 @@ if(!adminReady||!webhookSelfTestBtn)return;
 webhookSelfTestBtn.disabled=true;
 status("Running an internal Preview webhook check. No payment will be created…");
 try{
-var r=await fetch(apiUrl("/api/payments/webhook-self-test"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:"{}"});
+var r=await fetch(apiUrl("/api/payments/test-fixture-status?mode=webhook-self-test"),{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+adminToken},body:"{}"});
 var d=await parseResponse(r);
 if(d.ok!==true||d.signature_verification!=="passed"||d.webhook_handler!=="passed"||d.supabase_event_rpc!=="passed"||d.diagnostic_row_created!==true||d.diagnostic_row_cleaned!==true){
 throw new Error(d.error||"Webhook self-test did not pass all checks.");
