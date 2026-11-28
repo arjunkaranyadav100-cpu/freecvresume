@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
     if (!eventId) return json(res, 400, { error: "Missing event ID." });
     const event = JSON.parse(raw.toString("utf8"));
     const payment = event.payload && event.payload.payment && event.payload.payment.entity;
-    if (event.event === "payment.captured" && payment && payment.order_id) {
+    if (event.event === "payment.captured" && payment && payment.order_id && payment.currency === "INR" && Number.isSafeInteger(Number(payment.amount))) {
       await supabaseAdmin("rpc/complete_marketplace_payment_webhook", {
         method: "POST",
         body: JSON.stringify({
