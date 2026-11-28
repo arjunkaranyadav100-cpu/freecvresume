@@ -10,7 +10,7 @@ function env(name) {
 }
 function getBearer(req) {
   const header = req.headers.authorization || "";
-  const match = header.match(/^Bearer\\s+(.+)$/i);
+  const match = header.match(/^Bearer\s+(.+)$/i);
   return match ? match[1] : "";
 }
 async function supabaseUser(token) {
@@ -40,7 +40,7 @@ async function verifyPrivatePdfSignature(path) {
   const parts = String(path || "").split("/");
   if (parts.length !== 2 ||
       !/^[0-9a-f-]{36}$/i.test(parts[0]) ||
-      !/^[A-Za-z0-9_-]{1,180}\\.pdf$/i.test(parts[1])) return false;
+      !/^[A-Za-z0-9_-]{1,180}\.pdf$/i.test(parts[1])) return false;
 
   const serviceKey = env("SUPABASE_SERVICE_ROLE_KEY");
   const response = await fetch(
