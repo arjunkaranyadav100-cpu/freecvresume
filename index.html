@@ -2386,6 +2386,7 @@ function btn(label,cls,fn){var b=document.createElement("button");b.type="button
 btn("Preview PDF","bg-indigo-600",function(){previewAdminStudyPdf(note);});
 btn("View details","bg-slate-700",function(){alert("Title: "+note.title+"\nCreator: "+note.creator+"\nCategory: "+note.category+"\nSubject: "+note.subject+"\nLanguage: "+note.language+"\nPrice: ₹"+(note.price||0)+"\nStatus: "+note.moderation_status+"\n\nDescription:\n"+(note.content||"No description"));});
 if(note.moderation_status!=="approved")btn("Approve","bg-emerald-600",function(){moderateStudyNote(note.id,"approved");});
+if(note.moderation_status==="approved" && Number(note.price)>0)btn("Publish Secure Checkout","bg-emerald-700",function(){publishPaidNoteForCheckout(note.id);});
 if(note.moderation_status!=="rejected")btn("Reject","bg-amber-600",function(){moderateStudyNote(note.id,"rejected");});
 if(note.moderation_status!=="pending")btn("Move to Pending","bg-purple-600",function(){moderateStudyNote(note.id,"pending");});
 btn("Delete","bg-rose-700",function(){deleteAdminStudyNote(note.id,note.title);});
@@ -2420,6 +2421,28 @@ var result=await sbClient.from("study_notes").update({moderation_status:status,m
 if(result.error){alert("Moderation failed: "+result.error.message);return;}
 await loadAdminModeration();await syncNotesFromSupabase();
 alert(status==="approved"?"Note approved and visible to students.":status==="rejected"?"Note rejected and hidden from public.":"Note moved back to pending review.");
+}
+async function publishPaidNoteForCheckout(noteId) {
+var acc=getActiveCreatorAccount();
+if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
+if(!sbClient){alert("Secure login is unavailable. Please refresh and sign in again.");return;}
+try {
+var sessionResult=await sbClient.auth.getSession();
+if(sessionResult.error)throw sessionResult.error;
+var session=sessionResult.data&&sessionResult.data.session;
+if(!session||!session.access_token){alert("Admin Supabase login is required to publish paid notes.");return;}
+var response=await fetch("/api/payments/publish-product",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},
+body:JSON.stringify({note_id:String(noteId)})
+});
+var data=await response.json();
+if(!response.ok||data.published!==true)throw new Error(data.error||"Secure checkout publishing failed.");
+await loadAdminModeration();
+alert("Paid note securely published for checkout. The original PDF remains behind purchase entitlement checks.");
+} catch(err) {
+alert("Could not publish paid note: "+(err.message||"Please retry"));
+}
 }
 async function deleteAdminStudyNote(noteId,title) {
 var acc=getActiveCreatorAccount();if(!acc||acc.role!=="admin"){alert("Admin permission required.");return;}
