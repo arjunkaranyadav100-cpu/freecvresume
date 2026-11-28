@@ -6087,5 +6087,15 @@ syncNotesFromSupabase();
  });
 })();
 </script>
+<script>
+(function(){
+  var host=String(location.hostname||"").toLowerCase();
+  var productionHosts=["www.freecvresume.co.in","freecvresume.co.in","free-resume-maker-notes-4.vercel.app","free-resume-maker-notes-4-ak7-086a.vercel.app","free-resume-maker-notes-4-git-main-ak7-086a.vercel.app"];
+  if(productionHosts.indexOf(host)!==-1){
+    var panel=document.getElementById("paymentTestFixturePanel");
+    if(panel)panel.remove();
+  }
+})();
+</script>
 </body>
 </html>

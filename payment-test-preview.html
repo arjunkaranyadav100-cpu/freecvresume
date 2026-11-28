@@ -31,6 +31,14 @@ button:disabled{opacity:.55;cursor:not-allowed}.primary{background:#4338ca}.dang
 <script>
 (function(){
 "use strict";
+var currentHost=String(window.location.hostname||"").toLowerCase();
+var productionHosts=["www.freecvresume.co.in","freecvresume.co.in","free-resume-maker-notes-4.vercel.app","free-resume-maker-notes-4-ak7-086a.vercel.app","free-resume-maker-notes-4-git-main-ak7-086a.vercel.app"];
+if(productionHosts.indexOf(currentHost)!==-1){
+document.getElementById("status").textContent="This test page is available only on the Preview deployment.";
+document.getElementById("start").disabled=true;
+document.getElementById("cleanup").classList.add("hidden");
+return;
+}
 var SUPABASE_URL="https://uwdxigjbfljrssjqvfou.supabase.co";
 var SUPABASE_ANON_KEY="sb_publishable_kKq5y_Rt1ikt7TI_PiOzeg_xtDAJzRG";
 var client=null,adminToken="",buyerToken="",fixtureId="",razorpayLoaded=false,adminReady=false;
