@@ -3637,6 +3637,40 @@ if (showToastFlag) {
 showCloudSyncToast("☁️ Uploading PDF '" + (noteObj.title || "").slice(0, 22) + "...' to Cloud for all devices...", false);
 }
 
+// Paid PDFs must use the private bucket and authenticated server-issued upload ticket.
+if (Number(noteObj.price) > 0) {
+var authRes = await sbClient.auth.getSession();
+var accessToken = authRes && authRes.data && authRes.data.session ? authRes.data.session.access_token : "";
+if (!accessToken) throw new Error("Paid PDF upload ke liye Supabase account mein sign in karein.");
+var ticketRes = await fetch("/api/payments/create-private-upload", {
+method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + accessToken },
+body: JSON.stringify({ note_id: noteObj.id })
+});
+var ticket = await ticketRes.json();
+if (!ticketRes.ok || !ticket.token || !ticket.path) throw new Error(ticket.error || "Private upload ticket nahi mila.");
+var signedUpload = await sbClient.storage.from("paid-notes-private").uploadToSignedUrl(
+ticket.path, ticket.token, new Blob([pdfBuffer], { type: "application/pdf" }),
+{ contentType: "application/pdf", upsert: true }
+);
+if (!signedUpload || signedUpload.error) throw new Error(signedUpload && signedUpload.error ? signedUpload.error.message : "Private PDF upload fail hua.");
+var finishRes = await fetch("/api/payments/finish-private-upload", {
+method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + accessToken },
+body: JSON.stringify({ note_id: noteObj.id })
+});
+var finishData = await finishRes.json();
+if (!finishRes.ok || !finishData.saved) throw new Error(finishData.error || "Private PDF save verify nahi hua.");
+var privateMarker = "private-storage:" + ticket.path;
+noteObj.storage_path = ticket.path;
+noteObj.url = privateMarker;
+await sbClient.from("study_notes").update({ storage_path: ticket.path, url: "" }).eq("id", noteObj.id);
+var paidList = getCustomNotesList();
+for (var pi = 0; pi < paidList.length; pi++) if (paidList[pi].id === noteObj.id) { paidList[pi].storage_path = ticket.path; paidList[pi].url = privateMarker; }
+saveCustomNotesList(paidList);
+if (showToastFlag) showCloudSyncToast("✅ Paid PDF private storage mein secure save ho gaya.", true);
+delete activeCloudUploadsMap[slug];
+return privateMarker;
+}
+
 // 1. Try Supabase Storage bucket 'notes-pdfs' first (with 90s timeout for large 100+ page PDFs)
 var storagePath = "pdfs/" + slug + "_" + noteObj.id + ".pdf";
 var upRes = await Promise.race([
@@ -3740,6 +3774,28 @@ var head = new Uint8Array(buf, 0, Math.min(5, buf.byteLength));
 return head.length === 5 && head[0] === 37 && head[1] === 80 && head[2] === 68 && head[3] === 70 && head[4] === 45;
 }
 
+// Paid PDFs are delivered only through a short-lived URL after server-side entitlement validation.
+var privatePath = noteObj.storage_path || (String(noteObj.url || "").indexOf("private-storage:") === 0 ? String(noteObj.url).slice("private-storage:".length) : "");
+if (privatePath) {
+try {
+var authState = await sbClient.auth.getSession();
+var buyerToken = authState && authState.data && authState.data.session ? authState.data.session.access_token : "";
+if (!buyerToken) return null;
+if (onProgressText) onProgressText("🔐 Checking paid access and preparing secure PDF...");
+var secureRes = await fetch("/api/payments/private-download?note_id=" + encodeURIComponent(noteObj.id), {
+headers: { "Authorization": "Bearer " + buyerToken }, cache: "no-store"
+});
+var secureData = await secureRes.json();
+if (!secureRes.ok || !secureData.url) return null;
+var privateResp = await fetch(secureData.url, { cache: "no-store" });
+if (privateResp.ok) {
+var privateBuf = await privateResp.arrayBuffer();
+if (isValidPdfBuffer(privateBuf)) return clonePdfArrayBuffer(privateBuf);
+}
+} catch (privateErr) { console.warn("Secure paid PDF download failed:", privateErr); }
+return null;
+}
+
 // 1. Direct Storage URL: accept only a real PDF, never an HTML/error response.
 if (noteObj.url && noteObj.url.indexOf("http") === 0) {
 try {
@@ -3828,7 +3884,7 @@ localBuf = await loadPdfBufferFromCache(item.title);
 }
 if (localBuf && localBuf.byteLength > 200) {
 // Check if cloud already has this note's PDF synced
-var hasCloudUrl = item.url && (item.url.indexOf("http") === 0 || item.url.indexOf("sb-chunks:") === 0);
+var hasCloudUrl = item.storage_path || (item.url && (item.url.indexOf("http") === 0 || item.url.indexOf("sb-chunks:") === 0 || item.url.indexOf("private-storage:") === 0));
 if (!hasCloudUrl) {
 await uploadPdfBufferToCloud(item, localBuf, true);
 }
@@ -3874,7 +3930,8 @@ creator: row.creator,
 creatorEmail: (existingLocal && existingLocal.creatorEmail) ? existingLocal.creatorEmail : "",
 upi: row.upi,
 content: row.content,
-url: row.url || (existingLocal ? existingLocal.url : ""),
+url: row.storage_path ? "private-storage:" + row.storage_path : (row.url || (existingLocal ? existingLocal.url : "")),
+storage_path: row.storage_path || (existingLocal ? existingLocal.storage_path : ""),
 views: Math.max(row.views || 1, existingLocal ? (existingLocal.views || 1) : 1),
 sales: Math.max(row.sales || 0, existingLocal ? (existingLocal.sales || 0) : 0),
 rating: row.rating || 4.9,
