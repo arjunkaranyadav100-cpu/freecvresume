@@ -4457,6 +4457,29 @@ readerZoomPercent = 100;
 updateReaderZoom();
 var pageJumpInput = document.getElementById("readerPageJump"); if (pageJumpInput) pageJumpInput.value = "1";
 activeReaderNote = note;
+
+// Paid-note access is never trusted from localStorage or a browser-side purchased flag.
+// Confirm the entitlement with the server before loading/rendering the original PDF.
+var securePaidAccess = !(Number(note.price) > 0);
+if (Number(note.price) > 0) {
+  note.purchased = false;
+  try {
+    var paidSessionResult = sbClient ? await sbClient.auth.getSession() : null;
+    var paidSession = paidSessionResult && paidSessionResult.data && paidSessionResult.data.session;
+    if (paidSession && paidSession.access_token) {
+      var entitlementResponse = await fetch("/api/payments/entitlement?note_id=" + encodeURIComponent(String(note.id)), {
+        headers: { "Authorization": "Bearer " + paidSession.access_token }
+      });
+      if (entitlementResponse.ok) {
+        var entitlementData = await entitlementResponse.json();
+        securePaidAccess = entitlementData.entitled === true;
+        note.purchased = securePaidAccess;
+      }
+    }
+  } catch (entitlementError) {
+    console.warn("Paid-note entitlement check unavailable; keeping PDF locked.", entitlementError);
+  }
+}
 document.getElementById("onPageReaderModal").style.display = "flex";
 var progressLabel=document.getElementById("readerProgressLabel"); if(progressLabel) progressLabel.innerText="0% read";
 document.getElementById("readerBadge").innerText = note.badge || "STUDY NOTE";
@@ -4476,7 +4499,7 @@ note.content = generateSmartTopicSEOLines(note.title, note.category || "upsc", n
 }
 var isCustom = String(note.id || "").indexOf("custom-note") !== -1;
 var pdfBuf = null;
-if (isCustom) {
+if (isCustom && securePaidAccess) {
 pdfBuf = await loadPdfBufferFromCache(note.id);
 
 if (!pdfBuf) {
@@ -4499,7 +4522,10 @@ if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) retu
 }
 }
 if (readerRequestId !== activeReaderRequestId || activeReaderNote !== note) return;
-if (pdfBuf && pdfBuf.byteLength > 200) {
+if (!securePaidAccess) {
+canvasContainer.classList.add("hidden");
+if (printAreaBox) printAreaBox.classList.add("hidden");
+} else if (pdfBuf && pdfBuf.byteLength > 200) {
 canvasContainer.classList.remove("hidden");
 if (printAreaBox) printAreaBox.classList.add("hidden");
 renderVisualCroppedPdfPages(pdfBuf, canvasContainer);
@@ -4746,17 +4772,83 @@ var libraryPanel=document.getElementById("studentLibraryPanel"); if(libraryPanel
 }
 
 async function unlockPaidNoteNow() {
-if (!activeReaderNote) return false;
-var msg = "Secure checkout is not connected yet. No money has been charged and this note has not been unlocked. Please try again after the marketplace payment system is enabled.";
-alert(msg);
+if (!activeReaderNote || !(Number(activeReaderNote.price) > 0)) return false;
+var note = activeReaderNote;
 var payBtn = document.querySelector('#onPageReaderModal button[onclick="unlockPaidNoteNow()"]');
-if (payBtn) {
-  payBtn.disabled = true;
-  payBtn.innerText = "Secure checkout coming soon";
-  payBtn.classList.remove("bg-emerald-500","hover:bg-emerald-600");
-  payBtn.classList.add("bg-slate-400","cursor-not-allowed");
+var originalHtml = payBtn ? payBtn.innerHTML : "";
+if (payBtn) { payBtn.disabled = true; payBtn.innerText = "Connecting secure checkout..."; }
+try {
+  if (!sbClient) throw new Error("Secure login service is unavailable. Please refresh and sign in again.");
+  var sessionResult = await sbClient.auth.getSession();
+  if (sessionResult.error) throw sessionResult.error;
+  var session = sessionResult.data && sessionResult.data.session;
+  if (!session || !session.access_token) throw new Error("Paid notes kharidne ke liye pehle apne account se Login karein.");
+
+  var orderResponse = await fetch("/api/payments/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + session.access_token },
+    body: JSON.stringify({ note_id: String(note.id) })
+  });
+  var orderData = await orderResponse.json();
+  if (!orderResponse.ok) throw new Error(orderData.error || "Secure order could not be created.");
+
+  if (!window.Razorpay) {
+    await new Promise(function(resolve, reject) {
+      var existing = document.querySelector('script[data-razorpay-checkout="1"]');
+      if (existing) { existing.addEventListener("load", resolve, {once:true}); existing.addEventListener("error", reject, {once:true}); return; }
+      var script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.dataset.razorpayCheckout = "1";
+      script.onload = resolve;
+      script.onerror = function(){ reject(new Error("Razorpay Checkout load nahi ho paya. Please try again.")); };
+      document.head.appendChild(script);
+    });
+  }
+  if (!window.Razorpay) throw new Error("Razorpay Checkout is unavailable.");
+
+  await new Promise(function(resolve, reject) {
+    var checkout = new window.Razorpay({
+      key: orderData.key_id,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: "FreeCVResume",
+      description: orderData.product_title || note.title || "Premium Study Note",
+      order_id: orderData.order_id,
+      handler: async function(response) {
+        try {
+          var verifyResponse = await fetch("/api/payments/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + session.access_token },
+            body: JSON.stringify(response)
+          });
+          var verifyData = await verifyResponse.json();
+          if (!verifyResponse.ok || verifyData.verified !== true) throw new Error(verifyData.error || "Payment verification pending. PDF abhi locked rahegi.");
+          var accessResponse = await fetch("/api/payments/entitlement?note_id=" + encodeURIComponent(String(note.id)), {
+            headers: { "Authorization": "Bearer " + session.access_token }
+          });
+          var accessData = await accessResponse.json();
+          if (!accessResponse.ok || accessData.entitled !== true) throw new Error("Payment verify ho gaya, lekin access confirm nahi hua. Please support se sampark karein.");
+          note.purchased = true;
+          resolve(true);
+        } catch (verifyError) { reject(verifyError); }
+      },
+      modal: { ondismiss: function() { reject(new Error("Payment cancel kar diya gaya. Koi PDF unlock nahi hui.")); } },
+      theme: { color: "#4f46e5" }
+    });
+    checkout.on("payment.failed", function(event) {
+      var description = event && event.error && event.error.description;
+      reject(new Error(description || "Payment failed. PDF locked rahegi."));
+    });
+    checkout.open();
+  });
+  if (activeReaderNote === note) await launchOnPageReader(note);
+  return true;
+} catch (error) {
+  alert(error && error.message ? error.message : "Checkout abhi complete nahi ho paya. Koi PDF unlock nahi hui.");
+  return false;
+} finally {
+  if (payBtn && document.body.contains(payBtn)) { payBtn.disabled = false; payBtn.innerHTML = originalHtml; }
 }
-return false;
 }
 
 async function downloadSanitizedNotePDF() {
